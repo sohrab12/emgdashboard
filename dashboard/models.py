@@ -2,93 +2,88 @@ from django.db import models
 from datetime import datetime
 
 #GUI Models
-class Dashboard(models.Model):
+class WidgetOwner(models.Model):
+    """A superclass of dashboards and kits, any entity that has widgets tied to it.
+    """
+    pass
+
+class Dashboard(WidgetOwner):
     """A user's dashboard, including the last time the user logged into it. All widgets reference a dashboard as a foreign key.
     """
     user = models.CharField(max_length = 50)
-    sharedWidgets = []
     lastLogin = models.DateTimeField('last login')
 
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
     def addWidget(self, newquery, column):
-        xval = 0 if column == 'left' else 30
-        self.widget_set.create(creator = self.user, query = newquery, dateCreated = models.datetime.now(),
-                               dateUpdated = models.datetime.now(), xCoordinates = , yCoordinates = 0)
-        
-class Query:
-    """A query that a widget stores and periodically submits to the database.
-    Can access one or more tables in the database. Verification needed.
-    """
-    pass
+        #TODO: Add code to calculate Y-coordinates
+        self.widget_set.create(creator = self.user, query = newquery, x = column, y = 0)
 
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
     """
-    belongTo = models.ForeignKey(Dashboard)
+    belongTo = models.ForeignKey(WidgetOwner)
     creator = models.CharField(max_length=50)
     query = models.CharField(max_length=200)
-    dateCreated = models.DateTimeField('created')
-    dateUpdated = models.DateTimeField('last update')
-    xCoordinates = models.positiveIntegerField()
-    yCoordinates = models.positiveIntegerField()
+    created = models.DateTimeField('created')
+    updated = models.DateTimeField('last update')
+    x = models.PositiveIntegerField()
+    y = models.PositiveIntegerField()
     
 
-class Kit(models.Model):
+class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
     ID into a list
     """
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
     dateCreated = models.DateTimeField('created')
-    widgetList = [] 
     
 #Data models
 
 class DataEntry(models.Model):
     """A base class for all data entries. Contains a date at which the entry was recorded
     """
-    recorded = models.DateTimeField('recorded')
+    time = models.DateTimeField()
 
-class Price(DataEntry):
-    """Super-class for different price models in the database
-    """
-    price = models.FloatField(max_digits = 6, decimal_places = 2)
-
-class StockPrice(Price):
+class StockPrice(DataEntry):
     """Stores a price of a share of Edison International's (EIX) stock on the NYSE market at one time.
     Recorded in US$/share
     """
-    pass
+    price = models.FloatField()
 
-class BondPrice(Price):
+class BondPrice(DataEntry):
     """The daily trading price for EME and subsidiary bonds.
     Recorded in US$
     """
+    price = models.FloatField()
     company = models.CharField(max_length = 50)
     
-class PowerOutput(Price):
+class PowerOutput(DataEntry):
     """A statistic for the electricity generated in one day by one of EMG's generation units.
     Recorded in megawatts/hour
     """
     genunit = models.CharField(max_length = 50)
     unittype = models.CharField(max_length = 20)
 
-class ElectricityPrice(Price):
+class ElectricityPrice(DataEntry):
     """The market price for electricity at designated ISO zone/hub.
     Recorded in US$/megawatt/hour
     """
+    price = models.FloatField()
     iso = models.CharField(max_length = 20)
 
-class NaturalGasPrice(Price):
+class NaturalGasPrice(DataEntry):
     """The market price for natural gas at the specified delivery hub.
     Recorded in US$/MMBTU
     """
+    price = models.FloatField()
     iso = models.CharField(max_length = 20)
 
-class CoalPrice(Price):
+class CoalPrice(DataEntry):
     """The market price for coal by coal type.
     Recorded in US$/short ton
     """
+    price = models.FloatField()
     coaltype = models.CharField(max_length = 20)
 
 class GeneratorAvalablility(DataEntry):
@@ -110,7 +105,7 @@ class SubsidiaryBalance(DataEntry):
     """The cash position of the designated EMG subsidiary
     Recorded in US$
     """
-    balance = models.FloatField(max_digits = 6, decimal_places = 2)
+    balance = models.FloatField()
     company = models.CharField(max_length = 50)
 
 class AvailableCapital(DataEntry):
@@ -128,9 +123,9 @@ class ProfitLoss(DataEntry):
     """The daily results for EMMT's trading activities based on prices earned for power delivered.
     Recorded in US$
     """
-    profit = models.FloatField(max_digits = 16, decimal_places = 2)
-    expenditures = models.FloatField(max_digits = 16, decimal_places = 2)
-    netprofit = models.FloatField(max_digits = 16, decimal_places = 2)
+    profit = models.FloatField()
+    expenditures = models.FloatField()
+    netprofit = models.FloatField()
 
 class MoodyRating(DataEntry):
     """EME and subsidiary company ratings by Moody's.
@@ -148,4 +143,4 @@ class GrossMargin(DataEntry):
     """The margin earned for daily power output sold via trading by EMMT
     Recorded in US$
     """
-    margin = models.FloatField(max_digits = 16, decimal_places = 2)
+    margin = models.FloatField()
