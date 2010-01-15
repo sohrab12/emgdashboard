@@ -13,6 +13,10 @@ class Dashboard(WidgetOwner):
     user = models.CharField(max_length = 50)
     lastLogin = models.DateTimeField('last login')
 
+    #refer to self by user
+    def __unicode__(self):
+        return self.user
+
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
     def addWidget(self, newquery, column):
         #TODO: Add code to calculate Y-coordinates
@@ -23,12 +27,25 @@ class Widget(models.Model):
     """
     belongTo = models.ForeignKey(WidgetOwner)
     creator = models.CharField(max_length=50)
-    query = models.CharField(max_length=200)
     created = models.DateTimeField('created')
     updated = models.DateTimeField('last update')
     x = models.PositiveIntegerField()
     y = models.PositiveIntegerField()
-    
+
+    #refer to self as belongTo,x,y
+    def __unicode__(self):
+        return str(self.belongTo) + str(self.x) + str(self.y)
+
+class LineWidget(models.Model):
+    """A widget containing a line graph of data.
+    Has a one-to-one relationship with a non-typed widget.
+    """
+    parentwidget = models.OneToOneField(Widget, primary_key = True)
+    zoom = models.PositiveIntegerField() #miliseconds/hundred pixels
+    enddate = models.DateTimeField() #end date updates to current day if null
+    latestentry = models.DateTimeField()
+    model1 = models.CharField(max_length = 60)  #Reference to a DataEntry's field
+    model2 = models.CharField(max_length = 60) #Reference to a DataEntry's field
 
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's

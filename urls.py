@@ -5,12 +5,10 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^emgdashboard/', include('emgdashboard.foo.urls')),
-
+    (r'^admin/', include(admin.site.urls)),
+    (r'^', include('emgdashboard.dashboard.urls'))
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    (r'^admin/', include(admin.site.urls)),
 )
