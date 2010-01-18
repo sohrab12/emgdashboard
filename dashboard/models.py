@@ -67,6 +67,9 @@ class StockPrice(DataEntry):
     Recorded in US$/share
     """
     price = models.FloatField()
+    
+    def __unicode__(self):
+        return str(self.time)
 
 class BondPrice(DataEntry):
     """The daily trading price for EME and subsidiary bonds.
@@ -74,6 +77,9 @@ class BondPrice(DataEntry):
     """
     price = models.FloatField()
     company = models.CharField(max_length = 50)
+
+    def __unicode__(self):
+        return " ".join([self.company, str(self.time)])
     
 class PowerOutput(DataEntry):
     """A statistic for the electricity generated in one day by one of EMG's generation units.
@@ -82,12 +88,18 @@ class PowerOutput(DataEntry):
     genunit = models.CharField(max_length = 50)
     unittype = models.CharField(max_length = 20)
 
+    def __unicode__(self):
+        return " ".join([self.genunit, str(self.time)])   
+
 class ElectricityPrice(DataEntry):
     """The market price for electricity at designated ISO zone/hub.
     Recorded in US$/megawatt/hour
     """
     price = models.FloatField()
     iso = models.CharField(max_length = 20)
+
+    def __unicode__(self):
+        return " ".join([self.iso, str(self.time)])                        
 
 class NaturalGasPrice(DataEntry):
     """The market price for natural gas at the specified delivery hub.
@@ -96,12 +108,18 @@ class NaturalGasPrice(DataEntry):
     price = models.FloatField()
     iso = models.CharField(max_length = 20)
 
+    def __unicode__(self):
+        return " ".join([self.iso, str(self.time)])    
+
 class CoalPrice(DataEntry):
     """The market price for coal by coal type.
     Recorded in US$/short ton
     """
     price = models.FloatField()
     coaltype = models.CharField(max_length = 20)
+
+    def __unicode__(self):
+        return " ".join([self.coaltype, str(self.time)])    
 
 class GeneratorAvalablility(DataEntry):
     """The operational availability status of generation units.
@@ -118,12 +136,18 @@ class GeneratorAvalablility(DataEntry):
     unittype = models.CharField(max_length = 20)
     availability = models.CharField(max_length = 2, choices = AVAILABILITY_CHOICES)
 
+    def __unicode__(self):
+        return " ".join([self.genunit, str(self.time)])    
+
 class SubsidiaryBalance(DataEntry):
     """The cash position of the designated EMG subsidiary
     Recorded in US$
     """
     balance = models.FloatField()
     company = models.CharField(max_length = 50)
+
+    def __unicode__(self):
+        return " ".join([self.company, str(self.time)])    
 
 class AvailableCapital(DataEntry):
     """The available funds from EMG company, working capital facilities, and borrows against those facilities
@@ -144,6 +168,9 @@ class ProfitLoss(DataEntry):
     expenditures = models.FloatField()
     netprofit = models.FloatField()
 
+    def __unicode__(self):
+        return str(self.time)    
+
 class MoodyRating(DataEntry):
     """EME and subsidiary company ratings by Moody's.
     Elements still need to be reviewed.
@@ -161,3 +188,6 @@ class GrossMargin(DataEntry):
     Recorded in US$
     """
     margin = models.FloatField()
+
+    def __unicode__(self):
+        return str(self.time)    
