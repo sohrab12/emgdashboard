@@ -35,13 +35,6 @@ function cancelKit()
 	$(this).toggleClass("active");	
 }
 
-function updateCurrentlyOn(oldCurrentlyOn, newCurrentlyOn)
-{
-	alert(currentlyOn);
-	
-	
-}
-
 
 
 $(document).ready(function(){
@@ -93,6 +86,7 @@ $(document).ready(function(){
 			<li><a class="addWidget">Add Widget</a></li>
 			<li><a class="exportWidget">Export</a></li>
 			<li class="last"><a class="manageKit">Manage Kit</a></li>
+            
 		</ul>
 	</div>
 </div>
@@ -110,6 +104,7 @@ $(document).ready(function(){
                 <option value="">Pie Chart</option>
                 <option value="">Line Graph</option>
             </select>
+            &nbsp;&nbsp;&nbsp;
         </td>
         <td>   
             <select size="4" name="" multiple>
@@ -118,6 +113,7 @@ $(document).ready(function(){
                 <option value="">Actuals</option>
                 <option value="">Investments</option>
             </select>
+            &nbsp;&nbsp;&nbsp;
         </td>
         <td>    
             <select size="4" name="" multiple>
@@ -127,26 +123,29 @@ $(document).ready(function(){
                 <option value="">OMG</option>
             </select>
         </td>
+        <td width="25">
+        	&nbsp;
+        </td>
         <td align="right">
         	<br>
-			<input name="startDate">
- 			<br>
-			<input name="startDate">
+				<input type="text" name="startDate">
+ 			<br><br>
+				<input type="text" name="startDate">
             <br><br>
-            Zoom:
-            <a href="">Hour</a>
-            <a href="">Day</a>
-            <a href="">Week</a>
-            <a href="">Month</a>
+            <b>Zoom:</b>&nbsp;
+            <a href="">Hour</a> |
+            <a href="">Day</a> |
+            <a href="">Week</a> |
+            <a href="">Month</a> |
             <a href="">Year</a>
             <br><br>
         </td>            
     </tr>    
     <tr>
-    	<td colspan="4" align="right">
-        	<input type="button" name="clear" value="Clear">
-            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelAddWidget()">
-            <input type="button" name="addWidget" value="Add Widget">
+    	<td colspan="5" align="right">
+        	<input type="button" name="clear" value="Clear" class="btn">
+            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelAddWidget()" class="btn">
+            <input type="button" name="addWidget" value="Add Widget" class="btn">
         </td>
     </tr>
     </table>
@@ -158,16 +157,18 @@ $(document).ready(function(){
     <table border="0" height="75">
     <tr>
     	<td> 
-        	Select the widgets you are interested in exporting, then click on the desired format.          
+        	<font style="font-family:Verdana, Geneva, sans-serif; font-size:18px">
+        		Select the widget(s) you are interested in exporting, then click on the desired format.
+        	</font>
         </td>        
     </tr>    
     <tr>
     	<td align="right">
-        	<input type="button" name="cancel" value="Cancel" onClick="javascript:cancelExport()">
+        	<input type="button" name="cancel" value="Cancel" onClick="javascript:cancelExport()" class="btn">
         	&nbsp;&nbsp;&nbsp;Export to
-            <input type="button" name="excel" value="Excel">
-            <input type="button" name="pdf" value="PDF">
-            <input type="button" name="png" value="PNG">        
+            <input type="button" name="excel" value="Excel" class="btn">
+            <input type="button" name="pdf" value="PDF" class="btn">
+            <input type="button" name="png" value="PNG" class="btn">
         </td>
         
     
@@ -179,21 +180,27 @@ $(document).ready(function(){
     <div id="manageKitMenu">
     <table border="0" height="75">
     <tr>
-    	<td> 
-        	Select the widgets you are intrested in adding into your new <br>
-            kit, then name your kit in the text box, and press "Make Kit".        
+    	<td valign="top"> 
+        	<font style="font-family:Verdana, Geneva, sans-serif; font-size:14px;">
+	        	Select the widget(s) you are intrested in adding into your new <br>
+    	        kit, then name your kit in the text box, and press "Make Kit".        
+            </font>
         </td>
         <td width="20">&nbsp;</td>        
         <td>
-        	Name of new Kit:<br>
-            <input type="text" name="kitName" width="30">
+        	<font style="font-family:Verdana, Geneva, sans-serif; font-size:12px">
+	        	Name of new Kit:
+            </font>
+            <br>
+    	    <input type="text" name="kitName" width="30">             
+            <br><br><br>
         </td>
     </tr>    
     <tr>
     	<td colspan="3" align="right">
-        	<input type="button" name="applyChanges" value="Apply Changes">
-            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelKit()">
-            <input type="button" name="makeKit" value="Make Kit">
+        	<input type="button" name="applyChanges" value="Apply Changes" class="btn">
+            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelKit()" class="btn">
+            <input type="button" name="makeKit" value="Make Kit" class="btn">
         </td>
     </tr>
     </table>
