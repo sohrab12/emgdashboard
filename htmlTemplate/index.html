@@ -45,17 +45,18 @@ function updateCurrentlyOn(oldCurrentlyOn, newCurrentlyOn)
 
 
 $(document).ready(function(){
-	currentlyOn = "";
-	$("#addWidgetMenu").slideToggle("fast");
-	$("#exportMenu").slideToggle("fast");
-	$("#manageKitMenu").slideToggle("fast");
+//	currentlyOn = "";
+//	$("#addWidgetMenu").slideToggle("fast");
+//	$("#exportMenu").slideToggle("fast");
+//	$("#manageKitMenu").slideToggle("fast");
 	
 
 	$(".addWidget").click(function(){
 		
 		collapseMenus();
 		document.getElementById('addWidgetMenu').style.visibility = 'visible';								   
-		$("#addWidgetMenu").slideToggle("slow");
+//		$("#addWidgetMenu").slideToggle("slow");
+		$("#addWidgetMenu").show();
 	});
 		
 	
@@ -63,15 +64,16 @@ $(document).ready(function(){
 
 		collapseMenus();
 		document.getElementById('exportMenu').style.visibility = 'visible';									  
-		$("#exportMenu").slideToggle("slow");
+//		$("#exportMenu").slideToggle("slow");
+		$("#exportMenu").show();
 	});
 	
 
 	$(".manageKit").click(function(){
-
 		collapseMenus();
 		document.getElementById('manageKitMenu').style.visibility = 'visible';
-		$("#manageKitMenu").slideToggle("slow");
+//		$("#manageKitMenu").slideToggle("slow");
+		$("#manageKitMenu").show();
 	});
 	
 	 
