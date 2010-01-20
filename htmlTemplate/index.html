@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+<title>EMG Treasury Dashboard</title>
+
+
+<script type="text/javascript" src="jquery.js"></script>
+
+<script type="text/javascript">
+
+function collapseMenus()
+{
+	document.getElementById('addWidgetMenu').style.visibility = 'collapse';
+	document.getElementById('exportMenu').style.visibility = 'collapse';
+	document.getElementById('manageKitMenu').style.visibility = 'collapse';	
+}
+
+
+function cancelAddWidget()
+{
+	$("#addWidgetMenu").slideToggle("slow");
+	$(this).toggleClass("active");
+}
+
+function cancelExport()
+{
+	$("#exportMenu").slideToggle("slow");
+	$(this).toggleClass("active");
+}
+
+function cancelKit()
+{
+	$("#manageKitMenu").slideToggle("slow");
+	$(this).toggleClass("active");	
+}
+
+function updateCurrentlyOn(oldCurrentlyOn, newCurrentlyOn)
+{
+	alert(currentlyOn);
+	
+	
+}
+
+
+
+$(document).ready(function(){
+//	currentlyOn = "";
+//	$("#addWidgetMenu").slideToggle("fast");
+//	$("#exportMenu").slideToggle("fast");
+//	$("#manageKitMenu").slideToggle("fast");
+	
+
+	$(".addWidget").click(function(){
+		
+		collapseMenus();
+		document.getElementById('addWidgetMenu').style.visibility = 'visible';								   
+//		$("#addWidgetMenu").slideToggle("slow");
+		$("#addWidgetMenu").show();
+	});
+		
+	
+	$(".exportWidget").click(function(){
+
+		collapseMenus();
+		document.getElementById('exportMenu').style.visibility = 'visible';									  
+//		$("#exportMenu").slideToggle("slow");
+		$("#exportMenu").show();
+	});
+	
+
+	$(".manageKit").click(function(){
+		collapseMenus();
+		document.getElementById('manageKitMenu').style.visibility = 'visible';
+//		$("#manageKitMenu").slideToggle("slow");
+		$("#manageKitMenu").show();
+	});
+	
+	 
+});
+</script>
+
+
+<link href="style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body onLoad="javascript:collapseMenus()">
+<div id="header">
+	<div id="logo">
+		<h1><a href="#">EMG Treasury Dashboard</a></h1>
+	</div>
+	<div id="menu">
+		<ul>
+			<li><a class="addWidget">Add Widget</a></li>
+			<li><a class="exportWidget">Export</a></li>
+			<li class="last"><a class="manageKit">Manage Kit</a></li>
+		</ul>
+	</div>
+</div>
+<!-- start page -->
+
+<div id="page">
+    <div id="addWidgetMenu">
+    <table border="0" height="75">
+    <tr>
+    	<td> 
+            <select size="4" name="graphType">
+                <option value="">Table</option>
+                <option value="">Bar Graph</option>
+                <option value="">Histogram</option>
+                <option value="">Pie Chart</option>
+                <option value="">Line Graph</option>
+            </select>
+        </td>
+        <td>   
+            <select size="4" name="" multiple>
+                <option value="">Stocks</option>
+                <option value="">Bonds</option>
+                <option value="">Actuals</option>
+                <option value="">Investments</option>
+            </select>
+        </td>
+        <td>    
+            <select size="4" name="" multiple>
+                <option value="">EIX</option>
+                <option value="">AAPL</option>
+                <option value="">DOW</option>
+                <option value="">OMG</option>
+            </select>
+        </td>
+        <td align="right">
+        	<br>
+			<input name="startDate">
+ 			<br>
+			<input name="startDate">
+            <br><br>
+            Zoom:
+            <a href="">Hour</a>
+            <a href="">Day</a>
+            <a href="">Week</a>
+            <a href="">Month</a>
+            <a href="">Year</a>
+            <br><br>
+        </td>            
+    </tr>    
+    <tr>
+    	<td colspan="4" align="right">
+        	<input type="button" name="clear" value="Clear">
+            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelAddWidget()">
+            <input type="button" name="addWidget" value="Add Widget">
+        </td>
+    </tr>
+    </table>
+    </div>
+	
+    
+    <!-- Export Menu-->
+    <div id="exportMenu">
+    <table border="0" height="75">
+    <tr>
+    	<td> 
+        	Select the widgets you are interested in exporting, then click on the desired format.          
+        </td>        
+    </tr>    
+    <tr>
+    	<td align="right">
+        	<input type="button" name="cancel" value="Cancel" onClick="javascript:cancelExport()">
+        	&nbsp;&nbsp;&nbsp;Export to
+            <input type="button" name="excel" value="Excel">
+            <input type="button" name="pdf" value="PDF">
+            <input type="button" name="png" value="PNG">        
+        </td>
+        
+    
+    </tr>   
+    </table>
+    </div>
+    
+    <!-- Manage Kit Menu -->
+    <div id="manageKitMenu">
+    <table border="0" height="75">
+    <tr>
+    	<td> 
+        	Select the widgets you are intrested in adding into your new <br>
+            kit, then name your kit in the text box, and press "Make Kit".        
+        </td>
+        <td width="20">&nbsp;</td>        
+        <td>
+        	Name of new Kit:<br>
+            <input type="text" name="kitName" width="30">
+        </td>
+    </tr>    
+    <tr>
+    	<td colspan="3" align="right">
+        	<input type="button" name="applyChanges" value="Apply Changes">
+            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelKit()">
+            <input type="button" name="makeKit" value="Make Kit">
+        </td>
+    </tr>
+    </table>
+    </div>
+    
+    
+
+
+	<!-- start sidebar1 -->
+    <!---
+	<div id="sidebar1" class="sidebar">
+		<ul>
+			<<li id="search">
+				<h2>Search</h2>
+				<form id="searchform" method="get" action="">
+					<div>
+						<input type="text" name="s" id="s" size="15" />
+						<br />
+						<input name="submit" type="submit" value="Search" id="submit" />
+					</div>
+				</form>
+			</li>
+			<li id="calendar">
+				<h2>Calendar</h2>
+				<div id="calendar_wrap">
+					<table summary="Calendar">
+						<caption>
+						November 2008
+						</caption>
+						<thead>
+							<tr>
+								<th abbr="Monday" scope="col" title="Monday">M</th>
+								<th abbr="Tuesday" scope="col" title="Tuesday">T</th>
+								<th abbr="Wednesday" scope="col" title="Wednesday">W</th>
+								<th abbr="Thursday" scope="col" title="Thursday">T</th>
+								<th abbr="Friday" scope="col" title="Friday">F</th>
+								<th abbr="Saturday" scope="col" title="Saturday">S</th>
+								<th abbr="Sunday" scope="col" title="Sunday">S</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<td abbr="October" colspan="3" id="prev"><a href="#" title="View posts for October 2008">&laquo; Oct</a></td>
+								<td class="pad">&nbsp;</td>
+								<td abbr="December" colspan="3" id="next"><a href="3" title="View posts for October 2008">Dec &raquo;</a></td>
+							</tr>
+						</tfoot>
+						<tbody>
+							<tr>
+								<td colspan="3" class="pad">&nbsp;</td>
+								<td>1</td>
+								<td>2</td>
+								<td>3</td>
+								<td>4</td>
+							</tr>
+							<tr>
+								<td>5</td>
+								<td>6</td>
+								<td>7</td>
+								<td>8</td>
+								<td>9</td>
+								<td>10</td>
+								<td>11</td>
+							</tr>
+							<tr>
+								<td><a href="#">12</a></td>
+								<td>13</td>
+								<td>14</td>
+								<td>15</td>
+								<td>16</td>
+								<td>17</td>
+								<td>18</td>
+							</tr>
+							<tr>
+								<td>19</td>
+								<td>20</td>
+								<td>21</td>
+								<td>22</td>
+								<td>23</td>
+								<td id="today">24</td>
+								<td>25</td>
+							</tr>
+							<tr>
+								<td>26</td>
+								<td>27</td>
+								<td>28</td>
+								<td>29</td>
+								<td>30</td>
+								<td class="pad" colspan="2">&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</li>
+			<li id="categories-1">
+				<h2>Categories</h2>
+				<ul>
+					<li><a href="#" title="View all posts filed under Uncategorized">Uncategorized</a> (3) </li>
+					<li><a href="#" title="View all posts filed under Lorem Ipsum">Lorem Ipsum</a> (42) </li>
+					<li><a href="#" title="View all posts filed under Urna Congue Rutrum">Urna Congue Rutrum</a> (28) </li>
+					<li><a href="#" title="View all posts filed under Augue Praesent">Augue Praesent</a> (55) </li>
+					<li><a href="#" title="View all posts filed under Vivamus Fermentum">Vivamus Fermentum</a> (13) </li>
+				</ul>
+			</li>
+			<li id="archives">
+				<h2>Archives</h2>
+				<ul>
+					<li><a href="#">November 2008</a>&nbsp;(24)</li>
+					<li><a href="#">October 2008</a>&nbsp;(31)</li>
+					<li><a href="#">September 2008</a>&nbsp;(30)</li>
+					<li><a href="#">August 2008</a>&nbsp;(31)</li>
+					<li><a href="#">July 2008</a>&nbsp;(31)</li>
+					<li><a href="#">June 2008</a>&nbsp;(30)</li>
+					<li><a href="#">May 2008</a>&nbsp;(31)</li>
+					<li><a href="#">April 2008</a>&nbsp;(30)</li>
+					<li><a href="#">January 2008</a>&nbsp;(31)</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+    --->
+</div>
+	<!-- end sidebar1 -->
+	<!-- start content -->
+
+	<div id="widgetList">
+	<table width="100%">
+    	<tr>
+        	<td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+	</table>
+	</div>
+	<!-- end content -->
+
+<!-- end page -->
+
+</body>
+</html>
