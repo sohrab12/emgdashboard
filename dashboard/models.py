@@ -50,30 +50,49 @@ class LineWidget(models.Model):
     zoom = models.PositiveIntegerField() #miliseconds/hundred pixels
     enddate = models.DateTimeField() #end date updates to current day if null
     latestentry = models.DateTimeField()
-    model1 = models.CharField(max_length = 60)  #Reference to a DataEntry's field
-    model2 = models.CharField(max_length = 60) #Reference to a DataEntry's field
-
+    model1 = models.CharField(max_length = 60)
+    model1_prop = models.CharField(max_length = 60)
+    model2 = models.CharField(max_length = 60)
+    model2_prop = models.CharField(max_length = 60)
+    
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
     ID into a list
     """
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
-    dateCreated = models.DateTimeField('created')
-    
-#Data models
+    dateCreated = models.DateTimeField('created')  
+
+#
+# DATA
+#
 
 class DataEntry(models.Model):
     """A base class for all data entries. Contains a date at which the entry was recorded
     """
     time = models.DateTimeField()
-
+    
 class StockPrice(DataEntry):
     """Stores a price of a share of Edison International's (EIX) stock on the NYSE market at one time.
     Recorded in US$/share
     """
+    symbol = models.CharField(max_length = 4)
     price = models.FloatField()
-    
+        
+    @staticmethod
+    def first_order_options():
+        '''
+        Return an ordered list of
+        values commonly used for
+        sub-selection of bonds
+        for visualization.
+        
+        >>> StockPrice.first_order_options()
+        ['EIX']
+        '''
+        return StockPrice.all_symbols
+    def objects_by_first_order_option(self, p):
+        pass
     def __unicode__(self):
         return str(self.time)
 
@@ -83,7 +102,6 @@ class BondPrice(DataEntry):
     """
     price = models.FloatField()
     company = models.CharField(max_length = 50)
-
     def __unicode__(self):
         return " ".join([self.company, str(self.time)])
     
@@ -92,7 +110,7 @@ class PowerOutput(DataEntry):
     Recorded in megawatts/hour
     """
     genunit = models.CharField(max_length = 50)
-    unittype = models.CharField(max_length = 20)
+    output = models.FloatField()
 
     def __unicode__(self):
         return " ".join([self.genunit, str(self.time)])   
@@ -196,4 +214,8 @@ class GrossMargin(DataEntry):
     margin = models.FloatField()
 
     def __unicode__(self):
-        return str(self.time)    
+        return str(self.time)
+        
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
