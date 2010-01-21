@@ -87,6 +87,7 @@ class PowerOutput(DataEntry):
     """
     genunit = models.CharField(max_length = 50)
     unittype = models.CharField(max_length = 20)
+    output = models.FloatField()
 
     def __unicode__(self):
         return " ".join([self.genunit, str(self.time)])   
