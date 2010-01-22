@@ -48,10 +48,11 @@ class LineWidget(models.Model):
     """
     parentwidget = models.OneToOneField(Widget, primary_key = True)
     zoom = models.PositiveIntegerField() #miliseconds/hundred pixels
+    startdate = models.DateTimeField() #start date updates to current day if null
     enddate = models.DateTimeField() #end date updates to current day if null
     latestentry = models.DateTimeField()
-    model1 = models.CharField(max_length = 60)
-    model1_prop = models.CharField(max_length = 60)
+    model1 = models.CharField(max_length = 60) #First table to query
+    model1_prop = models.CharField(max_length = 60) #Filter for first query
     model2 = models.CharField(max_length = 60)
     model2_prop = models.CharField(max_length = 60)
     
@@ -92,7 +93,9 @@ class StockPrice(DataEntry):
         '''
         return StockPrice.all_symbols
     def objects_by_first_order_option(self, p):
-        pass
+        """Return all entries in this class' table that pass the filter p for first order options
+        """
+        return (s for s in StockPrice.objects.filter(symbol = p))
     def __unicode__(self):
         return str(self.time)
 
