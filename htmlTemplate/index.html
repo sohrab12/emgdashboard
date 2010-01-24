@@ -100,29 +100,30 @@ $(document).ready(function(){
 
 <div id="page">
     <div id="addWidgetMenu">
+    <form name="addWidgetForm" action="../addWidget" method="post">
     <table border="0" height="75">
     <tr>
     	<td> 
             <select size="4" name="graphType">
-                <option value="">Table</option>
-                <option value="">Bar Graph</option>
-                <option value="">Histogram</option>
-                <option value="">Pie Chart</option>
-                <option value="">Line Graph</option>
+                <option value="table">Table</option>
+                <option value="barGraph">Bar Graph</option>
+                <option value="histogram">Histogram</option>
+                <option value="pieChart">Pie Chart</option>
+                <option value="lineGraph">Line Graph</option>
             </select>
             &nbsp;&nbsp;&nbsp;
         </td>
         <td>   
-            <select size="4" name="" multiple>
-                <option value="">Stocks</option>
-                <option value="">Bonds</option>
-                <option value="">Actuals</option>
-                <option value="">Investments</option>
+            <select size="4" name="graphContent" multiple>
+                <option value="stocks">Stocks</option>
+                <option value="bonds">Bonds</option>
+                <option value="actuals">Actuals</option>
+                <option value="investments">Investments</option>
             </select>
             &nbsp;&nbsp;&nbsp;
         </td>
         <td>    
-            <select size="4" name="" multiple>
+            <select size="4" name="graphSymbol" multiple>
                 <option value="">EIX</option>
                 <option value="">AAPL</option>
                 <option value="">DOW</option>
@@ -151,15 +152,17 @@ $(document).ready(function(){
     	<td colspan="5" align="right">
         	<input type="button" name="clear" value="Clear" class="btn">
             <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelAddWidget()" class="btn">
-            <input type="button" name="addWidget" value="Add Widget" class="btn">
+            <input type="submit" name="addWidget" value="Add Widget" class="btn">
         </td>
     </tr>
     </table>
+    </form>
     </div>
 	
     
     <!-- Export Menu-->
     <div id="exportMenu">
+    <form name="exportForm" action="" method="post">
     <table border="0" height="75">
     <tr>
     	<td> 
@@ -172,18 +175,18 @@ $(document).ready(function(){
     	<td align="right">
         	<input type="button" name="cancel" value="Cancel" onClick="javascript:cancelExport()" class="btn">
         	&nbsp;&nbsp;&nbsp;Export to
-            <input type="button" name="excel" value="Excel" class="btn">
-            <input type="button" name="pdf" value="PDF" class="btn">
-            <input type="button" name="png" value="PNG" class="btn">
-        </td>
-        
-    
+            <input type="Submit" name="excel" value="Excel" class="btn">
+            <input type="Submit" name="pdf" value="PDF" class="btn">
+            <input type="Submit" name="png" value="PNG" class="btn">
+        </td>   
     </tr>   
     </table>
+    </form>
     </div>
     
     <!-- Manage Kit Menu -->
     <div id="manageKitMenu">
+    <form name="manageKitForm" action="" method="post">
     <table border="0" height="75">
     <tr>
     	<td valign="top"> 
@@ -210,6 +213,7 @@ $(document).ready(function(){
         </td>
     </tr>
     </table>
+    </form>
     </div>
     
     

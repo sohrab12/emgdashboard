@@ -215,4 +215,9 @@ def line_graph_view(request):
     response = HttpResponse(mimetype="image/png")
     im.save(response, "PNG")
     return response        
+
+
+def addWidget(request):
+    return render_to_response('htmlTemplate/index.html')
+    
     
