@@ -65,7 +65,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'emgdashboard.urls'
 
-TEMPLATE_DIRS = (
+TEMPLATE_DIRS = ('C:\Users\Alex\Documents\Inf 191\emgdashboard'
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

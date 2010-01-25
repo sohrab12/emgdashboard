@@ -46,6 +46,10 @@ def line_graph_view(request):
         modeliprop: the value to filter database queries by (assumed to be the value of the first order option).
             Requests can contain multiple modeliprop's, but each must correspond to a modeli (model1prop, model2prop, etc.)
         zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
+        topy: The maximum y value of the graph
+        bottomy: the minimum y value of the graph
+        graphplace: the number of the chunk to return in response.
+        graphchunks: the total number of chunks to split the graph into.
     """
     #Vertical Margins for the widget's display
     TOP_MARGIN = 20
@@ -55,7 +59,7 @@ def line_graph_view(request):
     #Horizontal Margins for the widget's display
     LEFT_MARGIN = 20
     RIGHT_MARGIN = 20
-    YLABEL_MARGIN = 33
+    YLABEL_MARGIN = 0
 
     #Canvas Dimensions
     CANVASX = 600
@@ -69,9 +73,17 @@ def line_graph_view(request):
     #TODO: Check min, max values against YTOP and YBOTTOM
     YTOP = 10
     YBOTTOM = 0
+
+    #Number of chunks to return the image in
+    try:
+        chunk_place = int(request.GET['chunkplace'])
+        chunk_count = int(request.GET['chunkcount'])
+    except:
+        chunk_place = 1
+        chunk_count = 3
     
     #Create a new image to display, as well as an ImageDraw object
-    im = Image.new('RGBA', (CANVASX, CANVASY), (0, 0, 0, 0)) # Create a blank image
+    im = Image.new('RGBA', (CANVASX, CANVASY), (255, 255, 255)) # Create a blank image
     draw = ImageDraw.Draw(im) # Create a draw object
     
     #Retrieve the size of the image, assuming width and height are separate parameters
@@ -176,11 +188,13 @@ def line_graph_view(request):
             draw.line((increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
 
     #y axis
+            """
     draw.line((YLABEL_MARGIN, 0, YLABEL_MARGIN, im.size[1] - XLABEL_MARGIN), fill = "black")
     increment = im.size[1]/len(yaxisvalues)
     for i in range(len(yaxisvalues)):
         draw.text((0, increment*i), "%.2f" % yaxisvalues[i], fill = "black")
         draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = "black")
+        """
 
     #Determine scale
     yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
@@ -209,10 +223,13 @@ def line_graph_view(request):
         
     del draw
     im = im.resize(size)
-
+    
     #Create and return response with image
     #TODO: Cut into 3 shingles, return json file if max y value is above top y point
+    chunk_width = im.size[0]/chunk_count
+    chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
     response = HttpResponse(mimetype="image/png")
-    im.save(response, "PNG")
+    #im.save(response, "PNG")
+    chunk.save(response, "PNG")
     return response        
     

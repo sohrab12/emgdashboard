@@ -1,0 +1,1171 @@
+[
+  {
+    "pk": 22, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_logentry", 
+      "name": "Can add log entry", 
+      "content_type": 8
+    }
+  }, 
+  {
+    "pk": 23, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_logentry", 
+      "name": "Can change log entry", 
+      "content_type": 8
+    }
+  }, 
+  {
+    "pk": 24, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_logentry", 
+      "name": "Can delete log entry", 
+      "content_type": 8
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_group", 
+      "name": "Can add group", 
+      "content_type": 2
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_message", 
+      "name": "Can add message", 
+      "content_type": 4
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_permission", 
+      "name": "Can add permission", 
+      "content_type": 1
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_user", 
+      "name": "Can add user", 
+      "content_type": 3
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_group", 
+      "name": "Can change group", 
+      "content_type": 2
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_message", 
+      "name": "Can change message", 
+      "content_type": 4
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_permission", 
+      "name": "Can change permission", 
+      "content_type": 1
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_user", 
+      "name": "Can change user", 
+      "content_type": 3
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_group", 
+      "name": "Can delete group", 
+      "content_type": 2
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_message", 
+      "name": "Can delete message", 
+      "content_type": 4
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_permission", 
+      "name": "Can delete permission", 
+      "content_type": 1
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_user", 
+      "name": "Can delete user", 
+      "content_type": 3
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_contenttype", 
+      "name": "Can add content type", 
+      "content_type": 5
+    }
+  }, 
+  {
+    "pk": 14, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_contenttype", 
+      "name": "Can change content type", 
+      "content_type": 5
+    }
+  }, 
+  {
+    "pk": 15, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_contenttype", 
+      "name": "Can delete content type", 
+      "content_type": 5
+    }
+  }, 
+  {
+    "pk": 67, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_availablecapital", 
+      "name": "Can add available capital", 
+      "content_type": 23
+    }
+  }, 
+  {
+    "pk": 46, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_bondprice", 
+      "name": "Can add bond price", 
+      "content_type": 16
+    }
+  }, 
+  {
+    "pk": 58, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_coalprice", 
+      "name": "Can add coal price", 
+      "content_type": 20
+    }
+  }, 
+  {
+    "pk": 28, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_dashboard", 
+      "name": "Can add dashboard", 
+      "content_type": 10
+    }
+  }, 
+  {
+    "pk": 40, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_dataentry", 
+      "name": "Can add data entry", 
+      "content_type": 14
+    }
+  }, 
+  {
+    "pk": 52, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_electricityprice", 
+      "name": "Can add electricity price", 
+      "content_type": 18
+    }
+  }, 
+  {
+    "pk": 61, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_generatoravalablility", 
+      "name": "Can add generator avalablility", 
+      "content_type": 21
+    }
+  }, 
+  {
+    "pk": 82, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_grossmargin", 
+      "name": "Can add gross margin", 
+      "content_type": 28
+    }
+  }, 
+  {
+    "pk": 37, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_kit", 
+      "name": "Can add kit", 
+      "content_type": 13
+    }
+  }, 
+  {
+    "pk": 70, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_lettersofcredit", 
+      "name": "Can add letters of credit", 
+      "content_type": 24
+    }
+  }, 
+  {
+    "pk": 34, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_linewidget", 
+      "name": "Can add line widget", 
+      "content_type": 12
+    }
+  }, 
+  {
+    "pk": 76, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_moodyrating", 
+      "name": "Can add moody rating", 
+      "content_type": 26
+    }
+  }, 
+  {
+    "pk": 55, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_naturalgasprice", 
+      "name": "Can add natural gas price", 
+      "content_type": 19
+    }
+  }, 
+  {
+    "pk": 49, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_poweroutput", 
+      "name": "Can add power output", 
+      "content_type": 17
+    }
+  }, 
+  {
+    "pk": 73, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_profitloss", 
+      "name": "Can add profit loss", 
+      "content_type": 25
+    }
+  }, 
+  {
+    "pk": 79, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_sprating", 
+      "name": "Can add sp rating", 
+      "content_type": 27
+    }
+  }, 
+  {
+    "pk": 43, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_stockprice", 
+      "name": "Can add stock price", 
+      "content_type": 15
+    }
+  }, 
+  {
+    "pk": 64, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_subsidiarybalance", 
+      "name": "Can add subsidiary balance", 
+      "content_type": 22
+    }
+  }, 
+  {
+    "pk": 31, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_widget", 
+      "name": "Can add widget", 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 25, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_widgetowner", 
+      "name": "Can add widget owner", 
+      "content_type": 9
+    }
+  }, 
+  {
+    "pk": 68, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_availablecapital", 
+      "name": "Can change available capital", 
+      "content_type": 23
+    }
+  }, 
+  {
+    "pk": 47, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_bondprice", 
+      "name": "Can change bond price", 
+      "content_type": 16
+    }
+  }, 
+  {
+    "pk": 59, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_coalprice", 
+      "name": "Can change coal price", 
+      "content_type": 20
+    }
+  }, 
+  {
+    "pk": 29, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_dashboard", 
+      "name": "Can change dashboard", 
+      "content_type": 10
+    }
+  }, 
+  {
+    "pk": 41, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_dataentry", 
+      "name": "Can change data entry", 
+      "content_type": 14
+    }
+  }, 
+  {
+    "pk": 53, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_electricityprice", 
+      "name": "Can change electricity price", 
+      "content_type": 18
+    }
+  }, 
+  {
+    "pk": 62, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_generatoravalablility", 
+      "name": "Can change generator avalablility", 
+      "content_type": 21
+    }
+  }, 
+  {
+    "pk": 83, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_grossmargin", 
+      "name": "Can change gross margin", 
+      "content_type": 28
+    }
+  }, 
+  {
+    "pk": 38, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_kit", 
+      "name": "Can change kit", 
+      "content_type": 13
+    }
+  }, 
+  {
+    "pk": 71, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_lettersofcredit", 
+      "name": "Can change letters of credit", 
+      "content_type": 24
+    }
+  }, 
+  {
+    "pk": 35, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_linewidget", 
+      "name": "Can change line widget", 
+      "content_type": 12
+    }
+  }, 
+  {
+    "pk": 77, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_moodyrating", 
+      "name": "Can change moody rating", 
+      "content_type": 26
+    }
+  }, 
+  {
+    "pk": 56, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_naturalgasprice", 
+      "name": "Can change natural gas price", 
+      "content_type": 19
+    }
+  }, 
+  {
+    "pk": 50, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_poweroutput", 
+      "name": "Can change power output", 
+      "content_type": 17
+    }
+  }, 
+  {
+    "pk": 74, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_profitloss", 
+      "name": "Can change profit loss", 
+      "content_type": 25
+    }
+  }, 
+  {
+    "pk": 80, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_sprating", 
+      "name": "Can change sp rating", 
+      "content_type": 27
+    }
+  }, 
+  {
+    "pk": 44, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_stockprice", 
+      "name": "Can change stock price", 
+      "content_type": 15
+    }
+  }, 
+  {
+    "pk": 65, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_subsidiarybalance", 
+      "name": "Can change subsidiary balance", 
+      "content_type": 22
+    }
+  }, 
+  {
+    "pk": 32, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_widget", 
+      "name": "Can change widget", 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 26, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_widgetowner", 
+      "name": "Can change widget owner", 
+      "content_type": 9
+    }
+  }, 
+  {
+    "pk": 69, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_availablecapital", 
+      "name": "Can delete available capital", 
+      "content_type": 23
+    }
+  }, 
+  {
+    "pk": 48, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_bondprice", 
+      "name": "Can delete bond price", 
+      "content_type": 16
+    }
+  }, 
+  {
+    "pk": 60, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_coalprice", 
+      "name": "Can delete coal price", 
+      "content_type": 20
+    }
+  }, 
+  {
+    "pk": 30, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_dashboard", 
+      "name": "Can delete dashboard", 
+      "content_type": 10
+    }
+  }, 
+  {
+    "pk": 42, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_dataentry", 
+      "name": "Can delete data entry", 
+      "content_type": 14
+    }
+  }, 
+  {
+    "pk": 54, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_electricityprice", 
+      "name": "Can delete electricity price", 
+      "content_type": 18
+    }
+  }, 
+  {
+    "pk": 63, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_generatoravalablility", 
+      "name": "Can delete generator avalablility", 
+      "content_type": 21
+    }
+  }, 
+  {
+    "pk": 84, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_grossmargin", 
+      "name": "Can delete gross margin", 
+      "content_type": 28
+    }
+  }, 
+  {
+    "pk": 39, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_kit", 
+      "name": "Can delete kit", 
+      "content_type": 13
+    }
+  }, 
+  {
+    "pk": 72, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_lettersofcredit", 
+      "name": "Can delete letters of credit", 
+      "content_type": 24
+    }
+  }, 
+  {
+    "pk": 36, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_linewidget", 
+      "name": "Can delete line widget", 
+      "content_type": 12
+    }
+  }, 
+  {
+    "pk": 78, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_moodyrating", 
+      "name": "Can delete moody rating", 
+      "content_type": 26
+    }
+  }, 
+  {
+    "pk": 57, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_naturalgasprice", 
+      "name": "Can delete natural gas price", 
+      "content_type": 19
+    }
+  }, 
+  {
+    "pk": 51, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_poweroutput", 
+      "name": "Can delete power output", 
+      "content_type": 17
+    }
+  }, 
+  {
+    "pk": 75, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_profitloss", 
+      "name": "Can delete profit loss", 
+      "content_type": 25
+    }
+  }, 
+  {
+    "pk": 81, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_sprating", 
+      "name": "Can delete sp rating", 
+      "content_type": 27
+    }
+  }, 
+  {
+    "pk": 45, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_stockprice", 
+      "name": "Can delete stock price", 
+      "content_type": 15
+    }
+  }, 
+  {
+    "pk": 66, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_subsidiarybalance", 
+      "name": "Can delete subsidiary balance", 
+      "content_type": 22
+    }
+  }, 
+  {
+    "pk": 33, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_widget", 
+      "name": "Can delete widget", 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 27, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_widgetowner", 
+      "name": "Can delete widget owner", 
+      "content_type": 9
+    }
+  }, 
+  {
+    "pk": 16, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_session", 
+      "name": "Can add session", 
+      "content_type": 6
+    }
+  }, 
+  {
+    "pk": 17, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_session", 
+      "name": "Can change session", 
+      "content_type": 6
+    }
+  }, 
+  {
+    "pk": 18, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_session", 
+      "name": "Can delete session", 
+      "content_type": 6
+    }
+  }, 
+  {
+    "pk": 19, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "add_site", 
+      "name": "Can add site", 
+      "content_type": 7
+    }
+  }, 
+  {
+    "pk": 20, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "change_site", 
+      "name": "Can change site", 
+      "content_type": 7
+    }
+  }, 
+  {
+    "pk": 21, 
+    "model": "auth.permission", 
+    "fields": {
+      "codename": "delete_site", 
+      "name": "Can delete site", 
+      "content_type": 7
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "Pyrobug", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": true, 
+      "is_staff": true, 
+      "last_login": "2010-01-13 19:02:48", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$f7514$50dbebebce9b7979cf08f1434d7f19a799501c2a", 
+      "email": "housenuker@gmail.com", 
+      "date_joined": "2010-01-13 19:02:22"
+    }
+  }, 
+  {
+    "pk": 23, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "availablecapital", 
+      "name": "available capital", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 16, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "bondprice", 
+      "name": "bond price", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 20, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "coalprice", 
+      "name": "coal price", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "contenttype", 
+      "name": "content type", 
+      "app_label": "contenttypes"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "dashboard", 
+      "name": "dashboard", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 14, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "dataentry", 
+      "name": "data entry", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 18, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "electricityprice", 
+      "name": "electricity price", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 21, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "generatoravalablility", 
+      "name": "generator avalablility", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 28, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "grossmargin", 
+      "name": "gross margin", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "group", 
+      "name": "group", 
+      "app_label": "auth"
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "kit", 
+      "name": "kit", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 24, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "lettersofcredit", 
+      "name": "letters of credit", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "linewidget", 
+      "name": "line widget", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "logentry", 
+      "name": "log entry", 
+      "app_label": "admin"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "message", 
+      "name": "message", 
+      "app_label": "auth"
+    }
+  }, 
+  {
+    "pk": 26, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "moodyrating", 
+      "name": "moody rating", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 19, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "naturalgasprice", 
+      "name": "natural gas price", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "permission", 
+      "name": "permission", 
+      "app_label": "auth"
+    }
+  }, 
+  {
+    "pk": 17, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "poweroutput", 
+      "name": "power output", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 25, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "profitloss", 
+      "name": "profit loss", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "session", 
+      "name": "session", 
+      "app_label": "sessions"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "site", 
+      "name": "site", 
+      "app_label": "sites"
+    }
+  }, 
+  {
+    "pk": 27, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "sprating", 
+      "name": "sp rating", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 15, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "stockprice", 
+      "name": "stock price", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 22, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "subsidiarybalance", 
+      "name": "subsidiary balance", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "user", 
+      "name": "user", 
+      "app_label": "auth"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "widget", 
+      "name": "widget", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "contenttypes.contenttype", 
+    "fields": {
+      "model": "widgetowner", 
+      "name": "widget owner", 
+      "app_label": "dashboard"
+    }
+  }, 
+  {
+    "pk": "d386f8cc7c0faf68542583697af7960c", 
+    "model": "sessions.session", 
+    "fields": {
+      "expire_date": "2010-01-27 19:02:49", 
+      "session_data": "gAJ9cQEoVRJfYXV0aF91c2VyX2JhY2tlbmRxAlUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRxA1UNX2F1dGhfdXNlcl9pZHEESwF1LjljZWNjZjEyYjRjNmZhZWZkYmQx\nMWZjMDFmZmEzMjg2\n"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "sites.site", 
+    "fields": {
+      "domain": "example.com", 
+      "name": "example.com"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "admin.logentry", 
+    "fields": {
+      "action_flag": 1, 
+      "action_time": "2010-01-13 19:11:59", 
+      "object_repr": "WidgetOwner object00", 
+      "object_id": "3", 
+      "change_message": "", 
+      "user": 1, 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "admin.logentry", 
+    "fields": {
+      "action_flag": 1, 
+      "action_time": "2010-01-13 19:11:38", 
+      "object_repr": "WidgetOwner object00", 
+      "object_id": "2", 
+      "change_message": "", 
+      "user": 1, 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "admin.logentry", 
+    "fields": {
+      "action_flag": 1, 
+      "action_time": "2010-01-13 19:11:30", 
+      "object_repr": "WidgetOwner object00", 
+      "object_id": "1", 
+      "change_message": "", 
+      "user": 1, 
+      "content_type": 11
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "admin.logentry", 
+    "fields": {
+      "action_flag": 1, 
+      "action_time": "2010-01-13 19:03:11", 
+      "object_repr": "Subject 2", 
+      "object_id": "2", 
+      "change_message": "", 
+      "user": 1, 
+      "content_type": 10
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "admin.logentry", 
+    "fields": {
+      "action_flag": 1, 
+      "action_time": "2010-01-13 19:02:59", 
+      "object_repr": "Subject 1", 
+      "object_id": "1", 
+      "change_message": "", 
+      "user": 1, 
+      "content_type": 10
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "dashboard.widgetowner", 
+    "fields": {}
+  }, 
+  {
+    "pk": 2, 
+    "model": "dashboard.widgetowner", 
+    "fields": {}
+  }, 
+  {
+    "pk": 1, 
+    "model": "dashboard.dashboard", 
+    "fields": {
+      "user": "Subject 1", 
+      "lastLogin": "2010-01-13 19:02:58"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "dashboard.dashboard", 
+    "fields": {
+      "user": "Subject 2", 
+      "lastLogin": "2010-01-13 19:03:10"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "dashboard.widget", 
+    "fields": {
+      "updated": "2010-01-13 19:08:48", 
+      "created": "2010-01-13 19:08:47", 
+      "creator": "Subject 1", 
+      "y": 0, 
+      "x": 0, 
+      "belongTo": 1
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "dashboard.widget", 
+    "fields": {
+      "updated": "2010-01-13 19:08:48", 
+      "created": "2010-01-13 19:08:47", 
+      "creator": "Subject 1", 
+      "y": 0, 
+      "x": 0, 
+      "belongTo": 1
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "dashboard.widget", 
+    "fields": {
+      "updated": "2010-01-13 19:11:55", 
+      "created": "2010-01-13 19:11:54", 
+      "creator": "Subject 2", 
+      "y": 0, 
+      "x": 0, 
+      "belongTo": 2
+    }
+  }
+]
