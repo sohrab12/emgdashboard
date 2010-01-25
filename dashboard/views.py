@@ -232,4 +232,9 @@ def line_graph_view(request):
     #im.save(response, "PNG")
     chunk.save(response, "PNG")
     return response        
+
+
+def addWidget(request):
+    return render_to_response('htmlTemplate/index.html')
+    
     
