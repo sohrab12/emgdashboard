@@ -4,9 +4,9 @@
 	document.onmousemove = mouse_move;
 	document.onmouseup = mouse_up;
 	var drag_object = null;
+	document.images[0].onmouseup = update_graph();
 	document.images[1].onmouseup = update_graph();
 	document.images[2].onmouseup = update_graph();
-	document.images[3].onmouseup = update_graph();
 
 	function mouse_move(ev)
 	{
@@ -58,11 +58,11 @@
 	function update_graph()
 	{
 		var refreshtag = Math.floor(Math.random()*10001)
-		for(var i = 1; i<=3; i++)
+		for(var i = 0; i<=2; i++)
 		{
 			if(document.images[i])
 			{
-				document.images[i].src = "http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=" + i + "&chunkcount=3&refresh=" + refreshtag;
+				document.images[i].src = document.images[i].src.split("&refresh", 1)+"&refresh=" + refreshtag;
 			}
 		}
 		//setTimeout('get_chunk()', 1000);
@@ -73,10 +73,10 @@
 	<script language="JavaScript">
 		//update_graph();
 	</script>
-	<DIV STYLE="{z-index:1;}">
-	<img src="images/WidgetBG.png"/>
+	<DIV STYLE="{z-index:1; height: 800px; width: 800px; background-color:#A7B8CB;}">
 	</DIV>
 	<DIV STYLE="{position: absolute; top: 50; left: 100; z-index:2;}">
+	<form
 	<img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=1&chunkcount=3"/><img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=2&chunkcount=3"/><img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=3&chunkcount=3"/>
 	</DIV>
 
@@ -105,14 +105,17 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</td>
 		  <td>
-		  	<a href="default.htm">
-				<img border="0" src="images/crapbutton.png" alt="Edit Button" width="80" height="40" />
-			</a>
-			</td>
+		</td>
 		</tr>
 		</table>
 	</DIV>
+	<DIV STYLE="{z-index:4; height:30px; width:40px; background-color:#000000; position:absolute; top: 550; left: 650;}">
+			  	<center><a href="default.htm" style='text-decoration: none;'><font color = "#FFFFFF">Edit</font></a></center>
+		  </DIV>
 <br>
 <br>
+<ul>
+<li>{{widget.startdate}}This is stuff.</li>
+</ul>
 </body>
 </html>

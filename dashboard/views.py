@@ -3,6 +3,12 @@ import Image, ImageFont, ImageDraw
 from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
+from django.template import RequestContext
+from django.shortcuts import render_to_response, get_object_or_404
+
+def widget_properties(request, widget_id):
+    widget=get_object_or_404(LineWidget, pk=widget_id)
+    return render_to_response('widgetframe.html', {'widget':widget})
 
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
