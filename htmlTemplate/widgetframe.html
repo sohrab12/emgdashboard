@@ -1,0 +1,118 @@
+<html>
+<head>
+	<script language="JavaScript">
+	document.onmousemove = mouse_move;
+	document.onmouseup = mouse_up;
+	var drag_object = null;
+	document.images[1].onmouseup = update_graph();
+	document.images[2].onmouseup = update_graph();
+	document.images[3].onmouseup = update_graph();
+
+	function mouse_move(ev)
+	{
+		ev = ev || window.event;
+		var mouse_pos = mouse_coords(ev);
+		if(drag_object)
+		{
+			update_graph();
+		}
+	}
+
+	function mouse_coords(ev)
+	{
+		if(ev.pageX || ev.pageY)
+		{
+			//Handle non IE browsers
+			return{x:ev.pageX, y:ev.pageY};
+		}
+			//Handle IE
+		return {
+			x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+			y:ev.clientY + document.body.scrollTop - document.body.clientTop
+		};
+	}
+
+	function mouse_up(ev)
+	{
+		drag_object = null;
+	}
+
+	function drag_object(object)
+	{
+		object.onmousedown = function(){
+			drag_object = this;
+			}
+	}
+
+
+
+	/*
+	function update_graph()
+	{
+		if(document.images)
+		{
+			setTimeout('get_chunk()', 1000);
+		}
+	}
+	*/
+	function update_graph()
+	{
+		var refreshtag = Math.floor(Math.random()*10001)
+		for(var i = 1; i<=3; i++)
+		{
+			if(document.images[i])
+			{
+				document.images[i].src = "http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=" + i + "&chunkcount=3&refresh=" + refreshtag;
+			}
+		}
+		//setTimeout('get_chunk()', 1000);
+	}
+	</script>
+</head>
+<body>
+	<script language="JavaScript">
+		//update_graph();
+	</script>
+	<DIV STYLE="{z-index:1;}">
+	<img src="images/WidgetBG.png"/>
+	</DIV>
+	<DIV STYLE="{position: absolute; top: 50; left: 100; z-index:2;}">
+	<img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=1&chunkcount=3"/><img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=2&chunkcount=3"/><img onMouseUp="return update_graph()" src="http://127.0.0.1:8000/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=3&chunkcount=3"/>
+	</DIV>
+
+	<DIV STYLE="{position: absolute; top:550; left: 100; z-index:3;}">
+		<table border="0">
+		<tr>
+		  <td>
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	<a href="url">Delete</a>
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="url">Share</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="url">Duplicate</a>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</td>
+		  <td>
+		  	<a href="default.htm">
+				<img border="0" src="images/crapbutton.png" alt="Edit Button" width="80" height="40" />
+			</a>
+			</td>
+		</tr>
+		</table>
+	</DIV>
+<br>
+<br>
+</body>
+</html>

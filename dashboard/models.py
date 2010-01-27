@@ -24,10 +24,6 @@ class Dashboard(WidgetOwner):
         #TODO: Add code to calculate Y-coordinates
         self.widget_set.create(creator = self.user, x = column, y = 0)
 
-class Query(models.Model):
-    """A query to be submitted to the database. Each query is referenced as a foreign key by one or more widgets."""
-    value = models.CharField(max_length=200)
-
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
     """
