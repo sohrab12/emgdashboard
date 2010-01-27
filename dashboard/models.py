@@ -47,7 +47,7 @@ class LineWidget(models.Model):
     Has a one-to-one relationship with a non-typed widget.
     """
     parentwidget = models.OneToOneField(Widget, primary_key = True)
-    zoom = models.PositiveIntegerField() #miliseconds/hundred pixels
+    zoom = models.CharField(max_length = 10) #miliseconds/hundred pixels
     startdate = models.DateTimeField() #start date updates to current day if null
     enddate = models.DateTimeField() #end date updates to current day if null
     latestentry = models.DateTimeField()

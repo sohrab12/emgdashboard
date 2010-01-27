@@ -5,5 +5,6 @@ admin.site.register(Dashboard)
 admin.site.register(Widget)
 admin.site.register(Kit)
 admin.site.register(StockPrice)
-
+admin.site.register(LineWidget)
+admin.site.register(WidgetOwner)
 

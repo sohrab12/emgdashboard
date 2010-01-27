@@ -65,6 +65,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'emgdashboard.urls'
 
+#TEMPLATE_DIRS = ('C:\Users\Alex\Documents\Inf 191\emgdashboard\htmlTemplate'
 TEMPLATE_DIRS = (
     "C:/UCI/Winter2010/Informatics191B/emgdashboard/htmlTemplate"
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
