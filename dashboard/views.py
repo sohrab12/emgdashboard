@@ -220,8 +220,8 @@ def line_graph_view(request):
 
 def addWidget(request):
     #return render_to_response('htmlTemplate/index.html')
-    #return HttpResponseRedirect('../index.html')
-    return render_to_response('index.html')
+    return HttpResponseRedirect('../')
+    #return render_to_response('index.html')
 
 def index(request):
     return render_to_response('index.html')
