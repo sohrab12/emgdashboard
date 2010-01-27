@@ -1,112 +1,113 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
-#import Image, ImageFont, ImageDraw
+import Image, ImageFont, ImageDraw
 from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-
+ 
 def widget_properties(request, widget_id):
     widget=get_object_or_404(LineWidget, pk=widget_id)
     return render_to_response('widgetframe.html', {'widget':widget})
-
-"""
-def graph_view(request):
-    #Load the image to be displayed, resize it to the parameters
-    im = Image.open("C:/Users/Alex/Documents/Inf 191/emgdashboard/dashboard/Awesome.png")
-    try:
-        #Retrieve the size of the image, assuming width and height are separate parameters
-        width = int(request.GET['width'])
-        height = int(request.GET['height'])
-        size = (width, height)
-
-        #Retrieve the left-most and right-most times
-        earliesttime = DateTime.datetime(request.GET['lefttime'])
-        latesttime = DateTime.datetimeP(request.GET['righttime'])
-
-        #Get the model and property to query
-        model1 = String(request.GET['model1'])
-        model1prop = String(request.GET['model1prop'])
-    except:
-        size = im.size
-
-    query_model = globals()[model1]()
-    queryset = query_model.objects_by_first_order_option(model1prop) 
-    im = im.resize(size)
-
-    #Create and return response with image
-    response = HttpResponse(mimetype="image/png")
-    im.save(response, "PNG")
-    return response
-"""
-
+ 
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
-    A request must include the following parameters:
-        width: the width in pixels of the graph window
-        height: the height in pixels of the graph window
-        lefttime: the earliest time that will appear on the x-axis
-        righttime: the latest time that will appear on the x-axis
-        modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
-            but each must be numbered sequentially(model1, model2, model3, etc.)
-        modeliprop: the value to filter database queries by (assumed to be the value of the first order option).
-            Requests can contain multiple modeliprop's, but each must correspond to a modeli (model1prop, model2prop, etc.)
-        zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
-    """
+A request must include the following parameters:
+width: the width in pixels of the graph window
+height: the height in pixels of the graph window
+lefttime: the earliest time that will appear on the x-axis
+righttime: the latest time that will appear on the x-axis
+modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
+but each must be numbered sequentially(model1, model2, model3, etc.)
+modeliprop: the value to filter database queries by (assumed to be the value of the first order option).
+Requests can contain multiple modeliprop's, but each must correspond to a modeli (model1prop, model2prop, etc.)
+zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
+topy: The maximum y value of the graph
+bottomy: the minimum y value of the graph
+graphplace: the number of the chunk to return in response.
+graphchunks: the total number of chunks to split the graph into.
+"""
     #Vertical Margins for the widget's display
     TOP_MARGIN = 20
     BOTTOM_MARGIN = 20
     XLABEL_MARGIN = 30
-
+ 
     #Horizontal Margins for the widget's display
-    LEFT_MARGIN = 20
-    RIGHT_MARGIN = 20
-    YLABEL_MARGIN = 33
-
-    #Canvas Dimensions
-    CANVASX = 600
-    CANVASY = 400
-
+    LEFT_MARGIN = 0
+    RIGHT_MARGIN = 0
+    YLABEL_MARGIN = 0
+ 
     #Axis value counts
     XAXIS_COUNT = 5
     YAXIS_COUNT = 9
-
+ 
     # Current y range under display
     #TODO: Check min, max values against YTOP and YBOTTOM
-    YTOP = 10
-    YBOTTOM = 0
+    try:
+        ytop = int(request.GET['ytop'])
+        ybottom = int(request.GET['ybottom'])
+    except:
+        ytop = 10
+        ybottom = 0
+ 
+    #Number of chunks to return the image in
+    try:
+        chunk_place = int(request.GET['chunkplace'])
+        chunk_count = int(request.GET['chunkcount'])
+    except:
+        chunk_place = 1
+        chunk_count = 1
+ 
+        #Image
+    try:
+        image_width = int(request.GET['width'])
+        image_height = int(request.GET['height'])
+    except:
+        image_width = 600
+        image_height = 400
     
     #Create a new image to display, as well as an ImageDraw object
-    im = Image.new('RGBA', (CANVASX, CANVASY), (0, 0, 0, 0)) # Create a blank image
+    im = Image.new('RGBA', (image_width, image_height), (255, 255, 255)) # Create a blank image
     draw = ImageDraw.Draw(im) # Create a draw object
-    
-    #Retrieve the size of the image, assuming width and height are separate parameters
-    width = 600
-    height = 400
-    size = (width, height)
-
+ 
     #Retrieve the left-most and right-most times
-    earliesttime = datetime(2010,01,01,00,00,00)
-    latesttime = datetime(2010,02,01,00,00,00)
+    try:
+        earliesttime = request.GET['lefttime']
+        latesttime = request.GET['righttime']
+    except:
+        earliesttime = datetime(2010,01,01,00,00,00)
+        latesttime = datetime(2010,02,01,00,00,00)
     #Milliseconds between the latest and earliest time
     duration = (latesttime-earliesttime).days*24*60*60*1000 + (latesttime-earliesttime).seconds*1000 + int((latesttime-earliesttime).microseconds/1000)
-    zoom = "hours"
+    try:
+        zoom = request.GET['zoom']
+    except:
+        zoom = "hours"
     xaxisvalues = [] #The dates to display on the x-axis
-
-    #Get the model and property to query
-    model1 = 'StockPrice'
-    model1prop = 'EIX'
-
+ 
+    #Get the models and propertys to query
+    models = []
+    for i in range(1000):
+        if i > 0:
+            try:
+                model = request.GET['model' + str(i)]
+                modelprop = request.GET['model' + str(i) + 'prop']
+                models.append((model, modelprop))
+            except:
+                break
+ 
     #Submit the query and capture the resulting QuerySet
-    query_model = globals()[model1]()
-    query_set = query_model.objects_by_first_order_option(model1prop)
-
+    query_results = []
+    for modelset in models:
+        query_model = globals()[modelset[0]]()
+        query_set = query_model.objects_by_first_order_option(modelset[1])
+        filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
+        query_results.append(filtered_results)
+ 
     #Filter query results by time, selecting only those that fall within the requested times
-    filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
-
-
-    #Determine times to label x-axis with 
+    
+ 
+    #Determine times to label x-axis with
     if(zoom == "hours"):
         tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
         xaxisvalues = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
@@ -135,13 +136,13 @@ def line_graph_view(request):
             if(tempmonth<1):
                 tempmonth=12
                 tempyear-=1
-    else:  #zoom == years
+    else: #zoom == years
         tempduration = latesttime.year-earliesttime.year + 1
         tempyear = latesttime.year
         for i in range(tempduration):
             xaxisvalues.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
             tempyear-=1
-
+ 
         
     #If there are too many x-axis values, scale
     if(len(xaxisvalues)>XAXIS_COUNT):
@@ -151,84 +152,95 @@ def line_graph_view(request):
         for i in range(XAXIS_COUNT):
             xaxisvalues.insert(0, incrementdate)
             incrementdate = incrementdate - xincrement
-
-    #Determine the y-axis values
-    yvalues = filtered_results
-    yvalues.sort()
-    minyvalue = yvalues[0][0]
-    maxyvalue = yvalues[len(filtered_results)-1][0]
-    yspan = maxyvalue-minyvalue
-    yincrement = yspan/YAXIS_COUNT
-    yaxisvalues = []
-    for i in range(YAXIS_COUNT):
-        yaxisvalues.append(maxyvalue - yincrement*i)
-
-    
+ 
+    xaxisvalues.reverse()
     #Draw axes
     #x axis
     draw.line((YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0], im.size[1]-30), fill="black")
-    increment = im.size[0]/len(xaxisvalues)
+    increment = (im.size[0]-RIGHT_MARGIN-LEFT_MARGIN)/len(xaxisvalues)
     if(zoom == "years"):
         for i in range(len(xaxisvalues)):
-            draw.text((increment*i + YLABEL_MARGIN, im.size[1]-25), str(xaxisvalues[i].year), fill = "black")
-            draw.line((increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), str(xaxisvalues[i].year), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
     elif(zoom == "months"):
         for i in range(len(xaxisvalues)):
-            draw.text((increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
-            draw.line((increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
     else:
         for i in range(len(xaxisvalues)):
-            draw.text((increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
-            draw.text((increment*i + YLABEL_MARGIN, im.size[1]-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
-            draw.line((increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, increment*i + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
-
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+ 
+ 
+ 
+ 
+    
+    
     #y axis
-    draw.line((YLABEL_MARGIN, 0, YLABEL_MARGIN, im.size[1] - XLABEL_MARGIN), fill = "black")
-    increment = im.size[1]/len(yaxisvalues)
-    for i in range(len(yaxisvalues)):
-        draw.text((0, increment*i), "%.2f" % yaxisvalues[i], fill = "black")
-        draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = "black")
-
-    #Determine scale
-    yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
+    """
+draw.line((YLABEL_MARGIN, 0, YLABEL_MARGIN, im.size[1] - XLABEL_MARGIN), fill = "black")
+increment = im.size[1]/len(yaxisvalues)
+for i in range(len(yaxisvalues)):
+draw.text((0, increment*i), "%.2f" % yaxisvalues[i], fill = "black")
+draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = "black")
+"""
     
     #Defining xscale as we defined yscale resolves to 0 in most cases. Therefore, it is resolved differently.
     #The numerator of xscale is defined below, and is only divided by the denominator when xpos is evaluated
     #in the iteration below
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
-    #Sort the list by time to be parsed
-    filtered_results.sort(lambda x, y: cmp(x[1], y[1]))
-    #Iterate through the query set, rendering each data point
-    for datapoint in filtered_results:
-        timelapse = latesttime-datapoint[1]
-        xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-        ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
-        draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
-    #Iterate through the query set, drawing a line between each pair of points
-    for i in range(len(filtered_results)-1):
-        timelapse = latesttime-filtered_results[i][1]
-        xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-        ypos1 = (maxyvalue-filtered_results[i][0])*yscale + TOP_MARGIN
-        timelapse = latesttime-filtered_results[i+1][1]
-        xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-        ypos2 = (maxyvalue-filtered_results[i+1][0])*yscale + TOP_MARGIN
-        draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
+ 
+    #For each model, determine its y scale, then draw the data points
+    for result_set in query_results:
+        #Determine the y-axis values
+        yvalues = result_set
+        yvalues.sort(lambda x, y: cmp(x[0], y[0]))
+        minyvalue = min(yvalues)[0]
+        maxyvalue = max(yvalues)[0]
+        yspan = maxyvalue-minyvalue
+        yincrement = yspan/YAXIS_COUNT
+        yaxisvalues = []
+        for i in range(YAXIS_COUNT):
+            yaxisvalues.append(maxyvalue - yincrement*i)
+        
+ 
+        #Determine scale
+        yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
+ 
+        #Sort the list by time to be parsed
+        result_set.sort(lambda x, y: cmp(x[1], y[1]))
+ 
+        #Iterate through the query set, rendering each data point
+        for datapoint in result_set:
+            timelapse = datapoint[1]-earliesttime
+            xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+            ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
+            draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
+        #Iterate through the query set, drawing a line between each pair of points
+        for i in range(len(result_set)-1):
+            timelapse = result_set[i][1]-earliesttime
+            xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+            ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
+            timelapse = result_set[i+1][1]-earliesttime
+            xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+            ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
+            draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
         
     del draw
-    im = im.resize(size)
-
+    
     #Create and return response with image
     #TODO: Cut into 3 shingles, return json file if max y value is above top y point
+    chunk_width = im.size[0]/chunk_count
+    chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
     response = HttpResponse(mimetype="image/png")
-    im.save(response, "PNG")
-    return response        
-
-
+    #im.save(response, "PNG")
+    chunk.save(response, "PNG")
+    return response
+ 
+ 
 def addWidget(request):
-    #return render_to_response('htmlTemplate/index.html')
-    return HttpResponseRedirect('../')
-    #return render_to_response('index.html')
+    return render_to_response('htmlTemplate/index.html')
 
 def index(request):
     return render_to_response('index.html')
-    
