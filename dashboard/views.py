@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
-#import Image, ImageFont, ImageDraw
+import Image, ImageFont, ImageDraw
 from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
