@@ -81,3 +81,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'emgdashboard.dashboard'
 )
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
