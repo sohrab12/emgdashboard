@@ -9,6 +9,28 @@
 
 <script type="text/javascript">
 
+function menuSelection()
+{
+	
+}
+
+
+
+function selectZoom(id)
+{
+//	oldZoom = document.addWidgetForm.zoom.value;
+//	document.getElementById(oldZoom).style.fontWeight = 'normal';
+
+	document.getElementById('hour').style.fontWeight = 'normal';
+	document.getElementById('day').style.fontWeight = 'normal';
+	document.getElementById('week').style.fontWeight = 'normal';
+	document.getElementById('month').style.fontWeight = 'normal';
+	document.getElementById('year').style.fontWeight = 'normal';
+	document.getElementById(id).style.fontWeight = 'bold';
+	document.addWidgetForm.zoom.value = id;
+}
+
+
 function collapseMenus()
 {	
 //	document.getElementById('addWidgetMenu').style.visibility = 'collapse';
@@ -89,9 +111,9 @@ $(document).ready(function(){
 	</div>
 	<div id="menu">
 		<ul>
-			<li><a class="addWidget">Add Widget</a></li>
-			<li><a class="exportWidget">Export</a></li>
-			<li class="last"><a class="manageKit">Manage Kit</a></li>
+			<li><a href="javascript:menuSelection()" class="addWidget">Add Widget</a></li>
+			<li><a href="javascript:menuSelection()" class="exportWidget">Export</a></li>
+			<li class="last"><a href="javascript:menuSelection()" class="manageKit">Manage Kit</a></li>
             
 		</ul>
 	</div>
@@ -140,17 +162,19 @@ $(document).ready(function(){
 				<input type="text" name="startDate">
             <br><br>
             <b>Zoom:</b>&nbsp;
-            <a href="">Hour</a> |
-            <a href="">Day</a> |
-            <a href="">Week</a> |
-            <a href="">Month</a> |
-            <a href="">Year</a>
+            <span id="hour"><a href="javascript:selectZoom('hour')">Hour</a></span> |
+            <span id="day"><a href="javascript:selectZoom('day')">Day</a></span> |
+            <span id="week" style="font-weight:bold"><a href="javascript:selectZoom('week')">Week</a></span> |
+            <span id="month"><a href="javascript:selectZoom('month')">Month</a></span> |
+            <span id="year"><a href="javascript:selectZoom('year')">Year</a></span>
             <br><br>
+            <input type="hidden" name="zoom" value="week">
         </td>            
     </tr>    
     <tr>
     	<td colspan="5" align="right">
         	<input type="button" name="clear" value="Clear" class="btn">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelAddWidget()" class="btn">
             <input type="submit" name="addWidget" value="Add Widget" class="btn">
         </td>
