@@ -240,7 +240,9 @@ draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = 
  
  
 def addWidget(request):
-    return render_to_response('htmlTemplate/index.html')
+    return HttpResponseRedirect('/dashboard')
 
 def index(request):
     return render_to_response('index.html')
+
+
