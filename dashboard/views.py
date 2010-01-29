@@ -297,4 +297,10 @@ def addWidget(request):
 def index(request):
     return render_to_response('index.html')
 
-
+def export_widget(request):
+    widget_ids = request.GET.values()
+    for widget_id in widget_ids:
+        widget = get_object_or_404(Widget, pk=widget_id)
+        response = HttpResponse(widget.widget_type())
+        #response = HttpResponse(widget.widget_type)
+        return response
