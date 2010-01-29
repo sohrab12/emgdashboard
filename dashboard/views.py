@@ -72,11 +72,38 @@ graphchunks: the total number of chunks to split the graph into.
  
     #Retrieve the left-most and right-most times
     try:
-        earliesttime = request.GET['lefttime']
-        latesttime = request.GET['righttime']
+        #Separate the left date's date and time
+        leftdate = request.GET['lefttime'].split(" ")[0].split("-")
+        lefttime = request.GET['lefttime'].split(" ")[1].split(":")
+        #Parse the left date
+        leftyear = int(leftdate[0])
+        leftmonth = int(leftdate[1])
+        leftday = int(leftdate[2])
+        #Parse the left time
+        lefthour = int(lefttime[0])
+        leftmin = int(lefttime[1])
+        leftsec = int(lefttime[2])
+
+        #Separate the right date's date and time
+        rightdate = request.GET['righttime'].split(" ")[0].split("-")
+        righttime = request.GET['righttime'].split(" ")[1].split(":")
+        #Parse the right date
+        rightyear = int(rightdate[0])
+        rightmonth = int(rightdate[1])
+        rightday = int(rightdate[2])
+        #Parse the right time
+        righthour = int(righttime[0])
+        rightmin = int(righttime[1])
+        rightsec = int(righttime[2])
+
+        earliesttime = datetime(leftyear, leftmonth, leftday, lefthour, leftmin, leftsec)        
+        latesttime = datetime(rightyear, rightmonth, rightday, righthour, rightmin, rightsec)
     except:
         earliesttime = datetime(2010,01,01,00,00,00)
         latesttime = datetime(2010,02,01,00,00,00)
+    #If the two dates are the same, set the earliest time back by a day, to avoid math errors when calculating the x-axis scale
+    if earliesttime == latesttime:
+        earliesttime = earliesttime - timedelta(days=1)
     #Milliseconds between the latest and earliest time
     duration = (latesttime-earliesttime).days*24*60*60*1000 + (latesttime-earliesttime).seconds*1000 + int((latesttime-earliesttime).microseconds/1000)
     try:
@@ -101,11 +128,33 @@ graphchunks: the total number of chunks to split the graph into.
     for modelset in models:
         query_model = globals()[modelset[0]]()
         query_set = query_model.objects_by_first_order_option(modelset[1])
+        #Filter query results by time, selecting only those that fall within the requested times
         filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
         query_results.append(filtered_results)
- 
-    #Filter query results by time, selecting only those that fall within the requested times
-    
+
+    #If there are no results, return an HttpResponse with a blank graph
+    """
+    if len(query_results) == 0:
+        draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN), fill="black")
+        draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill="black")
+        draw.line((im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill="black")
+        if(zoom == "years"):
+            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), str(earliesttime.year), fill="black")
+            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25), str(latesttime.year), fill="black")
+        elif(zoom == "months"):
+            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), "%s/%s" % (str(earliesttime.month), str("%s/%s" % (str(xaxisvalues[i].month), str(earliesttime.year)).year)), fill="black")
+            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25),"%s/%s" % (str(latesttime.month), str(latesttime.year)), fill="black")
+        else:
+            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), str(earliesttime.date), fill="black")
+            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-15), str(earliesttime.time), fill="black")
+            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25), str(latesttime.date), fill="black")
+            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-15), str(latesttime.time), fill="black")
+        chunk_width = im.size[0]/chunk_count
+        chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
+        response = HttpResponse(mimetype="image/png")
+        chunk.save(response, "PNG")
+        return response
+    """
  
     #Determine times to label x-axis with
     if(zoom == "hours"):
@@ -156,7 +205,7 @@ graphchunks: the total number of chunks to split the graph into.
     xaxisvalues.reverse()
     #Draw axes
     #x axis
-    draw.line((YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0], im.size[1]-30), fill="black")
+    draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN), fill="black")
     increment = (im.size[0]-RIGHT_MARGIN-LEFT_MARGIN)/len(xaxisvalues)
     if(zoom == "years"):
         for i in range(len(xaxisvalues)):
@@ -191,41 +240,45 @@ draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = 
     #in the iteration below
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
  
-    #For each model, determine its y scale, then draw the data points
+    #For each model, determine its y scale, then draw the data points, only if that model has data points
     for result_set in query_results:
-        #Determine the y-axis values
-        yvalues = result_set
-        yvalues.sort(lambda x, y: cmp(x[0], y[0]))
-        minyvalue = min(yvalues)[0]
-        maxyvalue = max(yvalues)[0]
-        yspan = maxyvalue-minyvalue
-        yincrement = yspan/YAXIS_COUNT
-        yaxisvalues = []
-        for i in range(YAXIS_COUNT):
-            yaxisvalues.append(maxyvalue - yincrement*i)
-        
- 
-        #Determine scale
-        yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
- 
-        #Sort the list by time to be parsed
-        result_set.sort(lambda x, y: cmp(x[1], y[1]))
- 
-        #Iterate through the query set, rendering each data point
-        for datapoint in result_set:
-            timelapse = datapoint[1]-earliesttime
-            xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-            ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
-            draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
-        #Iterate through the query set, drawing a line between each pair of points
-        for i in range(len(result_set)-1):
-            timelapse = result_set[i][1]-earliesttime
-            xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-            ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
-            timelapse = result_set[i+1][1]-earliesttime
-            xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-            ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
-            draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
+        if len(result_set) !=0:
+            #Determine the y-axis values
+            yvalues = result_set
+            yvalues.sort(lambda x, y: cmp(x[0], y[0]))
+            minyvalue = min(yvalues)[0]
+            maxyvalue = max(yvalues)[0]
+            yspan = maxyvalue-minyvalue
+            #If the two values are the same, set the span to 1 to avoid math errors in evaluating the y-axis scale
+            if yspan == 0:
+                yspan = 1
+            yincrement = yspan/YAXIS_COUNT
+            yaxisvalues = []
+            for i in range(YAXIS_COUNT):
+                yaxisvalues.append(maxyvalue - yincrement*i)
+            
+     
+            #Determine scale
+            yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
+     
+            #Sort the list by time to be parsed
+            result_set.sort(lambda x, y: cmp(x[1], y[1]))
+     
+            #Iterate through the query set, rendering each data point
+            for datapoint in result_set:
+                timelapse = datapoint[1]-earliesttime
+                xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
+                draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
+            #Iterate through the query set, drawing a line between each pair of points
+            for i in range(len(result_set)-1):
+                timelapse = result_set[i][1]-earliesttime
+                xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
+                timelapse = result_set[i+1][1]-earliesttime
+                xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
+                draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
         
     del draw
     
@@ -234,7 +287,6 @@ draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = 
     chunk_width = im.size[0]/chunk_count
     chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
     response = HttpResponse(mimetype="image/png")
-    #im.save(response, "PNG")
     chunk.save(response, "PNG")
     return response
  
