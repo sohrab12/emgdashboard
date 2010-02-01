@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime
 import inspect
 
 #GUI Models
@@ -25,10 +24,6 @@ class Dashboard(WidgetOwner):
         #TODO: Add code to calculate Y-coordinates
         self.widget_set.create(creator = self.user, x = column, y = 0)
 
-class Query(models.Model):
-    """A query to be submitted to the database. Each query is referenced as a foreign key by one or more widgets."""
-    value = models.CharField(max_length=200)
-
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
     """
@@ -40,12 +35,17 @@ class Widget(models.Model):
     y = models.PositiveIntegerField()
 
     def widget_type(self):
-        # get all classes of Widget
-        # then, query each for a ref to self
-        # return class of one that has it
-        klasses = [getattr(models, name) for name in dir(models) if inspect.isclass(getattr(models,name))]
-        widget_classes = [c for c in globals().values() if hasattr(c, "parentwidget")]
-        return klasses
+        widgetclasses = [c for c in globals().values() if inspect.isclass(c) and hasattr(c, "parentwidget")]
+        for nextc in widgetclasses:
+            query_result = [s for s in nextc.objects.filter(parentwidget = self)]
+            try:
+                return query_result[0]
+            except:
+                pass
+
+    #Gets all the queries associated with this widget    
+    def get_queries(self):
+        return [q for q in Query.objects.filter(belongTo = self)]
         
     #refer to self as belongTo,x,y
     def __unicode__(self):
@@ -60,13 +60,20 @@ class LineWidget(models.Model):
     startdate = models.DateTimeField() #start date updates to current day if null
     enddate = models.DateTimeField() #end date updates to current day if null
     latestentry = models.DateTimeField()
-    model1 = models.CharField(max_length = 60) #First table to query
-    model1_prop = models.CharField(max_length = 60) #Filter for first query
-    model2 = models.CharField(max_length = 60)
-    model2_prop = models.CharField(max_length = 60)
 
     def __unicode__(self):
-        return self.model1+model1_prop
+        return self.model1+self.model1_prop
+        
+class TickerWidget(models.Model):
+    """
+    A widget that displays the latest value
+    of a single data series.
+    """
+    parent_widget = models.OneToOneField(Widget, primary_key=True)
+    def get_query(self):
+        return Query.objects.get(belongTo=self.parent_widget)
+    def __unicode__(self):
+        return '<TickerWidget query='+unicode(self.get_query())+'>'     
     
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
@@ -74,7 +81,13 @@ class Kit(WidgetOwner):
     """
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
-    dateCreated = models.DateTimeField('created')  
+    dateCreated = models.DateTimeField('created')
+    
+class Query(models.Model):
+    """A query to be submitted to the database. Each query references a widget as a foreign key."""
+    belongTo = models.ForeignKey(Widget)
+    table = models.CharField(max_length=50)
+    property = models.CharField(max_length=50)
 
 #
 # DATA

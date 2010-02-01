@@ -7,8 +7,13 @@ from models import *
 from django.template import RequestContext
  
 def widget_properties(request, widget_id):
-    widget=get_object_or_404(LineWidget, pk=widget_id)
+    widget = get_object_or_404(LineWidget, pk=widget_id)
     return render_to_response('widgetframe.html', {'widget':widget})
+    
+def ticker_widget(request, ticker_widget_id):
+    ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
+    query = ticker_widget.get_query()
+    return HttpResponse('<b>%s:</b> %s' % ('Ticker', 'some value'))
  
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
