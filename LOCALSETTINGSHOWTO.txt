@@ -1,0 +1,22 @@
+The idea here is that you want to make a local_settings.py file that looks something like:
+
+
+DEBUG = True
+
+DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_NAME = 'dashboard.db'             # Or path to database file if using sqlite3.
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
+DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3
+
+MEDIA_ROOT = '/Users/emrys/Code/emgdashboard/static/'  #absolute path to media
+
+TEMPLATE_DIRS = (
+    "/Users/emrys/Code/emgdashboard/templates",
+)
+
+
+We first declare DEBUG to be True so we get handy error feedback, then we specify what sort of database you want to use on your local system (probably sqlite 3 as above), and then you fix the absolute paths. And that's that.
+
+The defaults in settings.py should be production defaults. For instance, on our production server, DEBUG should be False, for obvious reasons. On the production server, we'll also use a real SQL server.

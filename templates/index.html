@@ -5,11 +5,11 @@
 <head>
 <title>EMG Treasury Dashboard</title>
 
-<link href="/mymedia/style.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="/static/style.css" rel="stylesheet" type="text/css" media="screen" />
 
 
 
-<script type="text/javascript" src="/mymedia/jquery.js"></script>
+<script type="text/javascript" src="/static/jquery.js"></script>
 
 <script type="text/javascript">
 
@@ -64,6 +64,26 @@ function cancelKit()
 	$("#manageKitMenu").slideToggle("slow");
 	$(this).toggleClass("active");	
 }
+
+
+function displayContentOptions(selectedOption)
+{
+	document.getElementById('stocksListDiv').style.display = 'none';
+	document.getElementById('bondsListDiv').style.display = 'none';
+	document.getElementById('actualsListDiv').style.display = 'none';
+	document.getElementById('investmentsListDiv').style.display = 'none';
+	
+	if (selectedOption == 'stocks')
+		document.getElementById('stocksListDiv').style.display = 'inline';
+	else if (selectedOption == 'bonds')
+		document.getElementById('bondsListDiv').style.display = 'inline';
+	else if (selectionOption = 'actuals')
+		document.getElementById('actualsListDiv').style.display = 'inline';
+	else if (selectionOption = 'investments')
+		document.getElementById('investmentsListDiv').style.display = 'inline';
+		
+}
+
 
 
 
@@ -139,8 +159,8 @@ $(document).ready(function(){
             </select>
             &nbsp;&nbsp;&nbsp;
         </td>
-        <td>   
-            <select size="4" name="graphContent" multiple>
+        <td>
+            <select size="4" name="graphContent" multiple onChange="javascript:displayContentOptions(this.value)">
                 <option value="stocks">Stocks</option>
                 <option value="bonds">Bonds</option>
                 <option value="actuals">Actuals</option>
@@ -148,13 +168,32 @@ $(document).ready(function(){
             </select>
             &nbsp;&nbsp;&nbsp;
         </td>
-        <td>    
-            <select size="4" name="graphSymbol" multiple>
-                <option value="">EIX</option>
-                <option value="">AAPL</option>
-                <option value="">DOW</option>
-                <option value="">OMG</option>
+        <td>
+	       	<div id="stocksListDiv">
+            <select size="4" name="stocksGraphSymbol" multiple>           			
+            {% for StockPrice in stockList %}
+                <option value= "{{ StockPrice.symbol }}">{{ StockPrice.symbol }}</option>
+            {% endfor %}            
             </select>
+            </div>
+            
+            <div id="bondsListDiv" style="display:none">
+            <select size="4" name="bondsGraphSymbol" multiple>    
+                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+            </select>
+            </div>
+
+            <div id="actualsListDiv" style="display:none">
+            <select size="4" name="actualsGraphSymbol" multiple>    
+                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+            </select>
+            </div>
+           
+             <div id="investmentsListDiv" style="display:none">
+            <select size="4" name="investmentsGraphSymbol" multiple>    
+                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+            </select>
+            </div>            
         </td>
         <td width="25">&nbsp;
         	
