@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+import inspect
 
 #GUI Models
 class WidgetOwner(models.Model):
@@ -38,6 +39,14 @@ class Widget(models.Model):
     x = models.PositiveIntegerField()
     y = models.PositiveIntegerField()
 
+    def widget_type(self):
+        # get all classes of Widget
+        # then, query each for a ref to self
+        # return class of one that has it
+        klasses = [getattr(models, name) for name in dir(models) if inspect.isclass(getattr(models,name))]
+        widget_classes = [c for c in globals().values() if hasattr(c, "parentwidget")]
+        return klasses
+        
     #refer to self as belongTo,x,y
     def __unicode__(self):
         return str(self.belongTo) + str(self.x) + str(self.y)
@@ -55,6 +64,9 @@ class LineWidget(models.Model):
     model1_prop = models.CharField(max_length = 60) #Filter for first query
     model2 = models.CharField(max_length = 60)
     model2_prop = models.CharField(max_length = 60)
+
+    def __unicode__(self):
+        return self.model1+model1_prop
     
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
