@@ -64,6 +64,7 @@ class Kit(WidgetOwner):
     creator = models.CharField(max_length=50)
     dateCreated = models.DateTimeField('created')  
 
+
 #
 # DATA
 #
@@ -96,8 +97,9 @@ class StockPrice(DataEntry):
         """Return all entries in this class' table that pass the filter p for first order options
         """
         return (s for s in StockPrice.objects.filter(symbol = p))
+    
     def __unicode__(self):
-        return str(self.time)
+        return self.symbol
 
 class BondPrice(DataEntry):
     """The daily trading price for EME and subsidiary bonds.
