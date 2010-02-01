@@ -25,12 +25,6 @@ class Dashboard(WidgetOwner):
         #TODO: Add code to calculate Y-coordinates
         self.widget_set.create(creator = self.user, x = column, y = 0)
 
-class Query(models.Model):
-    """A query to be submitted to the database. Each query references a widget as a foreign key."""
-    belongTo = models.ForeignKey(Widget)
-    table = models.CharField(max_length=50)
-    property = models.CharField(max_length=50)
-
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
     """
@@ -44,15 +38,14 @@ class Widget(models.Model):
     def widget_type(self):
         widgetclasses = [c for c in globals().values() if inspect.isclass(c) and hasattr(c, "parentwidget")]
         for nextc in widgetclasses:
-            query_result = [s for s in nextc.objects.filter(parentwidget = self)]
             try:
-                return query_result[0]
+                return nextc.objects.get(parentwidget = self)
             except:
                 pass
 
     #Gets all the queries associated with this widget    
     def get_queries(self):
-        return [q for q in Query.objects.filter(belongTo = self)]
+        return Query.objects.filter(belongTo = self)
         
     #refer to self as belongTo,x,y
     def __unicode__(self):
@@ -70,6 +63,12 @@ class LineWidget(models.Model):
 
     def __unicode__(self):
         return self.model1+self.model1_prop
+
+class Query(models.Model):
+    """A query to be submitted to the database. Each query references a widget as a foreign key."""
+    belongTo = models.OneToOneField(Widget, primary_key = True)
+    table = models.CharField(max_length=50)
+    property = models.CharField(max_length=50)
     
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
