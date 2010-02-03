@@ -194,7 +194,6 @@ $(document).ready(function(){
         </td>
         <td>
 	       	<div id="stocksListDiv">
-            <br><br>            
             <select size="4" name="stocksGraphSymbol" style="width:107px" multiple>           			
             {% for StockPrice in stockList %}
                 <option value= "{{ StockPrice.symbol }}">{{ StockPrice.symbol }}</option>
