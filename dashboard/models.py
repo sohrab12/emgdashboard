@@ -49,7 +49,7 @@ class Widget(models.Model):
         
     #refer to self as belongTo,x,y
     def __unicode__(self):
-        return str(self.belongTo) + str(self.x) + str(self.y)
+        return str(self.belongTo) + ":" + " ".join([str(q) for q in self.get_queries()])
 
 class LineWidget(models.Model):
     """A widget containing a line graph of data.
@@ -62,13 +62,16 @@ class LineWidget(models.Model):
     latestentry = models.DateTimeField()
 
     def __unicode__(self):
-        return self.model1+self.model1_prop
+        return str(self.parentwidget)
 
 class Query(models.Model):
     """A query to be submitted to the database. Each query references a widget as a foreign key."""
     belongTo = models.ForeignKey(Widget)
     table = models.CharField(max_length=50)
     property = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return str(self.table)+" "+str(self.property)
         
 class TickerWidget(models.Model):
     """
