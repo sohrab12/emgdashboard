@@ -1,3 +1,4 @@
 *.pyc
 *EMGDashboardDB
+dashboard.db
 local_settings.py

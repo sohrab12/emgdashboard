@@ -7,8 +7,13 @@ from models import *
 from django.template import RequestContext
  
 def widget_properties(request, widget_id):
-    widget=get_object_or_404(LineWidget, pk=widget_id)
+    widget = get_object_or_404(LineWidget, pk=widget_id)
     return render_to_response('widgetframe.html', {'widget':widget})
+    
+def ticker_widget(request, ticker_widget_id):
+    ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
+    query = ticker_widget.get_query()
+    return HttpResponse('<b>%s:</b> %s' % ('Ticker', 'some value'))
  
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
@@ -114,15 +119,17 @@ graphchunks: the total number of chunks to split the graph into.
  
     #Get the models and propertys to query
     models = []
-    for k,v in request.GET.items() :
-        if k.startswith('model') and not(k.endswith('prop')):
-            model = request.GET[k]
-            modelprop = request.GET[k+'prop']
-            models.append((model, modelprop))
-    
+    for i in range(1000):
+        if i > 0:
+            try:
+                model = request.GET['model' + str(i)]
+                modelprop = request.GET['model' + str(i) + 'prop']
+                models.append((model, modelprop))
+            except:
+                break
+ 
     #Submit the query and capture the resulting QuerySet
     query_results = []
-    
     for modelset in models:
         query_model = globals()[modelset[0]]()
         query_set = query_model.objects_by_first_order_option(modelset[1])
@@ -301,27 +308,7 @@ def index(request):
 def export_widget(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
-        parentwidget = get_object_or_404(Widget, pk=widget_id)
-        widget = parentwidget.widget_type()
-
-        earliesttime = widget.startdate
-        latesttime = widget.enddate
-
-        if earliesttime == latesttime:
-            earliesttime = earliesttime - timedelta(days=1)
-        
-        #Milliseconds between the latest and earliest time
-        #duration = (latesttime-earliesttime).days*24*60*60*1000 + (latesttime-earliesttime).seconds*1000 + int((latesttime-earliesttime).microseconds/1000)
-        zoom = widget.zoom
-        #Get the models and propertys to query
-        models = parentwidget.get_queries()
-        
-        query_results = []
-        for modelset in models:
-            query_model = globals()[modelset[0]]()
-            query_set = query_model.objects_by_first_order_option(modelset[1])
-            #Filter query results by time, selecting only those that fall within the requested times
-            filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
-            query_results.append(filtered_results)
-
-        return HttpResponse(query_results)            
+        widget = get_object_or_404(Widget, pk=widget_id)
+        response = HttpResponse(widget.widget_type())
+        #response = HttpResponse(widget.widget_type)
+        return response

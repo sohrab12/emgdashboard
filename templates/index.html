@@ -6,10 +6,13 @@
 <title>EMG Treasury Dashboard</title>
 
 <link href="/static/style.css" rel="stylesheet" type="text/css" media="screen" />
-
-
-
 <script type="text/javascript" src="/static/jquery.js"></script>
+
+<link rel="stylesheet" href="/static/jquery.autocomplete.css" type="text/css" />
+<script type="text/javascript" src="/static/jquery.autocomplete.js"></script>
+
+
+
 
 <script type="text/javascript">
 
@@ -84,15 +87,36 @@ function displayContentOptions(selectedOption)
 		
 }
 
+var data = "";
+</script>
 
 
+
+{% for StockPrice in stockList %}
+<script type="text/javascript">
+	data += "{{ StockPrice.symbol }} "
+</script>	
+{% endfor %}
+
+
+
+
+<script type="text/javascript">
 
 $(document).ready(function(){
 //	$("#addWidgetMenu").slideToggle("fast");
 //	$("#exportMenu").slideToggle("fast");
 //	$("#manageKitMenu").slideToggle("fast");
-	
 
+
+//  var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
+	data = data.split(" ");
+	 
+	$("#stocksGraphSymbolSearchBox").autocomplete(data);
+
+	
+	
+	
 	$(".addWidget").click(function(){
 		
 		collapseMenus();
@@ -170,27 +194,29 @@ $(document).ready(function(){
         </td>
         <td>
 	       	<div id="stocksListDiv">
-            <select size="4" name="stocksGraphSymbol" multiple>           			
+            <select size="4" name="stocksGraphSymbol" style="width:107px" multiple>           			
             {% for StockPrice in stockList %}
                 <option value= "{{ StockPrice.symbol }}">{{ StockPrice.symbol }}</option>
             {% endfor %}            
             </select>
+            <br>
+            <input type="text" name="stocksGraphSymbolSearch" id="stocksGraphSymbolSearchBox" size="10">
             </div>
             
             <div id="bondsListDiv" style="display:none">
-            <select size="4" name="bondsGraphSymbol" multiple>    
+            <select size="4" name="bondsGraphSymbol" style="width:107px" multiple>    
                 <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
             </select>
             </div>
 
             <div id="actualsListDiv" style="display:none">
-            <select size="4" name="actualsGraphSymbol" multiple>    
+            <select size="4" name="actualsGraphSymbol" style="width:107px" multiple>    
                 <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
             </select>
             </div>
            
              <div id="investmentsListDiv" style="display:none">
-            <select size="4" name="investmentsGraphSymbol" multiple>    
+            <select size="4" name="investmentsGraphSymbol" style="width:107px" multiple>    
                 <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
             </select>
             </div>            

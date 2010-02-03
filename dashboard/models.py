@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime
 import inspect
 
 #GUI Models
@@ -38,14 +37,15 @@ class Widget(models.Model):
     def widget_type(self):
         widgetclasses = [c for c in globals().values() if inspect.isclass(c) and hasattr(c, "parentwidget")]
         for nextc in widgetclasses:
+            query_result = [s for s in nextc.objects.filter(parentwidget = self)]
             try:
-                return nextc.objects.get(parentwidget = self)
+                return query_result[0]
             except:
                 pass
 
     #Gets all the queries associated with this widget    
     def get_queries(self):
-        return Query.objects.filter(belongTo = self)
+        return [q for q in Query.objects.filter(belongTo = self)]
         
     #refer to self as belongTo,x,y
     def __unicode__(self):
@@ -69,6 +69,17 @@ class Query(models.Model):
     belongTo = models.ForeignKey(Widget, primary_key = True)
     table = models.CharField(max_length=50)
     property = models.CharField(max_length=50)
+        
+class TickerWidget(models.Model):
+    """
+    A widget that displays the latest value
+    of a single data series.
+    """
+    parent_widget = models.OneToOneField(Widget, primary_key=True)
+    def get_query(self):
+        return Query.objects.get(belongTo=self.parent_widget)
+    def __unicode__(self):
+        return '<TickerWidget query='+unicode(self.get_query())+'>'     
     
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
@@ -76,7 +87,13 @@ class Kit(WidgetOwner):
     """
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
-    dateCreated = models.DateTimeField('created')  
+    dateCreated = models.DateTimeField('created')
+    
+class Query(models.Model):
+    """A query to be submitted to the database. Each query references a widget as a foreign key."""
+    belongTo = models.ForeignKey(Widget)
+    table = models.CharField(max_length=50)
+    property = models.CharField(max_length=50)
 
 
 #
@@ -93,6 +110,7 @@ class StockPrice(DataEntry):
     Recorded in US$/share
     """
     symbol = models.CharField(max_length = 4)
+    company = models.CharField(max_length = 50)
     price = models.FloatField()
         
     @staticmethod
