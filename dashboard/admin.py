@@ -7,4 +7,5 @@ admin.site.register(Kit)
 admin.site.register(StockPrice)
 admin.site.register(LineWidget)
 admin.site.register(WidgetOwner)
+admin.site.register(Query)
 
