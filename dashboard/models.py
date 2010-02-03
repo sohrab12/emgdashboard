@@ -91,6 +91,7 @@ class StockPrice(DataEntry):
     Recorded in US$/share
     """
     symbol = models.CharField(max_length = 4)
+    company = models.CharField(max_length = 50)
     price = models.FloatField()
         
     @staticmethod
