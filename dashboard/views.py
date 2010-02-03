@@ -300,7 +300,10 @@ def addWidget(request):
     return HttpResponseRedirect('/dashboard')
 
 def index(request):
-    return render_to_response('index.html')
+    #p = get_object_or_404(StockPrice, pk=1)
+    stockList = StockPrice.objects.all().order_by('-symbol')[:5]
+    return render_to_response('index.html', {'stockList': stockList})
+    #return render_to_response('index.html')
 
 def export_widget(request):
     widget_ids = request.GET.values()
