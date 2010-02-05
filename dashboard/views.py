@@ -33,14 +33,14 @@ graphplace: the number of the chunk to return in response.
 graphchunks: the total number of chunks to split the graph into.
 """
     #Vertical Margins for the widget's display
-    TOP_MARGIN = 20
-    BOTTOM_MARGIN = 20
+    TOP_MARGIN = 5
+    BOTTOM_MARGIN = 0
     XLABEL_MARGIN = 30
  
     #Horizontal Margins for the widget's display
-    LEFT_MARGIN = 0
-    RIGHT_MARGIN = 0
-    YLABEL_MARGIN = 0
+    LEFT_MARGIN = 2
+    RIGHT_MARGIN = 2
+    YLABEL_MARGIN = 35
  
     #Axis value counts
     XAXIS_COUNT = 5
@@ -49,11 +49,22 @@ graphchunks: the total number of chunks to split the graph into.
     # Current y range under display
     #TODO: Check min, max values against YTOP and YBOTTOM
     try:
-        ytop = int(request.GET['ytop'])
-        ybottom = int(request.GET['ybottom'])
+        maxyvalue = int(request.GET['ytop'])
+        minyvalue = int(request.GET['ybottom'])
+        mainunits = request.GET['mainunits']
     except:
-        ytop = 10
-        ybottom = 0
+        maxyvalue = 30
+        minyvalue = 0
+
+    # Current y range under display for second axis
+    #TODO: Check min, max values against YTOP and YBOTTOM
+    try:
+        altmaxyvalue = int(request.GET['ytop'])
+        altminyvalue = int(request.GET['ybottom'])
+        altunits = request.GET['altunits']
+    except:
+        altmaxyvalue = 30
+        altminyvalue = 0
  
     #Number of chunks to return the image in
     try:
@@ -63,7 +74,7 @@ graphchunks: the total number of chunks to split the graph into.
         chunk_place = 1
         chunk_count = 1
  
-        #Image
+    #Image size
     try:
         image_width = int(request.GET['width'])
         image_height = int(request.GET['height'])
@@ -72,9 +83,62 @@ graphchunks: the total number of chunks to split the graph into.
         image_height = 400
     
     #Create a new image to display, as well as an ImageDraw object
-    im = Image.new('RGBA', (image_width, image_height), (255, 255, 255)) # Create a blank image
+    if chunk_place == 0 or chunk_place == -1:
+        im = Image.new('RGBA', (YLABEL_MARGIN, image_height), (255, 255, 255)) # Create a blank image
+    else:
+        im = Image.new('RGBA', (image_width, image_height), (255, 255, 255)) # Create a blank image
     draw = ImageDraw.Draw(im) # Create a draw object
- 
+
+    #Determine values for the y-scale
+    yspan = maxyvalue-minyvalue
+    #If the two values are the same, set the span to 1 to avoid math errors in evaluating the y-axis scale
+    if yspan == 0:
+        yspan = 1
+    yincrement = yspan/YAXIS_COUNT
+    yaxisvalues = []
+    for i in range(YAXIS_COUNT):
+        yaxisvalues.append(maxyvalue - yincrement*i)
+    yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
+
+    #Determine values for second y-scale if one exists
+    if(altmaxyvalue):
+        altyspan = altmaxyvalue-altminyvalue
+        #If the two values are the same, set the span to 1 to avoid math errors in evaluating the y-axis scale
+        if altyspan == 0:
+            altyspan = 1
+        altyincrement = altyspan/YAXIS_COUNT
+        altyaxisvalues = []
+        for i in range(YAXIS_COUNT):
+            altyaxisvalues.append(altmaxyvalue - altyincrement*i)
+        altyscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(altyspan)
+
+    #If this request's chunk_place is 0, we don't need to make any calls to the database. Just render the appropriate axis and return.
+    #If the chunk_place is 0, render the y-axis for the widget and return it as a response
+    if chunk_place == 0:
+        draw.line((LEFT_MARGIN, TOP_MARGIN, LEFT_MARGIN, im.size[1] - XLABEL_MARGIN - BOTTOM_MARGIN), fill = "black")
+        increment = (im.size[1]-TOP_MARGIN - BOTTOM_MARGIN - XLABEL_MARGIN)/len(yaxisvalues)
+        for i in range(len(yaxisvalues)):
+            draw.text((LEFT_MARGIN+2, increment*i + TOP_MARGIN), "%.2f" % yaxisvalues[i], fill = "black")
+            draw.line((LEFT_MARGIN, increment*i + TOP_MARGIN, LEFT_MARGIN + 10, increment*i + TOP_MARGIN), fill = "black")
+        draw.line((LEFT_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN), fill="black")
+        response = HttpResponse(mimetype="image/png")
+        im.save(response, "PNG")
+        return response
+
+    #If the chunk_place is -1, render the second y-axis for the widget and return it as a response    
+    if chunk_place == -1:
+        draw.line((im.size[0]-RIGHT_MARGIN, TOP_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1] - XLABEL_MARGIN - BOTTOM_MARGIN), fill = "black")
+        increment = (im.size[1]-TOP_MARGIN - BOTTOM_MARGIN - XLABEL_MARGIN)/len(altyaxisvalues)
+        for i in range(len(altyaxisvalues)):
+            draw.text((im.size[0]-RIGHT_MARGIN-22, increment*i + TOP_MARGIN), "%.2f" % altyaxisvalues[i], fill = "black")
+            draw.line((im.size[0]-RIGHT_MARGIN, increment*i + TOP_MARGIN, im.size[0]-RIGHT_MARGIN - 10, increment*i + TOP_MARGIN), fill = "black")
+        draw.line((im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-RIGHT_MARGIN-YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN), fill="black")
+        response = HttpResponse(mimetype="image/png")
+        im.save(response, "PNG")
+        return response
+        
+
+    #Otherwise, we continue.     
     #Retrieve the left-most and right-most times
     try:
         #Separate the left date's date and time
@@ -118,15 +182,13 @@ graphchunks: the total number of chunks to split the graph into.
     xaxisvalues = [] #The dates to display on the x-axis
  
     #Get the models and propertys to query
+    #Get the models and propertys to query
     models = []
-    for i in range(1000):
-        if i > 0:
-            try:
-                model = request.GET['model' + str(i)]
-                modelprop = request.GET['model' + str(i) + 'prop']
-                models.append((model, modelprop))
-            except:
-                break
+    for k,v in request.GET.items() :
+        if k.startswith('model') and not(k.endswith('prop')):
+            model = request.GET[k]
+            modelprop = request.GET[k+'prop']
+            models.append((model, modelprop))
  
     #Submit the query and capture the resulting QuerySet
     query_results = []
@@ -137,30 +199,6 @@ graphchunks: the total number of chunks to split the graph into.
         filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
         query_results.append(filtered_results)
 
-    #If there are no results, return an HttpResponse with a blank graph
-    """
-    if len(query_results) == 0:
-        draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN), fill="black")
-        draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill="black")
-        draw.line((im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill="black")
-        if(zoom == "years"):
-            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), str(earliesttime.year), fill="black")
-            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25), str(latesttime.year), fill="black")
-        elif(zoom == "months"):
-            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), "%s/%s" % (str(earliesttime.month), str("%s/%s" % (str(xaxisvalues[i].month), str(earliesttime.year)).year)), fill="black")
-            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25),"%s/%s" % (str(latesttime.month), str(latesttime.year)), fill="black")
-        else:
-            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-25), str(earliesttime.date), fill="black")
-            draw.text((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-15), str(earliesttime.time), fill="black")
-            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-25), str(latesttime.date), fill="black")
-            draw.text((im.size[0]-RIGHT_MARGIN, im.size[1]-15), str(latesttime.time), fill="black")
-        chunk_width = im.size[0]/chunk_count
-        chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
-        response = HttpResponse(mimetype="image/png")
-        chunk.save(response, "PNG")
-        return response
-    """
- 
     #Determine times to label x-axis with
     if(zoom == "hours"):
         tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
@@ -208,63 +246,32 @@ graphchunks: the total number of chunks to split the graph into.
             incrementdate = incrementdate - xincrement
  
     xaxisvalues.reverse()
-    #Draw axes
-    #x axis
-    draw.line((YLABEL_MARGIN+LEFT_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN), fill="black")
+    
+    #Draw x axis
+    draw.line((0, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN), fill="black")
     increment = (im.size[0]-RIGHT_MARGIN-LEFT_MARGIN)/len(xaxisvalues)
     if(zoom == "years"):
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), str(xaxisvalues[i].year), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), str(xaxisvalues[i].year), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
     elif(zoom == "months"):
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
     else:
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-10), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
+            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
+            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
  
- 
- 
- 
-    
-    
-    #y axis
-    """
-draw.line((YLABEL_MARGIN, 0, YLABEL_MARGIN, im.size[1] - XLABEL_MARGIN), fill = "black")
-increment = im.size[1]/len(yaxisvalues)
-for i in range(len(yaxisvalues)):
-draw.text((0, increment*i), "%.2f" % yaxisvalues[i], fill = "black")
-draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = "black")
-"""
     
     #Defining xscale as we defined yscale resolves to 0 in most cases. Therefore, it is resolved differently.
     #The numerator of xscale is defined below, and is only divided by the denominator when xpos is evaluated
     #in the iteration below
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
- 
+
     #For each model, determine its y scale, then draw the data points, only if that model has data points
     for result_set in query_results:
-        if len(result_set) !=0:
-            #Determine the y-axis values
-            yvalues = result_set
-            yvalues.sort(lambda x, y: cmp(x[0], y[0]))
-            minyvalue = min(yvalues)[0]
-            maxyvalue = max(yvalues)[0]
-            yspan = maxyvalue-minyvalue
-            #If the two values are the same, set the span to 1 to avoid math errors in evaluating the y-axis scale
-            if yspan == 0:
-                yspan = 1
-            yincrement = yspan/YAXIS_COUNT
-            yaxisvalues = []
-            for i in range(YAXIS_COUNT):
-                yaxisvalues.append(maxyvalue - yincrement*i)
-            
-     
-            #Determine scale
-            yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
      
             #Sort the list by time to be parsed
             result_set.sort(lambda x, y: cmp(x[1], y[1]))
@@ -289,10 +296,10 @@ draw.line((YLABEL_MARGIN, increment*i, YLABEL_MARGIN + 10, increment*i), fill = 
     
     #Create and return response with image
     #TODO: Cut into 3 shingles, return json file if max y value is above top y point
-    chunk_width = im.size[0]/chunk_count
-    chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
+    chunk_width = im.size[0]-YLABEL_MARGIN/chunk_count
+    chunk = im.crop(((chunk_place-1)*chunk_width+YLABEL_MARGIN, 0, chunk_place*chunk_width+YLABEL_MARGIN, im.size[1]))
     response = HttpResponse(mimetype="image/png")
-    chunk.save(response, "PNG")
+    chunk.save(response, "NG")
     return response
  
  
