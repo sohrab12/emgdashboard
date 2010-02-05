@@ -8,8 +8,6 @@ from django.template import RequestContext
 
 # imports for export_widget
 import os
-import win32com.client
-from numpy import *
 from time import *
 import time
  
@@ -322,6 +320,8 @@ def index(request):
     #return render_to_response('index.html')
 
 def export_widget(request):
+    from numpy import *
+    import win32com.client
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
