@@ -308,7 +308,7 @@ def addWidget(request):
 
 def index(request):
     #p = get_object_or_404(StockPrice, pk=1)
-    stockList = StockPrice.objects.all().order_by('-symbol')[:5]
+    stockList = StockPrice.objects.all().order_by('-symbol')
     return render_to_response('index.html', {'stockList': stockList})
     #return render_to_response('index.html')
 
