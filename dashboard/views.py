@@ -12,8 +12,10 @@ def widget_properties(request, widget_id):
     
 def ticker_widget(request, ticker_widget_id):
     ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
-    query = ticker_widget.get_query()
-    return HttpResponse('<b>%s:</b> %s' % ('Ticker', 'some value'))
+    queries = ticker_widget.get_queries()
+    assert len(queries) == 1
+    query = queries[0]
+    return HttpResponse('<b>%s:</b> %s' % (query.property, 'some value'))
  
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
