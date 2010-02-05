@@ -92,13 +92,6 @@ class Kit(WidgetOwner):
     creator = models.CharField(max_length=50)
     dateCreated = models.DateTimeField('created')
     
-class Query(models.Model):
-    """A query to be submitted to the database. Each query references a widget as a foreign key."""
-    belongTo = models.ForeignKey(Widget)
-    table = models.CharField(max_length=50)
-    property = models.CharField(max_length=50)
-
-
 #
 # DATA
 #

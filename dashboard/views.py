@@ -5,6 +5,13 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
+
+# imports for export_widget
+import os
+import win32com.client
+from numpy import *
+from time import *
+import time
  
 def widget_properties(request, widget_id):
     widget = get_object_or_404(LineWidget, pk=widget_id)
@@ -316,6 +323,25 @@ def export_widget(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
-        response = HttpResponse(widget.widget_type())
+        #response = HttpResponse(widget.widget_type())        
+        for query in widget.get_queries():
+            #response = HttpResponse(query.show_table())
+            sym = 'None'
+            list = []
+            for stockprice in StockPrice.objects.all().order_by('-symbol'):
+                if (query.property == stockprice.symbol):
+                    list.append(stockprice.price)
+                    sym = stockprice.symbol
+
+            xl = win32com.client.Dispatch("Excel.Application") #Start Excel
+            wb=xl.Workbooks.Add() #Create Excel application
+            xl.Visible=True #Show the workbook being created, fun to watch and good for debugging            
+            wb.Worksheets("Sheet1").Name=sym; w=wb.Worksheets(sym) #w
+            table=[[sym,sym,sym,sym]]
+            table.append(list)
+            #table.append(['7.12', '4.12', '15.13', '8.2', '5.12'])
+            w.Range("A1:D2").Value=table # Change this to expand table range
+            
+        response = HttpResponse(list)
         #response = HttpResponse(widget.widget_type)
         return response
