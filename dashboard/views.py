@@ -17,11 +17,12 @@ def widget_properties(request, widget_id):
     
 def ticker_widget(request, ticker_widget_id):
     ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
-    queries = ticker_widget.get_queries()
-    assert len(queries) == 1
-    query = queries[0]
-    return HttpResponse('<b>%s:</b> %s' % (query.property, 'some value'))
- 
+    query = ticker_widget.get_query()
+    try:
+        return HttpResponse('<b>%s.%s:</b> %s' % (query.table, query.first_order_option, query.run().next()))
+    except StopIteration:
+        return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
+        
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
 A request must include the following parameters:
@@ -320,7 +321,6 @@ def index(request):
     #return render_to_response('index.html')
 
 def export_widget(request):
-    from numpy import *
     import win32com.client
     widget_ids = request.GET.values()
     for widget_id in widget_ids:

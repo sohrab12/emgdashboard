@@ -32,7 +32,17 @@
 	  "fields": {
 	    "belongTo": 1,
 	    "table": "StockPrice",
+		"first_order_option": "EIX",
 	    "property": "price"
+	  }
+	},
+	
+	{
+	  "pk": 1,
+	  "model": "dashboard.stockprice",
+	  "fields": {
+		"symbol": "EIX",
+		"price": "3.12"
 	  }
 	}
 ]

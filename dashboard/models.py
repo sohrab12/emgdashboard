@@ -15,7 +15,7 @@ class Dashboard(WidgetOwner):
 
     #refer to self by user
     def __unicode__(self):
-        return self.user
+        return "%s's Dashboard" % self.user
 
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
     def addWidget(self, newquery, column):
@@ -68,8 +68,12 @@ class Query(models.Model):
     """A query to be submitted to the database. Each query references a widget as a foreign key."""
     belongTo = models.ForeignKey(Widget)
     table = models.CharField(max_length=50)
+    first_order_option = models.CharField(max_length=50)
     property = models.CharField(max_length=50)
-
+    def run(self):
+        print 'constructing generator w/ table=%s and property=%s' % (self.table, self.property)
+        for o in globals()[self.table].objects_by_first_order_option(self.first_order_option):
+            yield o.__getitem__(self.property)
     def __unicode__(self):
         return str(self.table)+" "+str(self.property)
         
@@ -91,7 +95,7 @@ class Kit(WidgetOwner):
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
     dateCreated = models.DateTimeField('created')
-    
+
 #
 # DATA
 #
@@ -105,8 +109,7 @@ class StockPrice(DataEntry):
     """Stores a price of a share of Edison International's (EIX) stock on the NYSE market at one time.
     Recorded in US$/share
     """
-    symbol = models.CharField(max_length = 4)
-    company = models.CharField(max_length = 50)
+    symbol = models.CharField(max_length=4)
     price = models.FloatField()
         
     @staticmethod
@@ -121,10 +124,14 @@ class StockPrice(DataEntry):
         ['EIX']
         '''
         return StockPrice.all_symbols
-    def objects_by_first_order_option(self, p):
-        """Return all entries in this class' table that pass the filter p for first order options
+    @staticmethod
+    def objects_by_first_order_option(p):
+        """Returns a generator of all entries in this class' table that pass the filter p for first order options
         """
-        return (s for s in StockPrice.objects.filter(symbol = p))
+        print 'getting Stockprices where symbol is %s' % p
+        for a in StockPrice.objects.filter(symbol=p):
+            print a
+        return StockPrice.objects.filter(symbol=p)
     
     def __unicode__(self):
         return self.symbol
@@ -248,6 +255,13 @@ class GrossMargin(DataEntry):
 
     def __unicode__(self):
         return str(self.time)
+        
+#
+# Auxiliary Data
+#
+class StockSymbolDescription(models.Model):
+    symbol = models.CharField(max_length=4)
+    company_name = models.CharField(max_length=200)
         
 if __name__ == '__main__':
     import doctest
