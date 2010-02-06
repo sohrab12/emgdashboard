@@ -13,6 +13,11 @@
 
 
 
+<link rel="stylesheet" href="/static/jquery.selectlist-0.1.2/css/selectlist.css" type="text/css" />
+<script type="text/javascript" src="/static/jquery.selectlist-0.1.2/scripts/jquery.selectlist.js"></script>
+
+
+
 
 <script type="text/javascript">
 
@@ -103,15 +108,22 @@ var data = "";
 
 <script type="text/javascript">
 
-$(document).ready(function(){
-//	$("#addWidgetMenu").slideToggle("fast");
-//	$("#exportMenu").slideToggle("fast");
-//	$("#manageKitMenu").slideToggle("fast");
 
+
+$(document).ready(function(){
+						   
+	$('select#stocksGraphSymbol').selectList({ 
+		addAnimate: function (item, callback) { 
+			$(item).slideDown(500, callback); }, 
+		
+		removeAnimate: function (item, callback) { 
+			$(item).slideUp(500, callback); } 
+	});   
+	
+	
 
 //  var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
-	data = data.split(" ");
-	 
+	data = data.split(" ");	 
 	$("#stocksGraphSymbolSearchBox").autocomplete(data);
 
 	
@@ -121,8 +133,6 @@ $(document).ready(function(){
 		
 		collapseMenus();
 		document.getElementById('addWidgetMenu').style.display = '';
-//		document.getElementById('addWidgetMenu').style.visibility = 'visible';								   
-//		$("#addWidgetMenu").slideToggle("slow");
 		$("#addWidgetMenu").show();
 	});
 		
@@ -131,8 +141,6 @@ $(document).ready(function(){
 
 		collapseMenus();
 		document.getElementById('exportMenu').style.display = '';		
-//		document.getElementById('exportMenu').style.visibility = 'visible';									  
-//		$("#exportMenu").slideToggle("slow");
 		$("#exportMenu").show();
 	});
 	
@@ -140,8 +148,6 @@ $(document).ready(function(){
 	$(".manageKit").click(function(){
 		collapseMenus();
 		document.getElementById('manageKitMenu').style.display = '';
-//		document.getElementById('manageKitMenu').style.visibility = 'visible';
-//		$("#manageKitMenu").slideToggle("slow");
 		$("#manageKitMenu").show();
 	});
 	
@@ -153,6 +159,8 @@ $(document).ready(function(){
 
 </head>
 <body onLoad="javascript:collapseMenus()">
+
+
 <div id="header">
 	<div id="logo">
 		<h1><a href="#">EMG Treasury Dashboard</a></h1>
@@ -169,12 +177,14 @@ $(document).ready(function(){
 <!-- start page -->
 
 <div id="page">
+  
+  
     <div id="addWidgetMenu">
     <form name="addWidgetForm" action="addWidget/" method="post">
     <table border="0" height="75">
     <tr>
     	<td> 
-            <select size="4" name="graphType">
+            <select size="4" name="graphType" id="graphType">
                 <option value="barGraph">Bar Graph</option>
                 <option value="lineGraph">Line Graph</option>
                 <option value="pieChart">Pie Chart</option>
@@ -184,7 +194,7 @@ $(document).ready(function(){
             &nbsp;&nbsp;&nbsp;
         </td>
         <td>
-            <select size="4" name="graphContent" multiple onChange="javascript:displayContentOptions(this.value)">
+            <select size="4" name="graphContent" id="graphContent" onChange="javascript:displayContentOptions(this.value)" multiple>
                 <option value="stocks">Stocks</option>
                 <option value="bonds">Bonds</option>
                 <option value="actuals">Actuals</option>
@@ -194,7 +204,7 @@ $(document).ready(function(){
         </td>
         <td>
 	       	<div id="stocksListDiv">
-            <select size="4" name="stocksGraphSymbol" style="width:107px" multiple>           			
+            <select size="4" name="stocksGraphSymbol" id="stocksGraphSymbol" style="width:107px" multiple>           			
             {% for StockPrice in stockList %}
                 <option value= "{{ StockPrice.symbol }}">{{ StockPrice.symbol }}</option>
             {% endfor %}            
@@ -204,7 +214,7 @@ $(document).ready(function(){
             </div>
             
             <div id="bondsListDiv" style="display:none">
-            <select size="4" name="bondsGraphSymbol" style="width:107px" multiple>    
+            <select size="4" name="bondsGraphSymbol" id="bondsGraphSymbol" style="width:107px" multiple>    
                 <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
             </select>
             </div>
@@ -216,7 +226,7 @@ $(document).ready(function(){
             </div>
            
              <div id="investmentsListDiv" style="display:none">
-            <select size="4" name="investmentsGraphSymbol" style="width:107px" multiple>    
+            <select size="4" name="investmentsGraphSymbol" id="investmentGraphSymbol" style="width:107px" multiple>    
                 <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
             </select>
             </div>            
