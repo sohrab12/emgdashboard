@@ -129,8 +129,6 @@ class StockPrice(DataEntry):
         """Returns a generator of all entries in this class' table that pass the filter p for first order options
         """
         print 'getting Stockprices where symbol is %s' % p
-        for a in StockPrice.objects.filter(symbol=p):
-            print a
         return StockPrice.objects.filter(symbol=p)
     
     def __unicode__(self):
