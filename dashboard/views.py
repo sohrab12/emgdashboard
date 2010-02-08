@@ -18,7 +18,7 @@ def ticker_widget(request, ticker_widget_id):
     except StopIteration:
         return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
         
-def line_graph_view(request):
+def line_graph_view(request, widget_id):
     """Renders a line graph from data passed via an HttpRequest
 A request must include the following parameters:
 width: the width in pixels of the graph window
@@ -51,10 +51,12 @@ graphchunks: the total number of chunks to split the graph into.
  
     # Current y range under display
     #TODO: Check min, max values against YTOP and YBOTTOM
+
+    line_widget = LineWidget.objects.get(parentwidget = widget_id)
     try:
         maxyvalue = int(request.GET['ytop'])
         minyvalue = int(request.GET['ybottom'])
-        mainunits = request.GET['mainunits']
+        mainunits = line_widget.firstunit
     except:
         maxyvalue = 30
         minyvalue = 0
@@ -64,10 +66,10 @@ graphchunks: the total number of chunks to split the graph into.
     try:
         altmaxyvalue = int(request.GET['ytop'])
         altminyvalue = int(request.GET['ybottom'])
-        altunits = request.GET['altunits']
+        altunits = line_widget.secondunit
     except:
-        altmaxyvalue = 30
-        altminyvalue = 0
+        altmaxyvalue = None
+        altminyvalue = None
  
     #Number of chunks to return the image in
     try:
@@ -144,32 +146,8 @@ graphchunks: the total number of chunks to split the graph into.
     #Otherwise, we continue.     
     #Retrieve the left-most and right-most times
     try:
-        #Separate the left date's date and time
-        leftdate = request.GET['lefttime'].split(" ")[0].split("-")
-        lefttime = request.GET['lefttime'].split(" ")[1].split(":")
-        #Parse the left date
-        leftyear = int(leftdate[0])
-        leftmonth = int(leftdate[1])
-        leftday = int(leftdate[2])
-        #Parse the left time
-        lefthour = int(lefttime[0])
-        leftmin = int(lefttime[1])
-        leftsec = int(lefttime[2])
-
-        #Separate the right date's date and time
-        rightdate = request.GET['righttime'].split(" ")[0].split("-")
-        righttime = request.GET['righttime'].split(" ")[1].split(":")
-        #Parse the right date
-        rightyear = int(rightdate[0])
-        rightmonth = int(rightdate[1])
-        rightday = int(rightdate[2])
-        #Parse the right time
-        righthour = int(righttime[0])
-        rightmin = int(righttime[1])
-        rightsec = int(righttime[2])
-
-        earliesttime = datetime(leftyear, leftmonth, leftday, lefthour, leftmin, leftsec)        
-        latesttime = datetime(rightyear, rightmonth, rightday, righthour, rightmin, rightsec)
+        earliesttime = widget.startdate
+        latesttime = widget.enddate
     except:
         earliesttime = datetime(2010,01,01,00,00,00)
         latesttime = datetime(2010,02,01,00,00,00)
@@ -179,24 +157,18 @@ graphchunks: the total number of chunks to split the graph into.
     #Milliseconds between the latest and earliest time
     duration = (latesttime-earliesttime).days*24*60*60*1000 + (latesttime-earliesttime).seconds*1000 + int((latesttime-earliesttime).microseconds/1000)
     try:
-        zoom = request.GET['zoom']
+        zoom = widget.zoom
     except:
         zoom = "hours"
     xaxisvalues = [] #The dates to display on the x-axis
  
-    #Get the models and option to query
-    models = []
-    for k,v in request.GET.items() :
-        if k.startswith('model') and not(k.endswith('option')):
-            model = request.GET[k]
-            modeloption = request.GET[k+'option']
-            models.append((model, modeloption))
- 
-    #Submit the query and capture the resulting QuerySet
+    #Get the the queries that belong to this model
+    parentwidget = Widget.objects.get(pk=widget_id)
+    queries = parentwidget.get_queries
+    #Run each query
     query_results = []
-    for modelset in models:
-        query_model = globals()[modelset[0]]()
-        query_set = query_model.objects_by_first_order_option(modelset[1])
+    for query in queries:
+        query_set = query.run()
         #Filter query results by time, selecting only those that fall within the requested times
         filtered_results = [(float(entry.price), entry.time, query_model.get_units()) for entry in query_set if earliesttime <= entry.time <= latesttime]
         query_results.append(filtered_results)
