@@ -125,7 +125,8 @@ class StockPrice(DataEntry):
         >>> StockPrice.first_order_options()
         ['EIX']
         '''
-        return StockPrice.all_symbols
+        # TODO: Return some nonsense
+        return ['EIX', 'APPL', 'GOOG', 'EMG', 'OMG', 'CATS']
     @staticmethod
     def objects_by_first_order_option(p):
         """Returns a generator of all entries in this class' table that pass the filter p for first order options
