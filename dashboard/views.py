@@ -5,6 +5,9 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
+
+# imports for export_widget
+import xlwt
  
 def widget_properties(request, widget_id):
     widget = get_object_or_404(LineWidget, pk=widget_id)
@@ -13,8 +16,11 @@ def widget_properties(request, widget_id):
 def ticker_widget(request, ticker_widget_id):
     ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
     query = ticker_widget.get_query()
-    return HttpResponse('<b>%s:</b> %s' % ('Ticker', 'some value'))
- 
+    try:
+        return HttpResponse('<b>%s.%s:</b> %s' % (query.table, query.first_order_option, query.run().next()))
+    except StopIteration:
+        return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
+        
 def line_graph_view(request):
     """Renders a line graph from data passed via an HttpRequest
 A request must include the following parameters:
@@ -308,7 +314,7 @@ def addWidget(request):
 
 def index(request):
     #p = get_object_or_404(StockPrice, pk=1)
-    stockList = StockPrice.objects.all().order_by('-symbol')[:5]
+    stockList = StockPrice.objects.all().order_by('-symbol')
     return render_to_response('index.html', {'stockList': stockList})
     #return render_to_response('index.html')
 
@@ -316,6 +322,28 @@ def export_widget(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
-        response = HttpResponse(widget.widget_type())
-        #response = HttpResponse(widget.widget_type)
+        #response = HttpResponse(widget.widget_type())
+        wb = xlwt.Workbook()
+        for query in widget.get_queries():
+            #response = HttpResponse(query.show_table())
+            table = query.table
+            rowcounter = -1
+            ws = wb.add_sheet(str(query.property)+' Test Sheet')
+            
+            for table in StockPrice.objects.all().order_by('-symbol'):
+            #for table in table.objects.all().order_by('-symbol'):
+            # Change StockPrice.objects.all().order_by('-symbol') to get 'table' information
+                if (query.property == table.symbol):
+                    #sym = table.symbol
+                    rowcounter += 1
+                    ws.write(rowcounter, 0, table.symbol)
+                    ws.write(rowcounter, 1, table.price)
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        filename = "test.xls"
+        #filename = "%stest.xls" %sym
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        #response['Content-Type'] = 'application/vnd.ms-excel'
+        wb.save(response)
         return response
+
+    
