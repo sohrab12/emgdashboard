@@ -72,7 +72,7 @@ graphchunks: the total number of chunks to split the graph into.
         chunk_count = int(request.GET['chunkcount'])
     except:
         chunk_place = 1
-        chunk_count = 1
+        chunk_count = 3
  
     #Image size
     try:
@@ -296,10 +296,10 @@ graphchunks: the total number of chunks to split the graph into.
     
     #Create and return response with image
     #TODO: Cut into 3 shingles, return json file if max y value is above top y point
-    chunk_width = im.size[0]-YLABEL_MARGIN/chunk_count
+    chunk_width = (im.size[0]-YLABEL_MARGIN)/chunk_count
     chunk = im.crop(((chunk_place-1)*chunk_width+YLABEL_MARGIN, 0, chunk_place*chunk_width+YLABEL_MARGIN, im.size[1]))
     response = HttpResponse(mimetype="image/png")
-    chunk.save(response, "NG")
+    chunk.save(response, "PNG")
     return response
  
  
