@@ -230,7 +230,8 @@ class GeneratorAvalablility(DataEntry):
     availability = models.CharField(max_length = 2, choices = AVAILABILITY_CHOICES)
 
     def __unicode__(self):
-        return " ".join([self.genunit, str(self.time)])@staticmethod
+        return " ".join([self.genunit, str(self.time)])
+    @staticmethod
     def get_units():
         """Returns the units that availability readings are recorded in (availability)
         """
