@@ -60,6 +60,8 @@ class LineWidget(models.Model):
     startdate = models.DateTimeField() #start date updates to current day if null
     enddate = models.DateTimeField() #end date updates to current day if null
     latestentry = models.DateTimeField()
+    firstunit = models.CharField(max_length = 20)
+    secondunit = models.CharField(max_length = 20)
 
     def __unicode__(self):
         return str(self.parentwidget)
@@ -130,7 +132,11 @@ class StockPrice(DataEntry):
         """
         print 'getting Stockprices where symbol is %s' % p
         return StockPrice.objects.filter(symbol=p)
-    
+    @staticmethod
+    def get_units():
+        """Returns the units that stock prices are recorded in (dollars)
+        """
+        return "dollars"
     def __unicode__(self):
         return self.symbol
 
@@ -142,6 +148,11 @@ class BondPrice(DataEntry):
     company = models.CharField(max_length = 50)
     def __unicode__(self):
         return " ".join([self.company, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that bond prices are recorded in (dollars)
+        """
+        return "dollars"
     
 class PowerOutput(DataEntry):
     """A statistic for the electricity generated in one day by one of EMG's generation units.
@@ -151,7 +162,12 @@ class PowerOutput(DataEntry):
     output = models.FloatField()
 
     def __unicode__(self):
-        return " ".join([self.genunit, str(self.time)])   
+        return " ".join([self.genunit, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that power output readings are recorded in (Megawatts/hour)
+        """
+        return "MW/hr"
 
 class ElectricityPrice(DataEntry):
     """The market price for electricity at designated ISO zone/hub.
@@ -161,7 +177,12 @@ class ElectricityPrice(DataEntry):
     iso = models.CharField(max_length = 20)
 
     def __unicode__(self):
-        return " ".join([self.iso, str(self.time)])                        
+        return " ".join([self.iso, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that electricity prices are recorded in (dollars/megawatts/hour)
+        """
+        return "dollars"
 
 class NaturalGasPrice(DataEntry):
     """The market price for natural gas at the specified delivery hub.
@@ -171,7 +192,12 @@ class NaturalGasPrice(DataEntry):
     iso = models.CharField(max_length = 20)
 
     def __unicode__(self):
-        return " ".join([self.iso, str(self.time)])    
+        return " ".join([self.iso, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that gas prices are recorded in (dollars/MMBTU)
+        """
+        return "dollars"
 
 class CoalPrice(DataEntry):
     """The market price for coal by coal type.
@@ -181,7 +207,12 @@ class CoalPrice(DataEntry):
     coaltype = models.CharField(max_length = 20)
 
     def __unicode__(self):
-        return " ".join([self.coaltype, str(self.time)])    
+        return " ".join([self.coaltype, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that coal prices are recorded in (dollars/ston)
+        """
+        return "dollars"
 
 class GeneratorAvalablility(DataEntry):
     """The operational availability status of generation units.
@@ -199,7 +230,11 @@ class GeneratorAvalablility(DataEntry):
     availability = models.CharField(max_length = 2, choices = AVAILABILITY_CHOICES)
 
     def __unicode__(self):
-        return " ".join([self.genunit, str(self.time)])    
+        return " ".join([self.genunit, str(self.time)])@staticmethod
+    def get_units():
+        """Returns the units that availability readings are recorded in (availability)
+        """
+        return "availability"    
 
 class SubsidiaryBalance(DataEntry):
     """The cash position of the designated EMG subsidiary
@@ -209,7 +244,12 @@ class SubsidiaryBalance(DataEntry):
     company = models.CharField(max_length = 50)
 
     def __unicode__(self):
-        return " ".join([self.company, str(self.time)])    
+        return " ".join([self.company, str(self.time)])
+    @staticmethod
+    def get_units():
+        """Returns the units that subsidiary balances are recorded in (dollars)
+        """
+        return "dollars"
 
 class AvailableCapital(DataEntry):
     """The available funds from EMG company, working capital facilities, and borrows against those facilities
@@ -231,7 +271,12 @@ class ProfitLoss(DataEntry):
     netprofit = models.FloatField()
 
     def __unicode__(self):
-        return str(self.time)    
+        return str(self.time)
+    @staticmethod
+    def get_units():
+        """Returns the units that P&L figures are recorded in (dollars)
+        """
+        return "dollars"
 
 class MoodyRating(DataEntry):
     """EME and subsidiary company ratings by Moody's.
@@ -253,6 +298,11 @@ class GrossMargin(DataEntry):
 
     def __unicode__(self):
         return str(self.time)
+    @staticmethod
+    def get_units():
+        """Returns the units that gross margin figures are recorded in (dollars)
+        """
+        return "dollars"
         
 #
 # Auxiliary Data

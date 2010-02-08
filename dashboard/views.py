@@ -30,8 +30,8 @@ lefttime: the earliest time that will appear on the x-axis
 righttime: the latest time that will appear on the x-axis
 modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
 but each must be numbered sequentially(model1, model2, model3, etc.)
-modeliprop: the value to filter database queries by (assumed to be the value of the first order option).
-Requests can contain multiple modeliprop's, but each must correspond to a modeli (model1prop, model2prop, etc.)
+modelioption: the value to filter database queries by (assumed to be the value of the first order option).
+Requests can contain multiple modelioption's, but each must correspond to a modeli (model1option, model2option, etc.)
 zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
 topy: The maximum y value of the graph
 bottomy: the minimum y value of the graph
@@ -187,14 +187,13 @@ graphchunks: the total number of chunks to split the graph into.
         zoom = "hours"
     xaxisvalues = [] #The dates to display on the x-axis
  
-    #Get the models and propertys to query
-    #Get the models and propertys to query
+    #Get the models and option to query
     models = []
     for k,v in request.GET.items() :
-        if k.startswith('model') and not(k.endswith('prop')):
+        if k.startswith('model') and not(k.endswith('option')):
             model = request.GET[k]
-            modelprop = request.GET[k+'prop']
-            models.append((model, modelprop))
+            modeloption = request.GET[k+'option']
+            models.append((model, modeloption))
  
     #Submit the query and capture the resulting QuerySet
     query_results = []
@@ -202,7 +201,7 @@ graphchunks: the total number of chunks to split the graph into.
         query_model = globals()[modelset[0]]()
         query_set = query_model.objects_by_first_order_option(modelset[1])
         #Filter query results by time, selecting only those that fall within the requested times
-        filtered_results = [(float(entry.price), entry.time) for entry in query_set if earliesttime <= entry.time <= latesttime]
+        filtered_results = [(float(entry.price), entry.time, query_model.get_units()) for entry in query_set if earliesttime <= entry.time <= latesttime]
         query_results.append(filtered_results)
 
     #Determine times to label x-axis with
@@ -276,27 +275,44 @@ graphchunks: the total number of chunks to split the graph into.
     #in the iteration below
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
 
-    #For each model, determine its y scale, then draw the data points, only if that model has data points
+    #For each model, draw the data points, only if that model has data points
     for result_set in query_results:
      
             #Sort the list by time to be parsed
             result_set.sort(lambda x, y: cmp(x[1], y[1]))
-     
-            #Iterate through the query set, rendering each data point
-            for datapoint in result_set:
-                timelapse = datapoint[1]-earliesttime
-                xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-                ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
-                draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
-            #Iterate through the query set, drawing a line between each pair of points
-            for i in range(len(result_set)-1):
-                timelapse = result_set[i][1]-earliesttime
-                xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-                ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
-                timelapse = result_set[i+1][1]-earliesttime
-                xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
-                ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
-                draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
+            #If the units of this set are equal to the first unit, plot the points along the left y-axis.
+            if result_set[0][2] == mainunits:
+                #Iterate through the query set, rendering each data point
+                for datapoint in result_set:
+                    timelapse = datapoint[1]-earliesttime
+                    xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
+                    draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
+                #Iterate through the query set, drawing a line between each pair of points
+                for i in range(len(result_set)-1):
+                    timelapse = result_set[i][1]-earliesttime
+                    xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
+                    timelapse = result_set[i+1][1]-earliesttime
+                    xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
+                    draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
+            #If the units are not equal to the first unit, plot them along the second axis
+            else:
+                for datapoint in result_set:
+                    timelapse = datapoint[1]-earliesttime
+                    xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos = (altmaxyvalue-datapoint[0])*altyscale + TOP_MARGIN
+                    draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
+                #Iterate through the query set, drawing a line between each pair of points
+                for i in range(len(result_set)-1):
+                    timelapse = result_set[i][1]-earliesttime
+                    xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos1 = (altmaxyvalue-result_set[i][0])*altyscale + TOP_MARGIN
+                    timelapse = result_set[i+1][1]-earliesttime
+                    xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                    ypos2 = (altmaxyvalue-result_set[i+1][0])*altyscale + TOP_MARGIN
+                    draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
         
     del draw
     
@@ -322,10 +338,8 @@ def export_widget(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
-        #response = HttpResponse(widget.widget_type())
         wb = xlwt.Workbook()
         for query in widget.get_queries():
-            #response = HttpResponse(query.show_table())
             table = query.table
             rowcounter = -1
             ws = wb.add_sheet(str(query.property)+' Test Sheet')
