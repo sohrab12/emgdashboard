@@ -6,9 +6,6 @@ from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
 
-# imports for export_widget
-import xlwt
- 
 def widget_properties(request, widget_id):
     widget = get_object_or_404(LineWidget, pk=widget_id)
     return render_to_response('widgetframe.html', {'widget':widget})
@@ -319,6 +316,8 @@ def index(request):
     #return render_to_response('index.html')
 
 def export_widget(request):
+    import xlwt # importing inside the view so that other functions work
+                # on hosts without xlwt
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
