@@ -87,7 +87,8 @@
         "fields": {
             "table": "StockPrice", 
             "property": "EIX", 
-            "belongTo": 3
+            "belongTo": 3, 
+            "first_order_option": ""
         }
     }, 
     {
@@ -96,7 +97,8 @@
         "fields": {
             "table": "StockPrice", 
             "property": "OMG", 
-            "belongTo": 3
+            "belongTo": 3, 
+            "first_order_option": ""
         }
     }, 
     {
@@ -160,8 +162,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 5.1200000000000001, 
-            "symbol": "EIX", 
-            "company": ""
+            "symbol": "EIX"
         }
     }, 
     {
@@ -169,8 +170,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 2.1400000000000001, 
-            "symbol": "EIX", 
-            "company": ""
+            "symbol": "EIX"
         }
     }, 
     {
@@ -178,8 +178,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 13.0, 
-            "symbol": "EIX", 
-            "company": ""
+            "symbol": "EIX"
         }
     }, 
     {
@@ -187,8 +186,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 9.3100000000000005, 
-            "symbol": "EIX", 
-            "company": ""
+            "symbol": "EIX"
         }
     }, 
     {
@@ -196,8 +194,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 7.1200000000000001, 
-            "symbol": "OMG", 
-            "company": ""
+            "symbol": "OMG"
         }
     }, 
     {
@@ -205,8 +202,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 4.1200000000000001, 
-            "symbol": "OMG", 
-            "company": ""
+            "symbol": "OMG"
         }
     }, 
     {
@@ -214,8 +210,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 15.130000000000001, 
-            "symbol": "OMG", 
-            "company": ""
+            "symbol": "OMG"
         }
     }, 
     {
@@ -223,8 +218,7 @@
         "model": "dashboard.stockprice", 
         "fields": {
             "price": 8.1999999999999993, 
-            "symbol": "OMG", 
-            "company": ""
+            "symbol": "OMG"
         }
     }
 ]

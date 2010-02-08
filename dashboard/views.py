@@ -7,9 +7,7 @@ from models import *
 from django.template import RequestContext
 
 # imports for export_widget
-import os
-from time import *
-import time
+import xlwt
  
 def widget_properties(request, widget_id):
     widget = get_object_or_404(LineWidget, pk=widget_id)
@@ -321,29 +319,31 @@ def index(request):
     #return render_to_response('index.html')
 
 def export_widget(request):
-    import win32com.client
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
-        #response = HttpResponse(widget.widget_type())        
+        #response = HttpResponse(widget.widget_type())
+        wb = xlwt.Workbook()
         for query in widget.get_queries():
             #response = HttpResponse(query.show_table())
-            sym = 'None'
-            list = []
-            for stockprice in StockPrice.objects.all().order_by('-symbol'):
-                if (query.property == stockprice.symbol):
-                    list.append(stockprice.price)
-                    sym = stockprice.symbol
-
-            xl = win32com.client.Dispatch("Excel.Application") #Start Excel
-            wb=xl.Workbooks.Add() #Create Excel application
-            xl.Visible=True #Show the workbook being created, fun to watch and good for debugging            
-            wb.Worksheets("Sheet1").Name=sym; w=wb.Worksheets(sym) #w
-            table=[[sym,sym,sym,sym]]
-            table.append(list)
-            #table.append(['7.12', '4.12', '15.13', '8.2', '5.12'])
-            w.Range("A1:D2").Value=table # Change this to expand table range
+            table = query.table
+            rowcounter = -1
+            ws = wb.add_sheet(str(query.property)+' Test Sheet')
             
-        response = HttpResponse(list)
-        #response = HttpResponse(widget.widget_type)
+            for table in StockPrice.objects.all().order_by('-symbol'):
+            #for table in table.objects.all().order_by('-symbol'):
+            # Change StockPrice.objects.all().order_by('-symbol') to get 'table' information
+                if (query.property == table.symbol):
+                    #sym = table.symbol
+                    rowcounter += 1
+                    ws.write(rowcounter, 0, table.symbol)
+                    ws.write(rowcounter, 1, table.price)
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        filename = "test.xls"
+        #filename = "%stest.xls" %sym
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        #response['Content-Type'] = 'application/vnd.ms-excel'
+        wb.save(response)
         return response
+
+    
