@@ -57,7 +57,7 @@
 	function update_graph()
 	{
 		var refreshtag = Math.floor(Math.random()*10001)
-		for(var i = 0; i<=4; i++)
+		for(var i = 0; i<=3; i++)
 		{
 			if(document.images[i])
 			{
@@ -69,11 +69,11 @@
 
 	function setup_widget()
 	{
-		for(var i = 0; i<=4; i++)
+		for(var i = 0; i<=3; i++)
 		{
-			document.images[i].src = "http://127.0.0.1:8000/dashboard/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=" + i + "&chunkcount=3&lefttime={{widget.startdate}}&righttime={{widget.enddate}}";
+			document.images[i].src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=" + i + "&chunkcount=3&ytop=20&ybottom=0";
 		}
-		document.images[4].src = "http://127.0.0.1:8000/dashboard/graph_chunk?model1=StockPrice&model1prop=EIX&model2=StockPrice&model2prop=OMG&chunkplace=-1&chunkcount=3&lefttime={{widget.startdate}}&righttime={{widget.enddate}}";
+		//Add code to add a second y axis if one exists
 	}
 	</script>
 </head>
@@ -81,8 +81,12 @@
 	<DIV STYLE="{z-index:1; height: 800px; width: 800px; background-color:#A7B8CB;}">
 	</DIV>
 	<DIV STYLE="{position: absolute; top: 50; left: 100; z-index:2;}">
-	<form
-	<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/>
+	<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><script type="text/javascript">
+	if("{{typedwidget.secondunit}}" == "dollars")
+	{
+		document.write('<img src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0">')
+	}
+	</script>
 	</DIV>
 
 	<DIV STYLE="{position: absolute; top:550; left: 100; z-index:3;}">
@@ -124,7 +128,7 @@
 <br>
 <br>
 <ul>
-<li>{{widget.startdate}}This is stuff.</li>
+<li>m{{typedwidget.secondunit}}m</li>
 </ul>
 </body>
 </html>
