@@ -319,10 +319,7 @@ def export_widget(request):
             table = query.table
             rowcounter = -1
             ws = wb.add_sheet(str(query.property)+' Test Sheet')
-            
-            for table in StockPrice.objects.all().order_by('-symbol'):
-            #for table in table.objects.all().order_by('-symbol'):
-            # Change StockPrice.objects.all().order_by('-symbol') to get 'table' information
+            for table in globals()[query.table].objects.all().order_by('-symbol'):
                 if (query.property == table.symbol):
                     #sym = table.symbol
                     rowcounter += 1
@@ -335,5 +332,3 @@ def export_widget(request):
         #response['Content-Type'] = 'application/vnd.ms-excel'
         wb.save(response)
         return response
-
-    
