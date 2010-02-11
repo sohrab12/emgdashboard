@@ -145,7 +145,7 @@ graphchunks: the total number of chunks to split the graph into.
         
 
     #Otherwise, we continue.     
-    #Retrieve the left-most and right-most times
+    #Retrieve the left-most and right-most timestry:
     try:
         earliesttime = widget.startdate
         latesttime = widget.enddate
@@ -158,9 +158,9 @@ graphchunks: the total number of chunks to split the graph into.
     #Milliseconds between the latest and earliest time
     duration = (latesttime-earliesttime).days*24*60*60*1000 + (latesttime-earliesttime).seconds*1000 + int((latesttime-earliesttime).microseconds/1000)
     try:
-        zoom = widget.zoom
+        zoom = line_widget.zoom
     except:
-        zoom = "hours"
+        zoom = "months"
     xaxisvalues = [] #The dates to display on the x-axis
  
     #Get the the queries that belong to this model
@@ -171,15 +171,14 @@ graphchunks: the total number of chunks to split the graph into.
     for query in queries:
         query_set = query.run()
         #Filter query results by time, selecting only those that fall within the requested times
-        filtered_results = [(float(entry.price), entry.time, globals()[query.table].get_units()) for entry in query_set if earliesttime <= entry.time <= latesttime]
+        filtered_results = [(float(entry[0]), entry[1], globals()[query.table].get_units()) for entry in query_set if earliesttime <= entry[1] <= latesttime]
         query_results.append(filtered_results)
-
     #Determine times to label x-axis with
     if(zoom == "hours"):
         tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
         xaxisvalues = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
     elif(zoom == "days"):
-        tempduration = (latesttime+timedelta(days=1)-earliesttime).days + 1
+        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days) + 1
         xaxisvalues = [earliesttime + timedelta(days=i) for i in range(tempduration)]
     elif(zoom == "weeks"):
         tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7) + 1
@@ -210,7 +209,6 @@ graphchunks: the total number of chunks to split the graph into.
             xaxisvalues.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
             tempyear-=1
  
-        
     #If there are too many x-axis values, scale
     if(len(xaxisvalues)>XAXIS_COUNT):
         xaxisvalues = []

@@ -49,7 +49,7 @@ class Widget(models.Model):
         
     #refer to self as belongTo,x,y
     def __unicode__(self):
-        return str(self.belongTo) + ":" + " ".join([str(q) for q in self.get_queries()])
+        return "Widget " + str(self.belongTo) + ":" + " ".join([str(q) for q in self.get_queries()]) + " " + str(self.pk)
 
 class LineWidget(models.Model):
     """A widget containing a line graph of data.
@@ -64,18 +64,20 @@ class LineWidget(models.Model):
     secondunit = models.CharField(max_length = 20)
 
     def __unicode__(self):
-        return str(self.parentwidget)
+        return "LineWidget " + str(self.parentwidget.pk)
 
 class Query(models.Model):
     """A query to be submitted to the database. Each query references a widget as a foreign key."""
     belongTo = models.ForeignKey(Widget)
-    table = models.CharField(max_length=50)
-    first_order_option = models.CharField(max_length=50)
-    property = models.CharField(max_length=50)
+    table = models.CharField(max_length=50) #The database table this query searches
+    first_order_option = models.CharField(max_length=50) #The string to match to filter the table
+    property = models.CharField(max_length=50) #The field we want to run the query for
+    #Run the query, searching the table for entries that have the desired first order option. Then return the value
+    #for the property field
     def run(self):
         print 'constructing generator w/ table=%s and property=%s' % (self.table, self.property)
         for o in globals()[self.table].objects_by_first_order_option(self.first_order_option):
-            yield o.__getitem__(self.property)
+            yield (o.__getitem__(self.property), o.__getitem__("time"))
     def __unicode__(self):
         return str(self.table)+" "+str(self.property)
         
@@ -129,17 +131,17 @@ class StockPrice(DataEntry):
         return ['EIX', 'APPL', 'GOOG', 'EMG', 'OMG', 'CATS']
     @staticmethod
     def objects_by_first_order_option(p):
-        """Returns a generator of all entries in this class' table that pass the filter p for first order options
+        """Returns a dictionary of all entries in this class' table that pass the filter p for first order options
         """
         print 'getting Stockprices where symbol is %s' % p
-        return StockPrice.objects.filter(symbol=p)
+        return StockPrice.objects.filter(symbol=p).values()
     @staticmethod
     def get_units():
         """Returns the units that stock prices are recorded in (dollars)
         """
         return "dollars"
     def __unicode__(self):
-        return self.symbol
+        return self.symbol + " " + str(self.time)
 
 class BondPrice(DataEntry):
     """The daily trading price for EME and subsidiary bonds.
