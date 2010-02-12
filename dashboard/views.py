@@ -36,8 +36,9 @@ graphplace: the number of the chunk to return in response.
 graphchunks: the total number of chunks to split the graph into.
 """
     #Vertical Margins for the widget's display
+    KEY_MARGIN = 30
     TOP_MARGIN = 5
-    BOTTOM_MARGIN = 0
+    BOTTOM_MARGIN = KEY_MARGIN+0
     XLABEL_MARGIN = 30
  
     #Horizontal Margins for the widget's display
@@ -330,3 +331,12 @@ def export_widget(request):
         #response['Content-Type'] = 'application/vnd.ms-excel'
         wb.save(response)
         return response
+
+def change_times(request):
+    """Change the widget's start time and end time to reflect the values chosen by the slider
+    """
+    return HttpResponse("Working")
+
+
+def remove_widget(request):
+    return HttpResponse("Working")

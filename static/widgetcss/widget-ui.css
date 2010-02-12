@@ -1,0 +1,58 @@
+body {
+	font-size: 62.5%;
+	font-family:"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif; }
+fieldset {
+	border:0;
+	margin: 6em;
+	height: 12em;}
+label {
+	font-weight: normal;
+	float: left;
+	margin-right: .5em;
+	font-size: 1.1em;}
+select {
+	margin-right: 1em;
+	float: left;}
+.ui-slider {
+	clear: both;
+	top: 5em;
+	margin-left:0em}
+.widget {
+	padding: 10px 20px 10px;
+	position: relative;}
+.widget .delete {
+	position: absolute;
+	top: 385px;
+	left: 40px;
+	cursor: pointer;
+	z-index:5;}
+.widgetbox {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	height: 450px;
+	width: 250px;
+	color: white;
+	z-index: 1;}
+.widgetgraph {
+	position: absolute;
+	top: 45px;
+	left: 50px;
+	height: 212px;
+	width: 212px;
+	color: white;
+	z-index: 29;}
+.widgetslider {
+	position: absolute;
+	top: 265px;
+	left: 50px;
+	height: 10px;
+	width: 275px;
+	z-index: 2;}
+.widgetother {
+	position: absolute;
+	top: 350px;
+	left: 30px;
+	height: 20px;
+	width: 200px;
+	z-index: 3;}

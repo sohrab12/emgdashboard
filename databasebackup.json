@@ -65,7 +65,7 @@
         "pk": 2, 
         "model": "dashboard.linewidget", 
         "fields": {
-            "startdate": "2010-01-25 19:11:55", 
+            "startdate": "2010-01-05 19:11:55", 
             "latestentry": "2010-01-25 19:11:55", 
             "enddate": "2010-01-25 19:11:55", 
             "zoom": "days",

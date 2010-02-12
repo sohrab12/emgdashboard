@@ -59,6 +59,7 @@ class LineWidget(models.Model):
     zoom = models.CharField(max_length = 10) #miliseconds/hundred pixels
     startdate = models.DateTimeField() #start date updates to current day if null
     enddate = models.DateTimeField() #end date updates to current day if null
+    
     latestentry = models.DateTimeField()
     firstunit = models.CharField(max_length = 20)
     secondunit = models.CharField(max_length = 20)

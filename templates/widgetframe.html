@@ -1,134 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-<head>
-	<script language="JavaScript">
-	document.onmousemove = mouse_move;
-	document.onmouseup = mouse_up;
-	var drag_object = null;
+	<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>jQuery UI Range Slider</title>
+	<script type="text/javascript" src="/static/widgetjs/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="/static/widgetjs/jquery-ui-1.7.1.custom.min.js"></script>
+	<script type="text/javascript" src="/static/widgetjs/selectToUISlider.jQuery.js"></script>
+	<link rel="stylesheet" href="/static/widgetcss/ui.slider.extras.css" type="text/css" />
+	<link rel="stylesheet" href="/static/widgetcss/widget-ui.css" type="text/css" />
+	<link rel="stylesheet" href="/static/widgetcss/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
+	<script type="text/javascript">
+		$(function(){
+			var valDates = [2006, 2007, 2008, 2009, 2010]
+
+			//new range slider
+			$("#slider-range").slider({
+				range: true,
+				min: 0,
+				max: valDates.length - 1,
+				values: [0, 1],
+				slide: function(event, ui) {
+					$("#date").val(valDates[ui.values[0]] + ' - ' + valDates[ui.values[1]]);
+				},
+				//Set change to update the widget via python when the sliders change
+				change: function(event, ui) {
+					$.post('http://127.0.0.1:8000/dashboard/changewidgettimes', {pk: "{{widget.pk}}"}, function(data){alert("Data Loaded: " + data);});
+				}
+			});
+
+			$("#date").val(valDates[$("#slider-range").slider("values", 0)] + ' - ' + valDates[$("#slider-range").slider("values", 1)]);
+
+			//delete widget
+			$(".widget .delete").click(function(){
+						$(this).parents(".widget").animate({ opacity: 'hide' }, "slow");
+						$.post('http://127.0.0.1:8000/dashboard/removewidget', {pk: "{{widget.pk}}"}, function(data){alert("Data Loaded: " + data);});
+			});
 
 
-
-	function mouse_move(ev)
-	{
-		ev = ev || window.event;
-		var mouse_pos = mouse_coords(ev);
-		if(drag_object)
-		{
-			update_graph();
-		}
-	}
-
-	function mouse_coords(ev)
-	{
-		if(ev.pageX || ev.pageY)
-		{
-			//Handle non IE browsers
-			return{x:ev.pageX, y:ev.pageY};
-		}
-			//Handle IE
-		return {
-			x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-			y:ev.clientY + document.body.scrollTop - document.body.clientTop
-		};
-	}
-
-	function mouse_up(ev)
-	{
-		drag_object = null;
-	}
-
-	function drag_object(object)
-	{
-		object.onmousedown = function(){
-			drag_object = this;
-			}
-	}
+		});
 
 
-
-	/*
-	function update_graph()
-	{
-		if(document.images)
-		{
-			setTimeout('get_chunk()', 1000);
-		}
-	}
-	*/
-	function update_graph()
-	{
-		var refreshtag = Math.floor(Math.random()*10001)
-		for(var i = 0; i<=3; i++)
-		{
-			if(document.images[i])
+			function update_graph()
 			{
-				document.images[i].src = document.images[i].src.split("&refresh", 1)+"&refresh=" + refreshtag;
+				var refreshtag = Math.floor(Math.random()*10001)
+				for(var i = 0; i<=3; i++)
+				{
+					if(document.images[i])
+					{
+						document.images[i].src = document.images[i].src.split("&refresh", 1)+"&refresh=" + refreshtag;
+					}
+				}
+				//setTimeout('get_chunk()', 1000);
 			}
-		}
-		//setTimeout('get_chunk()', 1000);
-	}
 
-	function setup_widget()
-	{
-		for(var i = 0; i<=3; i++)
-		{
-			document.images[i].src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=" + i + "&chunkcount=3&ytop=20&ybottom=0";
-		}
-		//Add code to add a second y axis if one exists
+			function setup_widget()
+			{
+				for(var i = 0; i<=3; i++)
+				{
+					if(document.images[i])
+					{
+						var width = $('div .widgetgraph').width();
+						var height = $('div .widgetgraph').height();
+						document.images[i].src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=" + i + "&chunkcount=3&ytop=20&ybottom=0&width=" + width + "&height=" + height;
+					}
+				}
 	}
 	</script>
+
 </head>
+
 <body>
-	<DIV STYLE="{z-index:1; height: 800px; width: 800px; background-color:#A7B8CB;}">
-	</DIV>
-	<DIV STYLE="{position: absolute; top: 50; left: 100; z-index:2;}">
-	<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><script type="text/javascript">
-	if("{{typedwidget.secondunit}}" == "dollars")
-	{
-		document.write('<img src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0">')
-	}
-	</script>
-	</DIV>
 
-	<DIV STYLE="{position: absolute; top:550; left: 100; z-index:3;}">
-		<table border="0">
-		<tr>
-		  <td>
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	<a href="url">Delete</a>
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="url">Share</a>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="url">Duplicate</a>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			</td>
-		  <td>
-		</td>
-		</tr>
-		</table>
-	</DIV>
-	<DIV STYLE="{z-index:4; height:30px; width:40px; background-color:#000000; position:absolute; top: 550; left: 650;}">
-			  	<center><a href="default.htm" style='text-decoration: none;'><font color = "#FFFFFF">Edit</font></a></center>
-		  </DIV>
-
+	<div class="widget">
+		<!-- widget placeholder -->
+		<DIV class="widgetgraph">
+			<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><script type="text/javascript">
+			if("{{typedwidget.secondunit}}" != "null")
+			{
+				var width = $("div .widgetgraph").width();
+				var height = $("div .widgetgraph").height();
+				var imgsrc = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0";
+				document.write('<img id="secondyaxis" onMouseUp="return update_graph()"/>')
+				$('img#secondyaxis').src(imgsrc);
+			}
+			</script>
+		</DIV>
+		<div class="widgetbox">
+			<img border="0" src="/static/images/temp.png" alt="Widget Placeholder" width="350" height="450" />
+		</div>
+		<!-- new range slider -->
+		<div class="widgetslider" id = "slider-range">
+			<p>
+			<label for="date">Date Range:</label>
+			<input type="text" id="date" style="border:0; color:#f6931f; font-weight:bold;" />
+			</p>
+		</div>
+		<!-- share -->
+		<!-- other functions -->
+		<div class="widgetother">
+				<table border="0" cellspacing = "30">
+					<tr>
+					  <td></td>
+					  <td></td>
+					  <td></td>
+					  <td>
+					  	<a href="url"> Share </a>
+						</td>
+					  <td>
+						<a href="url"> Duplicate </a>
+						</td>
+					  <td>
+					  	<a href="default.htm">
+							<img border="0" src="/static/images/edit.png" alt="Edit Button" width="60" height="20" />
+						</a>
+						</td>
+					</tr>
+				</table>
+		</div>
+		<!-- delete -->
+		<div alt="delete" class="delete"><font color="blue"><u> Delete </u></font></div>
+	</div>
 	<script language="JavaScript">
-		  setup_widget();
+			  setup_widget();
 	</script>
-<br>
-<br>
-<ul>
-<li>m{{typedwidget.secondunit}}m</li>
-</ul>
 </body>
 </html>
