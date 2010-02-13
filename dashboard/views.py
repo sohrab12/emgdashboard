@@ -8,7 +8,53 @@ from django.template import RequestContext
 
 def widget_properties(request, widget_id):
     widget = get_object_or_404(Widget, pk=widget_id)
-    return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':widget.widget_type()})
+
+    #Calculate the dates that the slider can be set to based on start time, end time, and zoom.
+    #Append these values to a list
+    typedwidget = widget.widget_type()
+    earliesttime = typedwidget.sliderstartdate
+    latesttime = typedwidget.sliderenddate
+    zoom = typedwidget.zoom
+    dates = []
+
+    #Calculate dates
+    if(zoom == "hours"):
+        #Tempduration = number of hours between the first and last dates
+        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
+        #For each hour, increment earliestdate by one hour and add it to the list
+        dates = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
+    elif(zoom == "days"):
+        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days) + 1
+        dates = [earliesttime + timedelta(days=i) for i in range(tempduration)]
+    elif(zoom == "weeks"):
+        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7) + 1
+        dates = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
+    elif(zoom == "months"):
+        #If the latest month is after or the same as the earliest month, count the difference between the months, plus
+        #12 times the number of intervening years
+        if(latesttime.month >= earliesttime.month):
+            tempduration = (latesttime.year-earliesttime.year)*12 + latesttime.month-earliesttime.month
+        #If the latest month is before the earliest month, on a later year, count 12 times the number of years minus 1,
+        #the months to the latest date since the start of the latest year, and the months from the starting month to the end of that year
+        else:
+            tempduration = (latesttime.year-earliesttime.year-1)*12 + latesttime.month + (12 - earliesttime.month)
+        tempduration+=1
+        tempyear = latesttime.year
+        tempmonth = latesttime.month
+        #For each month in the duration, create a new date time, calculating the month and the year
+        for i in range(tempduration):
+            dates.insert(0, datetime(tempyear, tempmonth, 1, 0, 0, 0))
+            tempmonth-=1
+            if(tempmonth<1):
+                tempmonth=12
+                tempyear-=1
+    else: #zoom == years
+        tempduration = latesttime.year-earliesttime.year + 1
+        tempyear = latesttime.year
+        for i in range(tempduration):
+            dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
+            tempyear-=1
+    return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
     
 def ticker_widget(request, ticker_widget_id):
     ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
@@ -148,8 +194,8 @@ graphchunks: the total number of chunks to split the graph into.
     #Otherwise, we continue.     
     #Retrieve the left-most and right-most timestry:
     try:
-        earliesttime = widget.startdate
-        latesttime = widget.enddate
+        earliesttime = line_widget.startdate
+        latesttime = line_widget.enddate
     except:
         earliesttime = datetime(2010,01,01,00,00,00)
         latesttime = datetime(2010,02,01,00,00,00)
@@ -332,11 +378,94 @@ def export_widget(request):
         wb.save(response)
         return response
 
-def change_times(request):
+def slide_times(request):
     """Change the widget's start time and end time to reflect the values chosen by the slider
     """
-    return HttpResponse("Working")
+    widget = Widget.objects.get(pk=request.POST["pk"])
+    typed_widget = widget.widget_type()
+    zoom = typed_widget.zoom
+    #Get the start and end date strings from the request
+    startstring = request.POST["start"]
+    endstring = request.POST["end"]
 
+    #Parse the time strings according to the widget's zoom    
+    if(zoom == "hours"):
+        #Start date
+        #if timestamp is PM, add 12 hours to it unless noon
+        if (startstring.split(" ")[2] == "PM") and (startstring.split(" ")[1] != "12"):
+            hours = int(startstring.split(" ")[1]) + 12
+        #If midnight, set to zero
+        elif (startstring.split(" ")[2] == "AM") and (startstring.split(" ")[1] == "12"):
+            hours = 0
+        #Otherwise, take it as is.
+        else:
+            hours = int(startstring.split(" ")[1])
+
+        thedate = startstring.split(" ")[0]
+        year = int(thedate.split("/")[2])
+        month = int(thedate.split("/")[0])
+        day = int(thedate.split("/")[1])
+        newstart = datetime(year, month, day, hours, 0, 0)
+
+        #End date
+        #if timestamp is PM, add 12 hours to it unless noon
+        if endstring.split(" ")[2] == "PM" and endstring.split(" ")[1] != "12":
+            hours = int(endstring.split(" ")[1]) + 12
+        #If midnight, set to zero
+        elif endstring.split(" ")[2] == "AM" and endstring.split(" ")[1] == "12":
+            hours = 0
+        #Otherwise, take it as is.
+        else:
+            hours = int(endstring.split(" ")[1])
+
+        thedate = endstring.split(" ")[0]
+        year = int(thedate.split("/")[2])
+        month = int(thedate.split("/")[0])
+        day = int(thedate.split("/")[1])
+        newend = datetime(year, month, day, hours, 59, 59)
+    elif(zoom == "days" or zoom == "weeks"):
+        #Start date
+        thedate = startstring.split(" ")[0]
+        year = int(thedate.split("/")[2])
+        month = int(thedate.split("/")[0])
+        day = int(thedate.split("/")[1])
+        newstart = datetime(year, month, day, 0, 0, 0)
+
+        #End date
+        thedate = endstring.split(" ")[0]
+        year = int(thedate.split("/")[2])
+        month = int(thedate.split("/")[0])
+        day = int(thedate.split("/")[1])
+        newend = datetime(year, month, day, 23, 59, 59)
+    elif(zoom == "months"):
+        #Start date
+        thedate = startstring.split(" ")[0]
+        year = int(thedate.split("/")[1])
+        month = int(thedate.split("/")[0])
+        newstart = datetime(year, month, 1, 0, 0, 0)
+
+        #End date
+        thedate = endstring.split(" ")[0]
+        year = int(thedate.split("/")[1])
+        month = int(thedate.split("/")[0])
+        newend = datetime(year, month, 28, 23, 59, 59)
+    else: #zoom == years
+        #Start date
+        year = int(startstring.split(" ")[0])
+        newstart = datetime(year, 1, 1, 0, 0, 0)
+
+        #End date
+        year = int(endstring.split(" ")[0])
+        newend = datetime(year, 12, 31, 23, 59, 59)
+
+    #Assign new start and end times to the widget in the database.
+    try:
+        typed_widget.startdate = newstart
+        typed_widget.enddate = newend
+        typed_widget.save()
+    except:
+        return HttpResponse("Could not alter widget")
+    return HttpResponse("Worked")
 
 def remove_widget(request):
     return HttpResponse("Working")

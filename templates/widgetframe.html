@@ -11,7 +11,61 @@
 	<link rel="stylesheet" href="/static/widgetcss/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
 	<script type="text/javascript">
 		$(function(){
-			var valDates = [2006, 2007, 2008, 2009, 2010]
+			//var valDates = ['2006', '2007', '2008', '2009', '2010'];
+			var valDates = [];
+			//Remove the brackets from the list to get the list of dates
+			var datelisttxt = '{{dates}}'.split("[")[1].split("]")[0];
+			var tempdates= datelisttxt.split("datetime.datetime")
+			//Parse list of dates and load each into valDates
+			for (date in tempdates)
+			{
+				if(tempdates[date]!="")
+				{
+					datevalues = tempdates[date].split("(")[1].split(")")[0].split(", ");
+					console.log(datevalues);
+					if('{{typedwidget.zoom}}' == 'hours')
+					{
+						//Add a time string for the date into valdates showing year, month, day, and hour.
+						var hour = datevalues[3];
+						if(hour == 0)
+						{
+							hour = 12
+							timestamp = 'am';
+						}
+						else if(hour == 12)
+						{
+							timestamp = 'pm';
+						}
+						else if(hour > 12)
+						{
+							hour = hour-12;
+							var timestamp = 'pm';
+						}
+						else
+						{
+							var timestamp = 'am';
+						}
+						valDates.push(datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0] + " " + hour + " " + timestamp);
+					}
+					else if('{{typedwidget.zoom}}' == 'days')
+					{
+						valDates.push(datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0]);
+					}
+					else if('{{typedwidget.zoom}}' == 'weeks')
+					{
+						valDates.push(datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0]);
+					}
+					else if('{{typedwidget.zoom}}' == 'months')
+					{
+						valDates.push(datevalues[1] + "/" + datevalues[0]);
+					}
+					else //Zoom = years
+					{
+						valDates.push(datevalues[0]);
+					}
+
+				}
+			}
 
 			//new range slider
 			$("#slider-range").slider({
@@ -24,7 +78,10 @@
 				},
 				//Set change to update the widget via python when the sliders change
 				change: function(event, ui) {
-					$.post('http://127.0.0.1:8000/dashboard/changewidgettimes', {pk: "{{widget.pk}}"}, function(data){alert("Data Loaded: " + data);});
+					var startdate = valDates[$("#slider-range").slider("values", 0)];
+					var enddate = valDates[$("#slider-range").slider("values", 1)];
+					$.post('http://127.0.0.1:8000/dashboard/slidewidgettimes', {pk: "{{widget.pk}}", start: startdate, end: enddate}, function(data){console.log("Data Loaded: " + data);});
+					update_graph();
 				}
 			});
 
@@ -51,6 +108,7 @@
 					}
 				}
 				//setTimeout('get_chunk()', 1000);
+				console.log("Graph updated");
 			}
 
 			function setup_widget()

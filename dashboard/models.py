@@ -57,9 +57,10 @@ class LineWidget(models.Model):
     """
     parentwidget = models.OneToOneField(Widget, primary_key = True)
     zoom = models.CharField(max_length = 10) #miliseconds/hundred pixels
-    startdate = models.DateTimeField() #start date updates to current day if null
+    startdate = models.DateTimeField() #start date updates to current day -15 zoom units if null
     enddate = models.DateTimeField() #end date updates to current day if null
-    
+    sliderstartdate = models.DateTimeField() #earliest date that can be selected by the widget's slider
+    sliderenddate = models.DateTimeField() #latest date that can be selected by the widget's slider
     latestentry = models.DateTimeField()
     firstunit = models.CharField(max_length = 20)
     secondunit = models.CharField(max_length = 20)

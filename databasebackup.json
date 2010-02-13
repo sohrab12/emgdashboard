@@ -66,8 +66,10 @@
         "model": "dashboard.linewidget", 
         "fields": {
             "startdate": "2010-01-05 19:11:55", 
-            "latestentry": "2010-01-25 19:11:55", 
             "enddate": "2010-01-25 19:11:55", 
+            "sliderstartdate": "2010-01-05 19:11:55", 
+            "sliderenddate": "2010-01-25 19:11:55", 
+            "latestentry": "2010-01-25 19:11:55", 
             "zoom": "days",
             "firstunit": "dollars"
         }
@@ -76,9 +78,11 @@
         "pk": 3, 
         "model": "dashboard.linewidget", 
         "fields": {
-            "startdate": "2010-01-25 19:11:55", 
-            "latestentry": "2010-01-25 19:11:55", 
-            "enddate": "2010-01-25 19:11:55", 
+            "startdate": "2010-01-05 19:11:55", 
+            "enddate": "2010-02-25 19:11:55", 
+            "sliderstartdate": "2010-01-05 19:11:55", 
+            "sliderenddate": "2010-02-25 19:11:55", 
+            "latestentry": "2010-02-25 19:11:55", 
             "zoom": "days",
             "firstunit": "dollars",
             "secondunit": "dollars"
@@ -89,9 +93,9 @@
         "model": "dashboard.query", 
         "fields": {
             "table": "StockPrice", 
-            "property": "EIX", 
+            "property": "price", 
             "belongTo": 3, 
-            "first_order_option": ""
+            "first_order_option": "EIX"
         }
     }, 
     {
@@ -99,9 +103,9 @@
         "model": "dashboard.query", 
         "fields": {
             "table": "StockPrice", 
-            "property": "OMG", 
+            "property": "price", 
             "belongTo": 3, 
-            "first_order_option": ""
+            "first_order_option": "OMG"
         }
     }, 
     {
