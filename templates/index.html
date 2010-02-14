@@ -102,7 +102,7 @@ var data = "";
 
 $(document).ready(function(){
 						   
-	$('select#stocksGraphSymbol').selectList({ 
+	$('select#stocksGraphSymbol').selectList('div#addSelections',{ 
 		addAnimate: function (item, callback) { 
 			$(item).slideDown(500, callback); }, 
 		
@@ -165,9 +165,13 @@ $(document).ready(function(){
 <!-- start page -->
 
 <div id="page">
-  
-  
     <div id="addWidgetMenu" style="display:none">
+    
+    <div id="addSelections" style="width:600px;">
+	</div>
+    
+    
+    
     <form name="addWidgetForm" action="addWidget/" method="post">
     <table border="0" height="75">
     <tr>

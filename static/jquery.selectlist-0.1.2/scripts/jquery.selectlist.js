@@ -13,7 +13,8 @@
 
 (function($) {
 
-$.selectList = function(select, options) {
+$.selectList = function(select, target, options) {
+
     var
 
         $list,
@@ -167,8 +168,8 @@ $.selectList = function(select, options) {
         onAdd: function () {},
         onRemove: function () {}
     }, options));
-
-    ($list = $(options.list || $('<ul />').insertAfter($(select))))
+	
+    ($list = $(options.list || $('<ul />').prependTo($(target))))
         .addClass(options.classPrefix + '-list');
 
     $(select).children(':selected').each(function () {
@@ -242,14 +243,17 @@ $.selectList = function(select, options) {
     ready = true;
 };
 
-$.fn.selectList = function (options) {
+$.fn.selectList = function (target, options) {
     options = options || {};
 
     this.filter('select').each(function () {
         if ($(this).data('selectList'))
             $(this).data('selectList').setOptions(options);
         else
-            $(this).data('selectList', new $.selectList(this, options));
+		{
+		 	$(this).data('selectList', new $.selectList(this, target, options));
+			
+		}
     });
 
     if (options.instance)
