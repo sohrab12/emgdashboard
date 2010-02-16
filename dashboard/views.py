@@ -7,6 +7,7 @@ from models import *
 from django.template import RequestContext
 
 def widget_properties(request, widget_id):
+    #Get the properties of the widget to render the widgetframe template with
     widget = get_object_or_404(Widget, pk=widget_id)
 
     #Calculate the dates that the slider can be set to based on start time, end time, and zoom.
@@ -377,95 +378,3 @@ def export_widget(request):
         #response['Content-Type'] = 'application/vnd.ms-excel'
         wb.save(response)
         return response
-
-def slide_times(request):
-    """Change the widget's start time and end time to reflect the values chosen by the slider
-    """
-    widget = Widget.objects.get(pk=request.POST["pk"])
-    typed_widget = widget.widget_type()
-    zoom = typed_widget.zoom
-    #Get the start and end date strings from the request
-    startstring = request.POST["start"]
-    endstring = request.POST["end"]
-
-    #Parse the time strings according to the widget's zoom    
-    if(zoom == "hours"):
-        #Start date
-        #if timestamp is PM, add 12 hours to it unless noon
-        if (startstring.split(" ")[2] == "PM") and (startstring.split(" ")[1] != "12"):
-            hours = int(startstring.split(" ")[1]) + 12
-        #If midnight, set to zero
-        elif (startstring.split(" ")[2] == "AM") and (startstring.split(" ")[1] == "12"):
-            hours = 0
-        #Otherwise, take it as is.
-        else:
-            hours = int(startstring.split(" ")[1])
-
-        thedate = startstring.split(" ")[0]
-        year = int(thedate.split("/")[2])
-        month = int(thedate.split("/")[0])
-        day = int(thedate.split("/")[1])
-        newstart = datetime(year, month, day, hours, 0, 0)
-
-        #End date
-        #if timestamp is PM, add 12 hours to it unless noon
-        if endstring.split(" ")[2] == "PM" and endstring.split(" ")[1] != "12":
-            hours = int(endstring.split(" ")[1]) + 12
-        #If midnight, set to zero
-        elif endstring.split(" ")[2] == "AM" and endstring.split(" ")[1] == "12":
-            hours = 0
-        #Otherwise, take it as is.
-        else:
-            hours = int(endstring.split(" ")[1])
-
-        thedate = endstring.split(" ")[0]
-        year = int(thedate.split("/")[2])
-        month = int(thedate.split("/")[0])
-        day = int(thedate.split("/")[1])
-        newend = datetime(year, month, day, hours, 59, 59)
-    elif(zoom == "days" or zoom == "weeks"):
-        #Start date
-        thedate = startstring.split(" ")[0]
-        year = int(thedate.split("/")[2])
-        month = int(thedate.split("/")[0])
-        day = int(thedate.split("/")[1])
-        newstart = datetime(year, month, day, 0, 0, 0)
-
-        #End date
-        thedate = endstring.split(" ")[0]
-        year = int(thedate.split("/")[2])
-        month = int(thedate.split("/")[0])
-        day = int(thedate.split("/")[1])
-        newend = datetime(year, month, day, 23, 59, 59)
-    elif(zoom == "months"):
-        #Start date
-        thedate = startstring.split(" ")[0]
-        year = int(thedate.split("/")[1])
-        month = int(thedate.split("/")[0])
-        newstart = datetime(year, month, 1, 0, 0, 0)
-
-        #End date
-        thedate = endstring.split(" ")[0]
-        year = int(thedate.split("/")[1])
-        month = int(thedate.split("/")[0])
-        newend = datetime(year, month, 28, 23, 59, 59)
-    else: #zoom == years
-        #Start date
-        year = int(startstring.split(" ")[0])
-        newstart = datetime(year, 1, 1, 0, 0, 0)
-
-        #End date
-        year = int(endstring.split(" ")[0])
-        newend = datetime(year, 12, 31, 23, 59, 59)
-
-    #Assign new start and end times to the widget in the database.
-    try:
-        typed_widget.startdate = newstart
-        typed_widget.enddate = newend
-        typed_widget.save()
-    except:
-        return HttpResponse("Could not alter widget")
-    return HttpResponse("Worked")
-
-def remove_widget(request):
-    return HttpResponse("Working")
