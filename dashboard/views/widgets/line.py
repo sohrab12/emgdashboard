@@ -1,12 +1,15 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
-import Image, ImageFont, ImageDraw
-from django.conf import settings
+import Image, ImageDraw
 from datetime import datetime, timedelta
-from models import *
-from django.template import RequestContext
+from ..models import Widget, LineWidget
 
 def widget_properties(request, widget_id):
+    '''
+    This view takes the widget_id as a URL
+    parameter, and returns a 
+    
+    '''
     #Get the properties of the widget to render the widgetframe template with
     widget = get_object_or_404(Widget, pk=widget_id)
 
@@ -56,32 +59,27 @@ def widget_properties(request, widget_id):
             dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
             tempyear-=1
     return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
-    
-def ticker_widget(request, ticker_widget_id):
-    ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
-    query = ticker_widget.get_query()
-    try:
-        return HttpResponse('<b>%s.%s:</b> %s' % (query.table, query.first_order_option, query.run().next()))
-    except StopIteration:
-        return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
         
 def line_graph_view(request, widget_id):
-    """Renders a line graph from data passed via an HttpRequest
-A request must include the following parameters:
-width: the width in pixels of the graph window
-height: the height in pixels of the graph window
-lefttime: the earliest time that will appear on the x-axis
-righttime: the latest time that will appear on the x-axis
-modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
-but each must be numbered sequentially(model1, model2, model3, etc.)
-modelioption: the value to filter database queries by (assumed to be the value of the first order option).
-Requests can contain multiple modelioption's, but each must correspond to a modeli (model1option, model2option, etc.)
-zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
-topy: The maximum y value of the graph
-bottomy: the minimum y value of the graph
-graphplace: the number of the chunk to return in response.
-graphchunks: the total number of chunks to split the graph into.
-"""
+    """
+    From an HttpRequest and widget_id URL component,
+    returns a PNG image as an HttpResponse.
+    
+    The given request must include the following GET parameters:
+        width: the width in pixels of the graph window
+        height: the height in pixels of the graph window
+        lefttime: the earliest time that will appear on the x-axis
+        righttime: the latest time that will appear on the x-axis
+        modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
+        but each must be numbered sequentially(model1, model2, model3, etc.)
+        modelioption: the value to filter database queries by (assumed to be the value of the first order option).
+        Requests can contain multiple modelioption's, but each must correspond to a modeli (model1option, model2option, etc.)
+        zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
+        topy: The maximum y value of the graph
+        bottomy: the minimum y value of the graph
+        graphplace: the number of the chunk to return in response.
+        graphchunks: the total number of chunks to split the graph into.
+    """
     #Vertical Margins for the widget's display
     KEY_MARGIN = 30
     TOP_MARGIN = 5
@@ -343,38 +341,3 @@ graphchunks: the total number of chunks to split the graph into.
     response = HttpResponse(mimetype="image/png")
     chunk.save(response, "PNG")
     return response
- 
- 
-def addWidget(request):
-    return HttpResponseRedirect('/dashboard')
-
-def index(request):
-    #p = get_object_or_404(StockPrice, pk=1)
-    stockList = StockPrice.objects.all().order_by('-symbol')
-    return render_to_response('index.html', {'stockList': stockList})
-    #return render_to_response('index.html')
-
-def export_widget(request):
-    import xlwt # importing inside the view so that other functions work
-                # on hosts without xlwt
-    widget_ids = request.GET.values()
-    for widget_id in widget_ids:
-        widget = get_object_or_404(Widget, pk=widget_id)
-        wb = xlwt.Workbook()
-        for query in widget.get_queries():
-            table = query.table
-            rowcounter = -1
-            ws = wb.add_sheet(str(query.property)+' Test Sheet')
-            for table in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == table.symbol):
-                    #sym = table.symbol
-                    rowcounter += 1
-                    ws.write(rowcounter, 0, table.symbol)
-                    ws.write(rowcounter, 1, table.price)
-        response = HttpResponse(mimetype='application/vnd.ms-excel')
-        filename = "test.xls"
-        #filename = "%stest.xls" %sym
-        response['Content-Disposition'] = 'attachment; filename='+filename
-        #response['Content-Type'] = 'application/vnd.ms-excel'
-        wb.save(response)
-        return response
