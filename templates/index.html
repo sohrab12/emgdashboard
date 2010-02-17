@@ -278,8 +278,43 @@ $(document).ready(function(){
 	            <input type="Submit" name="excel" value="Excel" class="btn">
 	            <input type="Submit" name="pdf" value="PDF" class="btn">
 	            <input type="Submit" name="png" value="PNG" class="btn">
+            
+	            <a href="http://127.0.0.1:8000/dashboard/export_widgets?first=3">Sample Export To Excel</a>
+				<a href="http://127.0.0.1:8000/dashboard/test?first=3">Sample Export To PDF</a>
 	        </td>   
 	    </tr>   
+	    </table>
+	    </form>
+	    </div>
+    
+	    <!-- Manage Kit Menu -->
+	    <div id="manageKitMenu" style="display:none">
+	    <form name="manageKitForm" action="" method="post">
+	    <table border="0" height="75">
+	    <tr>
+	    	<td valign="top"> 
+	        	<font style="font-family:Verdana, Geneva, sans-serif; font-size:14px;">
+		        	Select the widget(s) you are intrested in adding into your new <br>
+	    	        kit, then name your kit in the text box, and press "Make Kit".        
+	            </font>
+	        </td>
+	        <td width="20">&nbsp;</td>        
+	        <td>
+	        	<font style="font-family:Verdana, Geneva, sans-serif; font-size:12px">
+		        	Name of new Kit:
+	            </font>
+	            <br>
+	    	    <input type="text" name="kitName" width="30">             
+	            <br><br><br>
+	        </td>
+	    </tr>    
+	    <tr>
+	    	<td colspan="3" align="right">
+	        	<input type="button" name="applyChanges" value="Apply Changes" class="btn">
+	            <input type="button" name="cancel" value="Cancel" onClick="javascript:cancelKit()" class="btn">
+	            <input type="button" name="makeKit" value="Make Kit" class="btn">
+	        </td>
+	    </tr>
 	    </table>
 	    </form>
 	    </div>
