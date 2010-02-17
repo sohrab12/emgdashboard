@@ -467,9 +467,11 @@ def index(request, dashboard_id):
     #p = get_object_or_404(StockPrice, pk=1)
     dash = get_object_or_404(Dashboard, pk=dashboard_id)
     stockList = StockPrice.objects.all().order_by('-symbol')
-    widgets = dash.get_widgets()
-    return render_to_response('index.html', {'stockList': stockList, 'dashboard': dash, 'widgets':widgets})
-    #return render_to_response('index.html')
+    widgets = Widget.objects.filter(belongTo=dash)
+    print [w.x for w in widgets]
+    left_widgets = [w for w in widgets if w.x == 0]
+    right_widgets = [w for w in widgets if w.x == 1]
+    return render_to_response('index.html', {'stockList': stockList, 'dashboard': dash, 'left_widgets': left_widgets, 'right_widgets': right_widgets})
  
 def export_widget(request):
     import xlwt # importing inside the view so that other functions work
