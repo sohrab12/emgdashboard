@@ -17,12 +17,16 @@ class Dashboard(WidgetOwner):
     def __unicode__(self):
         return "%s's Dashboard" % self.user
 
+    #Get all the widgets belonging to this dashboard
+    def get_widgets(self):
+        return [w for w in Widget.objects.filter(belongTo = self)]
+
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
-    def addWidget(self, newquery, column):
+    def addWidget(self, column):
         #Create query for the new widget
         #query = Query(value = "select %s from %s 
         #TODO: Add code to calculate Y-coordinates
-        self.widget_set.create(creator = self.user, x = column, y = 0)
+        return self.widget_set.create(creator = self.user, x = column, y = 0)
 
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
@@ -42,6 +46,25 @@ class Widget(models.Model):
                 return query_result[0]
             except:
                 pass
+
+    def add_typed_widget(self, graphtype, wzoom, sdate, edate, unitone, unittwo):
+        if graphtype == "barGraph":
+            pass
+        elif graphtype == "lineGraph":
+            linewidget = LineWidget(parentwidget = self, zoom = wzoom, startdate = sdate, enddate = edate, sliderstartdate = sdate, sliderenddate = edate, firstunit = unitone, secondunit = unittwo)
+            linewidget.save()
+            return linewidget
+        elif graphtype == "table":
+            pass
+        else #graphtype == "histogram":
+            ticker = TickerWidget(parentwidget = self, firstunit = unitone)
+            ticker.save()
+            return ticker
+                         
+    def add_query(self, querytable, option, property)
+        newquery = Query(self, table, option, property)
+        newquery.save
+        return newquery
 
     #Gets all the queries associated with this widget    
     def get_queries(self):
@@ -181,6 +204,8 @@ class TickerWidget(models.Model):
     of a single data series.
     """
     parent_widget = models.OneToOneField(Widget, primary_key=True)
+    firstunit = models.CharField(max_length = 20)
+
     def get_query(self):
         return Query.objects.get(belongTo=self.parent_widget)
     def __unicode__(self):
