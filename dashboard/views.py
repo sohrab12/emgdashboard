@@ -353,7 +353,7 @@ def index(request, dashboard_id):
     dash = get_object_or_404(Dashboard, pk=dashboard_id)
     stockList = StockPrice.objects.all().order_by('-symbol')
     widgets = dash.get_widgets()
-    return render_to_response('index.html', {'stockList': stockList}, {'dashboard': dash}, {'widgets':widgets})
+    return render_to_response('index.html', {'stockList': stockList, 'dashboard': dash, 'widgets':widgets})
     #return render_to_response('index.html')
 
 def export_widget(request):
