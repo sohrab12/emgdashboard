@@ -346,6 +346,24 @@ graphchunks: the total number of chunks to split the graph into.
  
  
 def addWidget(request):
+    #Get the dashboard to add a widget to.
+    dashboard_id = request.GET["dashboardID"]
+    dashboard = objects.Dashboard.get(pk=dashboard_id)
+    new_widget = dashboard.addWidget(0)
+
+    #Add a typed widget corresponding to the new generic widget
+    graphtype = request.GET["graphType"]
+    zoom = request.GET["zoom"]
+    earliesttime = datetime(2010,01,01,00,00,00)
+    latesttime = datetime(2010,02,01,00,00,00)
+    firstunit = "dollars"
+    secondunit = "null"
+    new_widget.add_typed_widget(graphtype, zoom, earliesttime, latesttime, firstunit, secondunit)
+
+    #Make all the queries that need to be added to the database for the new widget
+    queries = request.GET["queryInfo"]
+    for query in queries:
+        new_widget.add_query(query[0], query[1], query[2])
     return HttpResponseRedirect('/dashboard')
 
 def index(request, dashboard_id):
