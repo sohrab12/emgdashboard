@@ -56,12 +56,12 @@ class Widget(models.Model):
             return linewidget
         elif graphtype == "table":
             pass
-        else #graphtype == "histogram":
+        else: #graphtype == "histogram"
             ticker = TickerWidget(parentwidget = self, firstunit = unitone)
             ticker.save()
             return ticker
                          
-    def add_query(self, querytable, option, property)
+    def add_query(self, querytable, option, property):
         newquery = Query(self, table, option, property)
         newquery.save
         return newquery
