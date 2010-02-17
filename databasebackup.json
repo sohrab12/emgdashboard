@@ -1,6 +1,14 @@
 [ 
     {
         "pk": 1, 
+        "model": "dashboard.Dashboard", 
+        "fields": {
+        	"user": "1",
+        	"lastLogin": "2010-01-13 19:02:58"
+        }
+    },
+    {
+        "pk": 1, 
         "model": "dashboard.widgetowner", 
         "fields": {}
     }, 

@@ -5,10 +5,11 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
-
+ 
 def widget_properties(request, widget_id):
+    #Get the properties of the widget to render the widgetframe template with
     widget = get_object_or_404(Widget, pk=widget_id)
-
+ 
     #Calculate the dates that the slider can be set to based on start time, end time, and zoom.
     #Append these values to a list
     typedwidget = widget.widget_type()
@@ -16,7 +17,7 @@ def widget_properties(request, widget_id):
     latesttime = typedwidget.sliderenddate
     zoom = typedwidget.zoom
     dates = []
-
+ 
     #Calculate dates
     if(zoom == "hours"):
         #Tempduration = number of hours between the first and last dates
@@ -98,7 +99,7 @@ graphchunks: the total number of chunks to split the graph into.
  
     # Current y range under display
     #TODO: Check min, max values against YTOP and YBOTTOM
-
+ 
     line_widget = LineWidget.objects.get(parentwidget = widget_id)
     try:
         maxyvalue = int(request.GET['ytop'])
@@ -107,7 +108,7 @@ graphchunks: the total number of chunks to split the graph into.
     except:
         maxyvalue = 30
         minyvalue = 0
-
+ 
     # Current y range under display for second axis
     #TODO: Check min, max values against YTOP and YBOTTOM
     try:
@@ -140,7 +141,7 @@ graphchunks: the total number of chunks to split the graph into.
     else:
         im = Image.new('RGBA', (image_width, image_height), (255, 255, 255)) # Create a blank image
     draw = ImageDraw.Draw(im) # Create a draw object
-
+ 
     #Determine values for the y-scale
     yspan = maxyvalue-minyvalue
     #If the two values are the same, set the span to 1 to avoid math errors in evaluating the y-axis scale
@@ -151,7 +152,7 @@ graphchunks: the total number of chunks to split the graph into.
     for i in range(YAXIS_COUNT):
         yaxisvalues.append(maxyvalue - yincrement*i)
     yscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(yspan)
-
+ 
     
     altyaxisvalues = []
     #Determine values for second y-scale if one exists
@@ -164,7 +165,7 @@ graphchunks: the total number of chunks to split the graph into.
         for i in range(YAXIS_COUNT):
             altyaxisvalues.append(altmaxyvalue - altyincrement*i)
         altyscale = (im.size[1]-(TOP_MARGIN+BOTTOM_MARGIN+XLABEL_MARGIN))/(altyspan)
-
+ 
     #If this request's chunk_place is 0, we don't need to make any calls to the database. Just render the appropriate axis and return.
     #If the chunk_place is 0, render the y-axis for the widget and return it as a response
     if chunk_place == 0:
@@ -177,8 +178,8 @@ graphchunks: the total number of chunks to split the graph into.
         response = HttpResponse(mimetype="image/png")
         im.save(response, "PNG")
         return response
-
-    #If the chunk_place is -1, render the second y-axis for the widget and return it as a response    
+ 
+    #If the chunk_place is -1, render the second y-axis for the widget and return it as a response
     if chunk_place == -1:
         draw.line((im.size[0]-RIGHT_MARGIN, TOP_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1] - XLABEL_MARGIN - BOTTOM_MARGIN), fill = "black")
         increment = (im.size[1]-TOP_MARGIN - BOTTOM_MARGIN - XLABEL_MARGIN)/len(altyaxisvalues)
@@ -190,8 +191,8 @@ graphchunks: the total number of chunks to split the graph into.
         im.save(response, "PNG")
         return response
         
-
-    #Otherwise, we continue.     
+ 
+    #Otherwise, we continue.
     #Retrieve the left-most and right-most timestry:
     try:
         earliesttime = line_widget.startdate
@@ -289,7 +290,7 @@ graphchunks: the total number of chunks to split the graph into.
     #The numerator of xscale is defined below, and is only divided by the denominator when xpos is evaluated
     #in the iteration below
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
-
+ 
     #For each model, draw the data points, only if that model has data points
     for result_set in query_results:
      
@@ -345,48 +346,34 @@ graphchunks: the total number of chunks to split the graph into.
  
  
 def addWidget(request):
+    #Get the dashboard to add a widget to.
+    dashboard_id = request.GET["dashboardID"]
+    dashboard = objects.Dashboard.get(pk=dashboard_id)
+    new_widget = dashboard.addWidget(0)
+ 
+    #Add a typed widget corresponding to the new generic widget
+    graphtype = request.GET["graphType"]
+    zoom = request.GET["zoom"]
+    earliesttime = datetime(2010,01,01,00,00,00)
+    latesttime = datetime(2010,02,01,00,00,00)
+    firstunit = "dollars"
+    secondunit = "null"
+    new_widget.add_typed_widget(graphtype, zoom, earliesttime, latesttime, firstunit, secondunit)
+ 
+    #Make all the queries that need to be added to the database for the new widget
+    queries = request.GET["queryInfo"]
+    for query in queries:
+        new_widget.add_query(query[0], query[1], query[2])
     return HttpResponseRedirect('/dashboard')
 
-def index(request):
-    #p = get_object_or_404(StockPrice, pk=1)
-    stockList = StockPrice.objects.all().order_by('-symbol')
-    return render_to_response('index.html', {'stockList': stockList})
-    #return render_to_response('index.html')
-
-def export_widget(request):
-    import xlwt # importing inside the view so that other functions work
-                # on hosts without xlwt
-    widget_ids = request.GET.values()
-    for widget_id in widget_ids:
-        widget = get_object_or_404(Widget, pk=widget_id)
-        wb = xlwt.Workbook()
-        for query in widget.get_queries():
-            table = query.table
-            rowcounter = -1
-            ws = wb.add_sheet(str(query.property)+' Test Sheet')
-            for table in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == table.symbol):
-                    #sym = table.symbol
-                    rowcounter += 1
-                    ws.write(rowcounter, 0, table.symbol)
-                    ws.write(rowcounter, 1, table.price)
-        response = HttpResponse(mimetype='application/vnd.ms-excel')
-        filename = "test.xls"
-        #filename = "%stest.xls" %sym
-        response['Content-Disposition'] = 'attachment; filename='+filename
-        #response['Content-Type'] = 'application/vnd.ms-excel'
-        wb.save(response)
-        return response
-
-def slide_times(request):
+def slide_times(self, starttime, endtime):
     """Change the widget's start time and end time to reflect the values chosen by the slider
     """
-    widget = Widget.objects.get(pk=request.POST["pk"])
-    typed_widget = widget.widget_type()
+    typed_widget = self.widget_type()
     zoom = typed_widget.zoom
     #Get the start and end date strings from the request
-    startstring = request.POST["start"]
-    endstring = request.POST["end"]
+    startstring = starttime
+    endstring = endtime
 
     #Parse the time strings according to the widget's zoom    
     if(zoom == "hours"):
@@ -467,5 +454,94 @@ def slide_times(request):
         return HttpResponse("Could not alter widget")
     return HttpResponse("Worked")
 
+#Remove this widget and its queries from the database
 def remove_widget(request):
     return HttpResponse("Working")
+ 
+def index(request, dashboard_id):
+    #p = get_object_or_404(StockPrice, pk=1)
+    dash = get_object_or_404(Dashboard, pk=dashboard_id)
+    stockList = StockPrice.objects.all().order_by('-symbol')
+    widgets = dash.get_widgets()
+    return render_to_response('index.html', {'stockList': stockList, 'dashboard': dash, 'widgets':widgets})
+    #return render_to_response('index.html')
+ 
+def export_widget(request):
+    import xlwt # importing inside the view so that other functions work
+                # on hosts without xlwt
+    widget_ids = request.GET.values()
+    for widget_id in widget_ids:
+        widget = get_object_or_404(Widget, pk=widget_id)
+        wb = xlwt.Workbook()
+        for query in widget.get_queries():
+            table = query.table
+            rowcounter = -1
+            ws = wb.add_sheet(str(query.property)+' Test Sheet')
+            for table in globals()[query.table].objects.all().order_by('-symbol'):
+                if (query.property == table.symbol):
+                    #sym = table.symbol
+                    rowcounter += 1
+                    ws.write(rowcounter, 0, table.symbol)
+                    ws.write(rowcounter, 1, table.price)
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        filename = "test.xls"
+        #filename = "%stest.xls" %sym
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        #response['Content-Type'] = 'application/vnd.ms-excel'
+        wb.save(response)
+        return response
+ 
+def export_pdf(request):
+    from cStringIO import StringIO
+    from reportlab.pdfgen import canvas # importing inside the view so that other functions work
+                                        # on hosts without reportlab
+ 
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.platypus import *
+    from reportlab.lib import colors
+ 
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=somefilename.pdf'
+ 
+    # Our container for 'Flowable' objects
+    elements = []
+ 
+    # A large collection of style sheets pre-made for us
+    styles = getSampleStyleSheet()
+ 
+    # A basic document for us to write to a response
+    doc = SimpleDocTemplate(response)
+ 
+    elements.append(Paragraph("Stockprices",
+     styles['Title']))
+ 
+    # Get database data
+    widget_ids = request.GET.values()
+    for widget_id in widget_ids:
+        widget = get_object_or_404(Widget, pk=widget_id)
+        data = []
+        for query in widget.get_queries():
+            tabl = query.table
+            for tabl in globals()[query.table].objects.all().order_by('-symbol'):
+                if (query.property == tabl.symbol):
+                    data.append([tabl.symbol, tabl.price])
+ 
+    ts = [('ALIGN', (1,1), (-1,-1), 'CENTER'),
+         ('LINEABOVE', (0,0), (-1,0), 1, colors.purple),
+         #('LINEBELOW', (0,0), (-1,0), 1, colors.purple),
+         #('FONT', (0,0), (-1,0), 'Times-Bold'),
+         #('LINEABOVE', (0,-1), (-1,-1), 1, colors.purple),
+         ('LINEBELOW', (0,-1), (-1,-1), 0.5, colors.purple,
+          1, None, None, 4,1),
+         ('LINEBELOW', (0,-1), (-1,-1), 1, colors.red),
+         ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+         ('BOX', (0,0), (-1,-1), 0.25, colors.black)
+         #('FONT', (0,-1), (-1,-1), 'Times-Bold')
+          ]
+    # Create the table with the necessary style, and add it to the
+    # elements list.
+    table = Table(data, style=ts)
+    elements.append(table)
+    # Write the document to response
+    doc.build(elements)
+    return response
