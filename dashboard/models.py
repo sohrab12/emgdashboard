@@ -19,14 +19,19 @@ class Dashboard(WidgetOwner):
 
     #Get all the widgets belonging to this dashboard
     def get_widgets(self):
+        # TODO: Make this not query the entire database, THEN filter.
+        #       Just query for the right widgets.
         return [w for w in Widget.objects.filter(belongTo = self)]
 
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
     def addWidget(self, column):
-        #Create query for the new widget
-        #query = Query(value = "select %s from %s 
+        assert column in ['left','right']
         #TODO: Add code to calculate Y-coordinates
-        return self.widget_set.create(creator = self.user, x = column, y = 0)
+        if column == 'left':
+            x = 0
+        elif column == 'right':
+            x = 1
+        return self.widget_set.create(creator = self.user, x = x, y = 0)
 
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
