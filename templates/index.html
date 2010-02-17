@@ -337,12 +337,17 @@ $(document).ready(function(){
 
 	<!-- start content -->
 
+
+
 	<div id="widgetList">
-	<table width="100%">
+    
+	<table width="95%">    	
     	<tr>
-        	<td>&nbsp;</td>
-            <td>&nbsp;</td>
+        	{% for Widget in widgets %}
+        	<td align="center"><iframe src="/dashboard/linewidget/{{ Widget.pk }}" width="450" height="500" frameborder="0"></iframe></td>
+            {% endfor %}
         </tr>
+       
 	</table>
 	</div>
 	<!-- end content -->
