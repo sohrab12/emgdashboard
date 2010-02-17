@@ -348,10 +348,12 @@ graphchunks: the total number of chunks to split the graph into.
 def addWidget(request):
     return HttpResponseRedirect('/dashboard')
 
-def index(request):
+def index(request, dashboard_id):
     #p = get_object_or_404(StockPrice, pk=1)
+    dash = get_object_or_404(Dashboard, pk=dashboard_id)
     stockList = StockPrice.objects.all().order_by('-symbol')
-    return render_to_response('index.html', {'stockList': stockList})
+    widgets = dash.get_widgets()
+    return render_to_response('index.html', {'stockList': stockList}, {'dashboard': dash}, {'widgets':widgets})
     #return render_to_response('index.html')
 
 def export_widget(request):

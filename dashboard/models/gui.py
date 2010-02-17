@@ -14,9 +14,6 @@ class Dashboard(WidgetOwner):
     user = models.CharField(max_length = 50)
     lastLogin = models.DateTimeField('last login')
 
-    #refer to self by user
-    def __unicode__(self):
-        return "%s's Dashboard" % self.user
 
     #Add a new widget to this dashboard. Y coordinate calculation needs to be written. X coordinate if right needs to be updated
     def addWidget(self, newquery, column):
@@ -24,6 +21,14 @@ class Dashboard(WidgetOwner):
         #query = Query(value = "select %s from %s 
         #TODO: Add code to calculate Y-coordinates
         self.widget_set.create(creator = self.user, x = column, y = 0)
+
+    #Get all the widgets belonging to this dashboard
+    def get_widgets(self):
+        return [w for w in Widget.objects.filter(belongTo == self)]
+    
+    #refer to self by user
+    def __unicode__(self):
+        return "%s's Dashboard" % self.user
 
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
@@ -46,7 +51,7 @@ class Widget(models.Model):
 
     #Gets all the queries associated with this widget    
     def get_queries(self):
-        return [q for q in Query.objects.filter(belongTo = self)]
+        return [q for q in Query.objects.filter(belongTo == self)]
 
     def slide_times(self, starttime, endtime):
         """Change the widget's start time and end time to reflect the values chosen by the slider
