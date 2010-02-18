@@ -56,7 +56,7 @@ class Widget(models.Model):
             return linewidget
         elif graphtype == "table":
             pass
-        else: #graphtype == "histogram"
+        else:
             ticker = TickerWidget(parentwidget = self, firstunit = unitone)
             ticker.save()
             return ticker
