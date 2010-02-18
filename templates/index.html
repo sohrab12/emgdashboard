@@ -359,13 +359,13 @@ $(document).ready(function(){
 		<table>    	
 	    	<tr>
 				<td align="center">
-	        	{% for w in left_widgets %}
-	        		<iframe src="/dashboard/linewidget/{{ w.pk }}" width="390" height="500" frameborder="0"></iframe>
+	        	{% for b in left_widget_bodies %}
+	        	{{ b }}
 	            {% endfor %}
 				</td>
 				<td align="center">
-	        	{% for w in right_widgets %}
-	        		<iframe src="/dashboard/linewidget/{{ w.pk }}" width="390" height="500" frameborder="0"></iframe>
+	        	{% for b in right_widget_bodies %}
+	        	{{ b }}
 	            {% endfor %}
 				</td>
 	        </tr>
