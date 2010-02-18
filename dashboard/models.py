@@ -1,3 +1,4 @@
+from django.template import loader, Context
 from django.db import models
 import inspect
 
@@ -163,9 +164,17 @@ class Widget(models.Model):
             return HttpResponse("Could not alter widget")
         return HttpResponse("Worked")
 
-    #Remove this widget and its queries from the database
-    def remove_widget(request):
-        return HttpResponse("Working")
+    def remove_widget(self):
+        'Remove this widget and its queries from the database'
+        raise NotImplementedError
+        
+    def get_specialization(self):
+        print LineWidget.objects.all()
+        lw = LineWidget.objects.get(parentwidget__pk=self.pk)
+        if lw:
+            return lw
+        else:
+            assert False
     
     #refer to self as belongTo,x,y
     def __unicode__(self):
@@ -184,7 +193,10 @@ class LineWidget(models.Model):
     latestentry = models.DateTimeField()
     firstunit = models.CharField(max_length = 20)
     secondunit = models.CharField(max_length = 20)
-
+    def get_html(self):
+        t = loader.get_template('linewidget.html')
+        c = Context({ 'pk': self.pk })
+        return t.render(c)
     def __unicode__(self):
         return "LineWidget " + str(self.parentwidget.pk)
 
