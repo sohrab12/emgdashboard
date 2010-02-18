@@ -13,6 +13,5 @@ urlpatterns = patterns('emgdashboard.dashboard.views',
     (r'^export_widgets$', 'export_widget'),
     (r'^export_pdf$', 'export_pdf'),
     (r'^linewidget/(?P<widget_id>\d+)$', 'widget_properties'),
-    (r'^tickerwidget/(?P<ticker_widget_id>\d+)$', 'ticker_widget'),
     (r'^slidewidgettimes', 'slide_times'),
     (r'^removewidget$', 'remove_widget'))
