@@ -56,14 +56,6 @@ def widget_properties(request, widget_id):
             dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
             tempyear-=1
     return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
-    
-def ticker_widget(request, ticker_widget_id):
-    ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
-    query = ticker_widget.get_query()
-    try:
-        return HttpResponse('<b>%s.%s:</b> %s' % (query.table, query.first_order_option, query.run().next()))
-    except StopIteration:
-        return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
         
 def line_graph_view(request, widget_id):
     """Renders a line graph from data passed via an HttpRequest

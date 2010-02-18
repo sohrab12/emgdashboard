@@ -45,9 +45,9 @@ class Widget(models.Model):
     y = models.PositiveIntegerField()
 
     def widget_type(self):
-        widgetclasses = [c for c in globals().values() if inspect.isclass(c) and hasattr(c, "parentwidget")]
+        widgetclasses = [c for c in globals().values() if inspect.isclass(c) and hasattr(c, "parent_widget")]
         for nextc in widgetclasses:
-            query_result = [s for s in nextc.objects.filter(parentwidget = self)]
+            query_result = [s for s in nextc.objects.filter(parent_widget = self)]
             try:
                 return query_result[0]
             except:
@@ -57,13 +57,13 @@ class Widget(models.Model):
         if graphtype == "barGraph":
             pass
         elif graphtype == "lineGraph":
-            linewidget = LineWidget(parentwidget = self, zoom = wzoom, startdate = sdate, enddate = edate, sliderstartdate = sdate, sliderenddate = edate, firstunit = unitone, secondunit = unittwo)
+            linewidget = LineWidget(parent_widget = self, zoom = wzoom, startdate = sdate, enddate = edate, sliderstartdate = sdate, sliderenddate = edate, firstunit = unitone, secondunit = unittwo)
             linewidget.save()
             return linewidget
         elif graphtype == "table":
             pass
         else:
-            ticker = TickerWidget(parentwidget = self, firstunit = unitone)
+            ticker = TickerWidget(parent_widget = self, firstunit = unitone)
             ticker.save()
             return ticker
                          
@@ -169,22 +169,31 @@ class Widget(models.Model):
         raise NotImplementedError
         
     def get_specialization(self):
-        print LineWidget.objects.all()
-        lw = LineWidget.objects.get(parentwidget__pk=self.pk)
-        if lw:
-            return lw
-        else:
-            assert False
+        # First, identify all classes with a 'parent_widget'
+        # attribute in this module
+        specs = []
+        for c in globals().itervalues():
+            if inspect.isclass(c) and issubclass(c, models.Model) and hasattr(c, 'parent_widget'):
+                specs.append(c)
+        print specs
+        # Find out which of these is this particular specialization
+        for spec in specs:
+            o = spec.objects.filter(parent_widget__pk=self.pk)
+            if len(o) > 1:
+                raise Exception('Database integrity error. Found more than one %s with the same parent Widget.' % str(type(spec)))
+            elif len(o) == 1:
+                return o[0]
+        raise Exception("Found no specialization for %s" % (unicode(self)))
     
     #refer to self as belongTo,x,y
     def __unicode__(self):
-        return "Widget " + str(self.belongTo) + ":" + " ".join([str(q) for q in self.get_queries()]) + " " + str(self.pk)
+        return "Widget (belonging to " + str(self.belongTo) + "):" + " ".join([str(q) for q in self.get_queries()]) + " " + str(self.pk)
 
 class LineWidget(models.Model):
     """A widget containing a line graph of data.
     Has a one-to-one relationship with a non-typed widget.
     """
-    parentwidget = models.OneToOneField(Widget, primary_key = True)
+    parent_widget = models.OneToOneField(Widget, primary_key = True)
     zoom = models.CharField(max_length = 10) #miliseconds/hundred pixels
     startdate = models.DateTimeField() #start date updates to current day -15 zoom units if null
     enddate = models.DateTimeField() #end date updates to current day if null
@@ -195,10 +204,11 @@ class LineWidget(models.Model):
     secondunit = models.CharField(max_length = 20)
     def get_html(self):
         t = loader.get_template('linewidget.html')
-        c = Context({ 'pk': self.pk })
+        c = Context({ 'widget_pk': self.pk })
+        print t.render(c)
         return t.render(c)
     def __unicode__(self):
-        return "LineWidget " + str(self.parentwidget.pk)
+        return "LineWidget " + str(self.parent_widget.pk)
 
 class Query(models.Model):
     """A query to be submitted to the database. Each query references a widget as a foreign key."""
@@ -221,12 +231,19 @@ class TickerWidget(models.Model):
     of a single data series.
     """
     parent_widget = models.OneToOneField(Widget, primary_key=True)
-    firstunit = models.CharField(max_length = 20)
 
-    def get_query(self):
-        return Query.objects.get(belongTo=self.parent_widget)
+    def get_html(self):
+        queries = self.parent_widget.get_queries()
+        if len(queries) > 1:
+            raise Exception("%s has more than one query" % unicode(self))
+        query = queries[0]
+            
+        try:
+            return u'<strong>%s.%s:</strong> %s' % (query.table, query.first_order_option, query.run().next())
+        except StopIteration:
+            return u'<strong>No data for %s.%s!</strong>' % (query.table, query.first_order_option)
     def __unicode__(self):
-        return '<TickerWidget query='+unicode(self.get_query())+'>'     
+        return u'<TickerWidget %d>' % self.pk 
     
 class Kit(WidgetOwner):
     """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
