@@ -21,14 +21,14 @@ def widget_properties(request, widget_id):
     #Calculate dates
     if(zoom == "hours"):
         #Tempduration = number of hours between the first and last dates
-        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
+        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24)
         #For each hour, increment earliestdate by one hour and add it to the list
         dates = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
     elif(zoom == "days"):
-        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days) + 1
+        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days)
         dates = [earliesttime + timedelta(days=i) for i in range(tempduration)]
     elif(zoom == "weeks"):
-        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7) + 1
+        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7)
         dates = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
     elif(zoom == "months"):
         #If the latest month is after or the same as the earliest month, count the difference between the months, plus
@@ -94,7 +94,7 @@ graphchunks: the total number of chunks to split the graph into.
     YLABEL_MARGIN = 35
  
     #Axis value counts
-    XAXIS_COUNT = 5
+    XAXIS_COUNT = 3
     YAXIS_COUNT = 9
  
     # Current y range under display
@@ -219,17 +219,17 @@ graphchunks: the total number of chunks to split the graph into.
     for query in queries:
         query_set = query.run()
         #Filter query results by time, selecting only those that fall within the requested times
-        filtered_results = [(float(entry[0]), entry[1], globals()[query.table].get_units()) for entry in query_set if earliesttime <= entry[1] <= latesttime]
+        filtered_results = [(float(entry[0]), entry[1], globals()[query.table].get_units(), query.table, query.first_order_option) for entry in query_set if earliesttime <= entry[1] <= latesttime]
         query_results.append(filtered_results)
     #Determine times to label x-axis with
     if(zoom == "hours"):
-        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24) + 1
+        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24)
         xaxisvalues = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
     elif(zoom == "days"):
-        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days) + 1
+        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days)
         xaxisvalues = [earliesttime + timedelta(days=i) for i in range(tempduration)]
     elif(zoom == "weeks"):
-        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7) + 1
+        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7)
         xaxisvalues = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
     elif(zoom == "months"):
         #If the latest month is after or the same as the earliest month, count the difference between the months, plus
@@ -265,25 +265,23 @@ graphchunks: the total number of chunks to split the graph into.
         for i in range(XAXIS_COUNT):
             xaxisvalues.insert(0, incrementdate)
             incrementdate = incrementdate - xincrement
- 
-    xaxisvalues.reverse()
     
     #Draw x axis
     draw.line((0, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-RIGHT_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN), fill="black")
     increment = (im.size[0]-RIGHT_MARGIN-LEFT_MARGIN)/len(xaxisvalues)
     if(zoom == "years"):
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), str(xaxisvalues[i].year), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
+            draw.text((LEFT_MARGIN + increment*(i), im.size[1]-BOTTOM_MARGIN-25), str(xaxisvalues[i].year), fill = "black")
+            draw.line((LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
     elif(zoom == "months"):
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
+            draw.text((LEFT_MARGIN + increment*(i), im.size[1]-BOTTOM_MARGIN-25), "%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].year)), fill = "black")
+            draw.line((LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
     else:
         for i in range(len(xaxisvalues)):
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
-            draw.text((im.size[0]-increment*i + YLABEL_MARGIN, im.size[1]-BOTTOM_MARGIN-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
-            draw.line((im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, im.size[0]-increment*i-1 + YLABEL_MARGIN, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
+            draw.text((LEFT_MARGIN + increment*(i), im.size[1]-BOTTOM_MARGIN-25), "%s/%s/%s" % (str(xaxisvalues[i].month), str(xaxisvalues[i].day), str(xaxisvalues[i].year)), fill = "black")
+            draw.text((LEFT_MARGIN + increment*(i), im.size[1]-BOTTOM_MARGIN-15), "%02d:%02d:%02d" % (xaxisvalues[i].hour, xaxisvalues[i].minute, xaxisvalues[i].second), fill = "black")
+            draw.line((LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN, LEFT_MARGIN + increment*(i) - 1, im.size[1]-XLABEL_MARGIN-BOTTOM_MARGIN-10), fill = "black")
  
     
     #Defining xscale as we defined yscale resolves to 0 in most cases. Therefore, it is resolved differently.
@@ -292,6 +290,7 @@ graphchunks: the total number of chunks to split the graph into.
     xscale = im.size[0]-(LEFT_MARGIN+RIGHT_MARGIN+YLABEL_MARGIN)
 
     #For each model, draw the data points, only if that model has data points
+    key_pos = 0
     for result_set in query_results:
      
             #Sort the list by time to be parsed
@@ -302,34 +301,39 @@ graphchunks: the total number of chunks to split the graph into.
                     #Iterate through the query set, rendering each data point
                     for datapoint in result_set:
                         timelapse = datapoint[1]-earliesttime
-                        xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos = (maxyvalue-datapoint[0])*yscale + TOP_MARGIN
                         draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
                     #Iterate through the query set, drawing a line between each pair of points
                     for i in range(len(result_set)-1):
                         timelapse = result_set[i][1]-earliesttime
-                        xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos1 = (maxyvalue-result_set[i][0])*yscale + TOP_MARGIN
                         timelapse = result_set[i+1][1]-earliesttime
-                        xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos2 = (maxyvalue-result_set[i+1][0])*yscale + TOP_MARGIN
                         draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
                 #If the units are not equal to the first unit, plot them along the second axis
                 else:
                     for datapoint in result_set:
                         timelapse = datapoint[1]-earliesttime
-                        xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos = (altmaxyvalue-datapoint[0])*altyscale + TOP_MARGIN
                         draw.rectangle((xpos - 1, ypos - 1, xpos + 1, ypos + 1), fill="red")
                     #Iterate through the query set, drawing a line between each pair of points
                     for i in range(len(result_set)-1):
                         timelapse = result_set[i][1]-earliesttime
-                        xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos1 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos1 = (altmaxyvalue-result_set[i][0])*altyscale + TOP_MARGIN
                         timelapse = result_set[i+1][1]-earliesttime
-                        xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN + YLABEL_MARGIN
+                        xpos2 = ((timelapse.days*24*60*60*1000 + timelapse.seconds*1000 + int(timelapse.microseconds/1000)) * xscale /duration)+ LEFT_MARGIN
                         ypos2 = (altmaxyvalue-result_set[i+1][0])*altyscale + TOP_MARGIN
                         draw.line((xpos1, ypos1, xpos2, ypos2), fill = "red")
+                #Draw the key for the widget
+                query_count = len(queries)
+                draw.text((LEFT_MARGIN, (im.size[1]-BOTTOM_MARGIN) + (BOTTOM_MARGIN/query_count)*key_pos), result_set[0][4], fill = "black")
+                draw.line((LEFT_MARGIN + 20, (im.size[1]-BOTTOM_MARGIN) + (BOTTOM_MARGIN/query_count)*key_pos + 5, LEFT_MARGIN + 30, (im.size[1]-BOTTOM_MARGIN) + (BOTTOM_MARGIN/query_count)*key_pos + 5), fill = "red")
+                key_pos+=1
             #The query returned no results, so draw nothing.
             except:
                 pass
@@ -339,7 +343,7 @@ graphchunks: the total number of chunks to split the graph into.
     #Create and return response with image
     #TODO: Cut into 3 shingles, return json file if max y value is above top y point
     chunk_width = (im.size[0]-YLABEL_MARGIN)/chunk_count
-    chunk = im.crop(((chunk_place-1)*chunk_width+YLABEL_MARGIN, 0, chunk_place*chunk_width+YLABEL_MARGIN, im.size[1]))
+    chunk = im.crop(((chunk_place-1)*chunk_width, 0, chunk_place*chunk_width, im.size[1]))
     response = HttpResponse(mimetype="image/png")
     chunk.save(response, "PNG")
     return response
@@ -366,14 +370,15 @@ def addWidget(request):
         new_widget.add_query(query[0], query[1], query[2])
     return HttpResponseRedirect('/dashboard')
 
-def slide_times(self, starttime, endtime):
+def slide_times(request):
     """Change the widget's start time and end time to reflect the values chosen by the slider
     """
-    typed_widget = self.widget_type()
+    widget = Widget.objects.get(pk = request.POST["pk"])
+    typed_widget = widget.widget_type()
     zoom = typed_widget.zoom
     #Get the start and end date strings from the request
-    startstring = starttime
-    endstring = endtime
+    startstring = request.POST["start"]
+    endstring = request.POST["end"]
 
     #Parse the time strings according to the widget's zoom    
     if(zoom == "hours"):
