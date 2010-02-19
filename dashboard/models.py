@@ -1,5 +1,6 @@
 from django.template import loader, Context
 from django.db import models
+from datetime import datetime, timedelta
 import inspect
 
 #GUI Models
@@ -32,7 +33,7 @@ class Dashboard(WidgetOwner):
             x = 0
         elif column == 'right':
             x = 1
-        return self.widget_set.create(creator = self.user, x = x, y = 0)
+        return self.widget_set.create(creator = self.user, created = datetime.now(), updated = datetime.now(), x = x, y = 0)
 
 class Widget(models.Model):
     """A single sub-display that stores a query to be submitted to the database, and handles the displaying of the resulting data.
@@ -57,7 +58,7 @@ class Widget(models.Model):
         if graphtype == "barGraph":
             pass
         elif graphtype == "lineGraph":
-            linewidget = LineWidget(parent_widget = self, zoom = wzoom, startdate = sdate, enddate = edate, sliderstartdate = sdate, sliderenddate = edate, firstunit = unitone, secondunit = unittwo)
+            linewidget = LineWidget(parent_widget = self, zoom = wzoom, startdate = sdate, enddate = edate, sliderstartdate = sdate, sliderenddate = edate, latestentry = datetime.now(), firstunit = unitone, secondunit = unittwo)
             linewidget.save()
             return linewidget
         elif graphtype == "table":
@@ -68,106 +69,14 @@ class Widget(models.Model):
             return ticker
                          
     def add_query(self, querytable, option, property):
-        newquery = Query(self, table, option, property)
-        newquery.save
+        newquery = Query(belongTo = self, table = querytable, first_order_option = option, property = property)
+        newquery.save()
         return newquery
 
     #Gets all the queries associated with this widget    
     def get_queries(self):
         return [q for q in Query.objects.filter(belongTo = self)]
 
-    def slide_times(self, starttime, endtime):
-        """Change the widget's start time and end time to reflect the values chosen by the slider
-        """
-        typed_widget = self.widget_type()
-        zoom = typed_widget.zoom
-        #Get the start and end date strings from the request
-        startstring = starttime
-        endstring = endtime
-
-        #Parse the time strings according to the widget's zoom    
-        if(zoom == "hours"):
-            #Start date
-            #if timestamp is PM, add 12 hours to it unless noon
-            if (startstring.split(" ")[2] == "PM") and (startstring.split(" ")[1] != "12"):
-                hours = int(startstring.split(" ")[1]) + 12
-            #If midnight, set to zero
-            elif (startstring.split(" ")[2] == "AM") and (startstring.split(" ")[1] == "12"):
-                hours = 0
-            #Otherwise, take it as is.
-            else:
-                hours = int(startstring.split(" ")[1])
-
-            thedate = startstring.split(" ")[0]
-            year = int(thedate.split("/")[2])
-            month = int(thedate.split("/")[0])
-            day = int(thedate.split("/")[1])
-            newstart = datetime(year, month, day, hours, 0, 0)
-
-            #End date
-            #if timestamp is PM, add 12 hours to it unless noon
-            if endstring.split(" ")[2] == "PM" and endstring.split(" ")[1] != "12":
-                hours = int(endstring.split(" ")[1]) + 12
-            #If midnight, set to zero
-            elif endstring.split(" ")[2] == "AM" and endstring.split(" ")[1] == "12":
-                hours = 0
-            #Otherwise, take it as is.
-            else:
-                hours = int(endstring.split(" ")[1])
-
-            thedate = endstring.split(" ")[0]
-            year = int(thedate.split("/")[2])
-            month = int(thedate.split("/")[0])
-            day = int(thedate.split("/")[1])
-            newend = datetime(year, month, day, hours, 59, 59)
-        elif(zoom == "days" or zoom == "weeks"):
-            #Start date
-            thedate = startstring.split(" ")[0]
-            year = int(thedate.split("/")[2])
-            month = int(thedate.split("/")[0])
-            day = int(thedate.split("/")[1])
-            newstart = datetime(year, month, day, 0, 0, 0)
-
-            #End date
-            thedate = endstring.split(" ")[0]
-            year = int(thedate.split("/")[2])
-            month = int(thedate.split("/")[0])
-            day = int(thedate.split("/")[1])
-            newend = datetime(year, month, day, 23, 59, 59)
-        elif(zoom == "months"):
-            #Start date
-            thedate = startstring.split(" ")[0]
-            year = int(thedate.split("/")[1])
-            month = int(thedate.split("/")[0])
-            newstart = datetime(year, month, 1, 0, 0, 0)
-
-            #End date
-            thedate = endstring.split(" ")[0]
-            year = int(thedate.split("/")[1])
-            month = int(thedate.split("/")[0])
-            newend = datetime(year, month, 28, 23, 59, 59)
-        else: #zoom == years
-            #Start date
-            year = int(startstring.split(" ")[0])
-            newstart = datetime(year, 1, 1, 0, 0, 0)
-
-            #End date
-            year = int(endstring.split(" ")[0])
-            newend = datetime(year, 12, 31, 23, 59, 59)
-
-        #Assign new start and end times to the widget in the database.
-        try:
-            typed_widget.startdate = newstart
-            typed_widget.enddate = newend
-            typed_widget.save()
-        except:
-            return HttpResponse("Could not alter widget")
-        return HttpResponse("Worked")
-
-    def remove_widget(self):
-        'Remove this widget and its queries from the database'
-        raise NotImplementedError
-        
     def get_specialization(self):
         # First, identify all classes with a 'parent_widget'
         # attribute in this module
@@ -215,8 +124,8 @@ class Query(models.Model):
     """
     belongTo = models.ForeignKey(Widget)
     table = models.CharField(max_length=50) #The database table this query searches
-    first_order_option = models.CharField(max_length=50) #The string to match to filter the table
-    property = models.CharField(max_length=50) #The field we want to run the query for
+    first_order_option = models.CharField(max_length=50) #Filter value
+    property = models.CharField(max_length=50) #The thing we want back
     #Run the query, searching the table for entries that have the desired first order option. Then return the value
     #for the property field
     def run(self):
@@ -301,6 +210,12 @@ class StockPrice(DataEntry):
         """Returns the units that stock prices are recorded in (dollars)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "price"
     def __unicode__(self):
         return self.symbol + " " + str(self.time)
 
@@ -317,6 +232,12 @@ class BondPrice(DataEntry):
         """Returns the units that bond prices are recorded in (dollars)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "price"
     
 class PowerOutput(DataEntry):
     """A statistic for the electricity generated in one day by one of EMG's generation units.
@@ -332,6 +253,12 @@ class PowerOutput(DataEntry):
         """Returns the units that power output readings are recorded in (Megawatts/hour)
         """
         return "MW/hr"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "output"
 
 class ElectricityPrice(DataEntry):
     """The market price for electricity at designated ISO zone/hub.
@@ -347,6 +274,12 @@ class ElectricityPrice(DataEntry):
         """Returns the units that electricity prices are recorded in (dollars/megawatts/hour)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "price"
 
 class NaturalGasPrice(DataEntry):
     """The market price for natural gas at the specified delivery hub.
@@ -362,6 +295,12 @@ class NaturalGasPrice(DataEntry):
         """Returns the units that gas prices are recorded in (dollars/MMBTU)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "price"
 
 class CoalPrice(DataEntry):
     """The market price for coal by coal type.
@@ -377,6 +316,12 @@ class CoalPrice(DataEntry):
         """Returns the units that coal prices are recorded in (dollars/ston)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "price"
 
 class GeneratorAvalablility(DataEntry):
     """The operational availability status of generation units.
@@ -399,7 +344,13 @@ class GeneratorAvalablility(DataEntry):
     def get_units():
         """Returns the units that availability readings are recorded in (availability)
         """
-        return "availability"    
+        return "availability"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "availability"
 
 class SubsidiaryBalance(DataEntry):
     """The cash position of the designated EMG subsidiary
@@ -415,6 +366,12 @@ class SubsidiaryBalance(DataEntry):
         """Returns the units that subsidiary balances are recorded in (dollars)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "balance"
 
 class AvailableCapital(DataEntry):
     """The available funds from EMG company, working capital facilities, and borrows against those facilities
@@ -442,6 +399,12 @@ class ProfitLoss(DataEntry):
         """Returns the units that P&L figures are recorded in (dollars)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "netprofit"
 
 class MoodyRating(DataEntry):
     """EME and subsidiary company ratings by Moody's.
@@ -468,6 +431,12 @@ class GrossMargin(DataEntry):
         """Returns the units that gross margin figures are recorded in (dollars)
         """
         return "dollars"
+    @staticmethod
+    def get_most_important_property():
+        """Returns the most important property for this model.
+        This is the property that is assumed to be used for the y-value of graphed data points
+        """
+        return "margin"
         
 #
 # Auxiliary Data

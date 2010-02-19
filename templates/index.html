@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 
 <html>
@@ -19,10 +19,10 @@ function menuSelection(){}
 
 
 function updateQueryInfo(source)
-{	
+{
 	localQueryInfo = document.addWidgetForm.queryInfo.value;
-	localQueryInfo += "stock:" + document.getElementById(source).value + ",";	
-	document.addWidgetForm.queryInfo.value = localQueryInfo;		
+	localQueryInfo += "StockPrice:" + document.getElementById(source).value + ",";
+	document.addWidgetForm.queryInfo.value = localQueryInfo;
 }
 
 
@@ -51,7 +51,7 @@ function collapseMenus()
 	document.getElementById('tabbody').style.display = 'none';
 	document.getElementById('addWidgetMenu').style.display = 'none';
 	document.getElementById('exportMenu').style.display = 'none';
-	document.getElementById('manageKitMenu').style.display = 'none';	
+	document.getElementById('manageKitMenu').style.display = 'none';
 }
 
 
@@ -75,7 +75,7 @@ function cancelKit()
 {
 	removeAllMenuHighlights();
 	$("#tabbody").slideToggle("fast");
-	$(this).toggleClass("active");	
+	$(this).toggleClass("active");
 }
 
 
@@ -85,7 +85,7 @@ function displayContentOptions(selectedOption)
 	document.getElementById('bondsListDiv').style.display = 'none';
 	document.getElementById('actualsListDiv').style.display = 'none';
 	document.getElementById('investmentsListDiv').style.display = 'none';
-	
+
 	if (selectedOption == 'stocks')
 		document.getElementById('stocksListDiv').style.display = 'inline';
 	else if (selectedOption == 'bonds')
@@ -94,7 +94,7 @@ function displayContentOptions(selectedOption)
 		document.getElementById('actualsListDiv').style.display = 'inline';
 	else if (selectionOption = 'investments')
 		document.getElementById('investmentsListDiv').style.display = 'inline';
-		
+
 }
 
 var data = "";
@@ -103,7 +103,7 @@ var data = "";
 {% for StockPrice in stockList %}
 <script type="text/javascript">
 	data += "{{ StockPrice.symbol }} "
-</script>	
+</script>
 {% endfor %}
 
 <script type="text/javascript">
@@ -111,40 +111,40 @@ var data = "";
 
 
 $(document).ready(function(){
-						   
-	$('select#stocksGraphSymbol').selectList('div#addSelections',{ 
-		addAnimate: function (item, callback) { 
-			$(item).slideDown(500, callback); 
-			updateQueryInfo('stocksGraphSymbol');}, 
-		
-		removeAnimate: function (item, callback) { 
-			$(item).slideUp(500, callback);} 
-	});   
-	
-	
+
+	$('select#stocksGraphSymbol').selectList('div#addSelections',{
+		addAnimate: function (item, callback) {
+			$(item).slideDown(500, callback);
+			updateQueryInfo('stocksGraphSymbol');},
+
+		removeAnimate: function (item, callback) {
+			$(item).slideUp(500, callback);}
+	});
+
+
 
 //  var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
-	data = data.split(" ");	 
+	data = data.split(" ");
 	$("#stocksGraphSymbolSearchBox").autocomplete(data);
 
-	
-	
-	
-	$(".addWidget").click(function(){		
+
+
+
+	$(".addWidget").click(function(){
 		collapseMenus();
 		$('#tabbody').show();
 		$("#addWidgetMenu").show();
 		$('.addWidget').addClass('menuitemselected');
 	});
-		
-	
+
+
 	$(".exportWidget").click(function(){
 		collapseMenus();
 		$('#tabbody').show();
 		$("#exportMenu").show();
 		$('.exportWidget').addClass('menuitemselected');
 	});
-	
+
 
 	$(".manageKit").click(function(){
 		collapseMenus();
@@ -152,8 +152,8 @@ $(document).ready(function(){
 		$("#manageKitMenu").show();
 		$('.manageKit').addClass('menuitemselected');
 	});
-	
-	 
+
+
 });
 </script>
 </head>
@@ -175,12 +175,12 @@ $(document).ready(function(){
 	    	<form name="addWidgetForm" action="addWidget/" method="post">
 		    <table border="0" height="75">
 		    <tr>
-		    	<td valign="top"> 
+		    	<td valign="top">
 		            <select size="4" name="graphType" id="graphType">
 		                <option value="barGraph">Bar Graph</option>
 		                <option value="lineGraph">Line Graph</option>
 		                <option value="pieChart">Pie Chart</option>
-		                <option value="table">Table</option>                
+		                <option value="table">Table</option>
 		                <option value="histogram">Ticker</option>
 		            </select>
 		            &nbsp;&nbsp;&nbsp;
@@ -196,35 +196,35 @@ $(document).ready(function(){
 		        </td>
 		        <td valign="top">
 			       	<div id="stocksListDiv">
-		            <select size="4" name="stocksGraphSymbol" id="stocksGraphSymbol" style="width:107px" multiple>           			
+		            <select size="4" name="stocksGraphSymbol" id="stocksGraphSymbol" style="width:107px" multiple>
 		            {% for StockPrice in stockList %}
 		                <option value= "{{ StockPrice.symbol }}">{{ StockPrice.symbol }}</option>
-		            {% endfor %}            
+		            {% endfor %}
 		            </select>
 		            <br>
 		            <input type="text" name="stocksGraphSymbolSearch" id="stocksGraphSymbolSearchBox" size="10">
 		            </div>
-            
+
 		            <div id="bondsListDiv" style="display:none">
-		            <select size="4" name="bondsGraphSymbol" id="bondsGraphSymbol" style="width:107px" multiple>    
-		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+		            <select size="4" name="bondsGraphSymbol" id="bondsGraphSymbol" style="width:107px" multiple>
+		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		            </select>
 		            </div>
 
 		            <div id="actualsListDiv" style="display:none">
-		            <select size="4" name="actualsGraphSymbol" style="width:107px" multiple>    
-		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+		            <select size="4" name="actualsGraphSymbol" style="width:107px" multiple>
+		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		            </select>
 		            </div>
-           
+
 		             <div id="investmentsListDiv" style="display:none">
-		            <select size="4" name="investmentsGraphSymbol" id="investmentGraphSymbol" style="width:107px" multiple>    
-		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>            
+		            <select size="4" name="investmentsGraphSymbol" id="investmentGraphSymbol" style="width:107px" multiple>
+		                <option vlaue="test">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		            </select>
-		            </div>            
+		            </div>
 		        </td>
 		        <td width="25">&nbsp;
-        	
+
 		        </td>
 		        <td align="right">
 		        	<!--
@@ -233,26 +233,26 @@ $(document).ready(function(){
 		 			<br><br>
 						<input type="text" name="startDate">
 		            -->
-           
-            
+
+
 
 		            <div id="addSelections" style="width:230px;height:100px;">
 					</div>
 
-            
+
 		            <br><br>
 		            <b>Zoom:</b>&nbsp;
-		            <span id="hour"><a href="javascript:selectZoom('hour')">Hour</a></span> |
-		            <span id="day"><a href="javascript:selectZoom('day')">Day</a></span> |
-		            <span id="week"><a href="javascript:selectZoom('week')">Week</a></span> |
-		            <span id="month"><a href="javascript:selectZoom('month')">Month</a></span> |
-		            <span id="year"><a href="javascript:selectZoom('year')">Year</a></span>
+		            <span id="hour"><a href="javascript:selectZoom('hours')">Hour</a></span> |
+		            <span id="day"><a href="javascript:selectZoom('days')">Day</a></span> |
+		            <span id="week"><a href="javascript:selectZoom('weeks')">Week</a></span> |
+		            <span id="month"><a href="javascript:selectZoom('months')">Month</a></span> |
+		            <span id="year"><a href="javascript:selectZoom('years')">Year</a></span>
 		            <br><br>
-		            <input type="hidden" name="zoom" value="week">
+		            <input type="hidden" name="zoom" value="weeks">
 		            <input type="hidden" name="queryInfo" value="">
 		            <input type="hidden" name="dashboardID" value="{{ dashboard.pk }}">
-		        </td>            
-		    </tr>    
+		        </td>
+		    </tr>
 		    <tr>
 		    	<td colspan="5" align="right">
 		        	<input type="button" name="clear" value="Clear" class="btn">
@@ -264,17 +264,17 @@ $(document).ready(function(){
 		    </table>
 		    </form>
 	    </div>
-	
-    
+
+
 	    <!-- Export Menu-->
 	    <div id="exportMenu" style="display:none">
 	    <form name="exportForm" action="" method="post">
 	    <table border="0" height="75">
 	    <tr>
-	    	<td> 
+	    	<td>
         		<p>Select the widget(s) you are interested in exporting, then click on the desired format.</p>
-	        </td>        
-	    </tr>    
+	        </td>
+	    </tr>
 	    <tr>
 	    	<td align="right">
 	        	<input type="button" name="cancel" value="Cancel" onClick="javascript:cancelExport()" class="btn">
@@ -282,31 +282,31 @@ $(document).ready(function(){
 	            <input type="Submit" name="excel" value="Excel" class="btn">
 	            <input type="Submit" name="pdf" value="PDF" class="btn">
 	            <input type="Submit" name="png" value="PNG" class="btn">
-            
+
 	            <a href="http://127.0.0.1:8000/dashboard/export_widgets?first=3">Sample Export To Excel</a>
 				<a href="http://127.0.0.1:8000/dashboard/test?first=3">Sample Export To PDF</a>
-	        </td>   
-	    </tr>   
+	        </td>
+	    </tr>
 	    </table>
 	    </form>
 	    </div>
-    
+
 	    <!-- Manage Kit Menu -->
 	    <div id="manageKitMenu" style="display:none">
 	    <form name="manageKitForm" action="" method="post">
 	    <table border="0" height="75">
 	    <tr>
-	    	<td valign="top"> 
+	    	<td valign="top">
 		        <p>Select the widget(s) you are interested in adding into your new kit, then name your kit in the text box, and press "Make Kit".</p>
 	        </td>
-	        <td width="20">&nbsp;</td>        
+	        <td width="20">&nbsp;</td>
 	        <td>
 	        	Name of new Kit:
 	            <br>
-	    	    <input type="text" name="kitName" width="30">             
+	    	    <input type="text" name="kitName" width="30">
 	            <br><br><br>
 	        </td>
-	    </tr>    
+	    </tr>
 	    <tr>
 	    	<td colspan="3" align="right">
 	        	<input type="button" name="applyChanges" value="Apply Changes" class="btn">
@@ -317,23 +317,23 @@ $(document).ready(function(){
 	    </table>
 	    </form>
 	    </div>
-    
+
 	    <!-- Manage Kit Menu -->
 	    <div id="manageKitMenu" style="display:none">
 	    	<form name="manageKitForm" action="" method="post">
 		    <table border="0" height="75">
 		    <tr>
-		    	<td valign="top"> 
+		    	<td valign="top">
 			        <p>Select the widget(s) you are intrested in adding into your new kit, then name your kit in the text box, and press "Make Kit".</p>
 		        </td>
-		        <td width="20">&nbsp;</td>        
+		        <td width="20">&nbsp;</td>
 		        <td>
 		        	Name of New Kit:
 		            <br>
-		    	    <input type="text" name="kitName" width="30">             
+		    	    <input type="text" name="kitName" width="30">
 		            <br><br><br>
 		        </td>
-		    </tr>    
+		    </tr>
 		    <tr>
 		    	<td colspan="3" align="right">
 		        	<input type="button" name="applyChanges" value="Apply Changes" class="btn">
@@ -344,9 +344,9 @@ $(document).ready(function(){
 		    </table>
 		    </form>
 	    </div>
-	
+
 	</div>
-	
+
 	<!-- start content -->
 	<div id="content">
 		<div id="widgetList">
@@ -367,7 +367,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<!-- end content -->
-	
+
 	<div id="footer">
 		<p>Courtesy, <em>Team Volt</em>. 2010.</p>
 	</div>

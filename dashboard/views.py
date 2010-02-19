@@ -23,13 +23,13 @@ def widget_properties(request, widget_id):
         #Tempduration = number of hours between the first and last dates
         tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24)
         #For each hour, increment earliestdate by one hour and add it to the list
-        dates = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
+        dates = [(earliesttime + timedelta(hours=i)).isoformat() for i in range(tempduration)]
     elif(zoom == "days"):
         tempduration = int((latesttime+timedelta(days=1)-earliesttime).days)
-        dates = [earliesttime + timedelta(days=i) for i in range(tempduration)]
+        dates = [(earliesttime + timedelta(days=i)).isoformat() for i in range(tempduration)]
     elif(zoom == "weeks"):
         tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7)
-        dates = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
+        dates = [(earliesttime + timedelta(weeks=i)).isoformat() for i in range(tempduration)]
     elif(zoom == "months"):
         #If the latest month is after or the same as the earliest month, count the difference between the months, plus
         #12 times the number of intervening years
@@ -44,7 +44,7 @@ def widget_properties(request, widget_id):
         tempmonth = latesttime.month
         #For each month in the duration, create a new date time, calculating the month and the year
         for i in range(tempduration):
-            dates.insert(0, datetime(tempyear, tempmonth, 1, 0, 0, 0))
+            dates.insert(0, datetime(tempyear, tempmonth, 1, 0, 0, 0).isoformat())
             tempmonth-=1
             if(tempmonth<1):
                 tempmonth=12
@@ -53,7 +53,7 @@ def widget_properties(request, widget_id):
         tempduration = latesttime.year-earliesttime.year + 1
         tempyear = latesttime.year
         for i in range(tempduration):
-            dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
+            dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0).isoformat() )
             tempyear-=1
     return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
         
@@ -343,13 +343,13 @@ graphchunks: the total number of chunks to split the graph into.
  
 def addWidget(request):
     #Get the dashboard to add a widget to.
-    dashboard_id = request.GET["dashboardID"]
-    dashboard = objects.Dashboard.get(pk=dashboard_id)
-    new_widget = dashboard.addWidget(0)
+    dashboard_id = request.POST["dashboardID"]
+    dashboard = Dashboard.objects.get(pk=dashboard_id)
+    new_widget = dashboard.addWidget('left')
  
     #Add a typed widget corresponding to the new generic widget
-    graphtype = request.GET["graphType"]
-    zoom = request.GET["zoom"]
+    graphtype = request.POST["graphType"]
+    zoom = request.POST["zoom"]
     earliesttime = datetime(2010,01,01,00,00,00)
     latesttime = datetime(2010,02,01,00,00,00)
     firstunit = "dollars"
@@ -357,10 +357,14 @@ def addWidget(request):
     new_widget.add_typed_widget(graphtype, zoom, earliesttime, latesttime, firstunit, secondunit)
  
     #Make all the queries that need to be added to the database for the new widget
-    queries = request.GET["queryInfo"]
+    queries = request.POST["queryInfo"].split(",")
     for query in queries:
-        new_widget.add_query(query[0], query[1], query[2])
-    return HttpResponseRedirect('/dashboard')
+        if query != "":
+            table = query.split(":")[0]
+            option = query.split(":")[1]
+            property = globals()[table].get_most_important_property()
+            new_widget.add_query(table, option, property)
+    return HttpResponseRedirect('/dashboard/' + dashboard_id)
 
 def extract_times(indate):
     """Takes a string representing a time stamp from the template, and scans it into a datetime object
