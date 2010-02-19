@@ -356,14 +356,16 @@ $(document).ready(function(){
 		<!-- start content -->
 		<div id="widgetList">
     
-		<table>    	
+		<table>
 	    	<tr>
-				<td align="center">
+				<td valign="top" width="410">
+				<h2>Left</h2>
 	        	{% for b in left_widget_bodies %}
 	        	{{ b }}
 	            {% endfor %}
 				</td>
-				<td align="center">
+				<td valign="top" width="310">
+				<h2>Right</h2>
 	        	{% for b in right_widget_bodies %}
 	        	{{ b }}
 	            {% endfor %}

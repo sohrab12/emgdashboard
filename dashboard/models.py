@@ -178,7 +178,7 @@ class Widget(models.Model):
         print specs
         # Find out which of these is this particular specialization
         for spec in specs:
-            o = spec.objects.filter(parent_widget__pk=self.pk)
+            o = spec.objects.filter(parent_widget=self)
             if len(o) > 1:
                 raise Exception('Database integrity error. Found more than one %s with the same parent Widget.' % str(type(spec)))
             elif len(o) == 1:
@@ -205,7 +205,6 @@ class LineWidget(models.Model):
     def get_html(self):
         t = loader.get_template('linewidget.html')
         c = Context({ 'widget_pk': self.pk })
-        print t.render(c)
         return t.render(c)
     def __unicode__(self):
         return "LineWidget " + str(self.parent_widget.pk)
@@ -237,17 +236,21 @@ class TickerWidget(models.Model):
         if len(queries) > 1:
             raise Exception("%s has more than one query" % unicode(self))
         query = queries[0]
-            
         try:
-            return u'<strong>%s.%s:</strong> %s' % (query.table, query.first_order_option, query.run().next())
+            data = query.run().next()
         except StopIteration:
-            return u'<strong>No data for %s.%s!</strong>' % (query.table, query.first_order_option)
+            data = None
+        t = loader.get_template('ticker.html')
+        c = Context({ 'table': query.table, 'foo': query.first_order_option, 'data': data})
+        return t.render(c)
     def __unicode__(self):
         return u'<TickerWidget %d>' % self.pk 
     
 class Kit(WidgetOwner):
-    """A collection of widgets that can all be added to the dashboard at once. Kits store multiple widgets by storing each widget's
-    ID into a list
+    """
+    A collection of widgets that can all be added to the dashboard at
+    once. Kits store multiple widgets by storing each widget's ID into
+    a list.
     """
     name = models.CharField(max_length=30)
     creator = models.CharField(max_length=50)
