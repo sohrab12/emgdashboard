@@ -282,9 +282,16 @@ $(document).ready(function(){
 	            <input type="Submit" name="excel" value="Excel" class="btn">
 	            <input type="Submit" name="pdf" value="PDF" class="btn">
 	            <input type="Submit" name="png" value="PNG" class="btn">
-            
-	            <a href="http://127.0.0.1:8000/dashboard/export_widgets?first=3">Sample Export To Excel</a>
-				<a href="http://127.0.0.1:8000/dashboard/test?first=3">Sample Export To PDF</a>
+        
+		<br />
+	            <a href="http://127.0.0.1:8000/dashboard/export_widgets?first=1">Sample Export EIX To Excel</a>
+		<br />
+	            <a href="http://127.0.0.1:8000/dashboard/export_widgets?first=3">Sample Export OMG To Excel</a>
+		<br />
+	            <a href="http://127.0.0.1:8000/dashboard/export_pdf?first=1">Sample Export EIX To PDF</a>
+		<br />
+	            <a href="http://127.0.0.1:8000/dashboard/export_pdf?first=3">Sample Export OMG To PDF</a>
+		<br />
 	        </td>   
 	    </tr>   
 	    </table>
@@ -350,7 +357,7 @@ $(document).ready(function(){
 	<!-- start content -->
 	<div id="content">
 		{% if no_widgets %}
-		<p style="text-align: center" class="nowidgetsp">You haven't added any widgets yet. <a class="addWidget" href="javascript:menuSelection()">Add some</a></p>
+		<p style="text-align: center">You haven't added any widgets yet. <a class="addWidget" href="javascript:menuSelection()">Add some</a></p>
 		{% else %}
 		<div id="widgetList">
 			<table>

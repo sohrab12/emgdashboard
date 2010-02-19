@@ -414,14 +414,15 @@ def export_widget(request):
                 # on hosts without xlwt
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
-        widget = get_object_or_404(Widget, pk=widget_id)
+        widget = Widget.objects.get(pk=widget_id)
+        #widget = get_object_or_404(Widget, pk=widget_id)
         wb = xlwt.Workbook()
         for query in widget.get_queries():
             table = query.table
             rowcounter = -1
-            ws = wb.add_sheet(str(query.property)+' Test Sheet')
+            ws = wb.add_sheet(str(query.first_order_option)+' Test Sheet')
             for table in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == table.symbol):
+                if (query.first_order_option == table.symbol):
                     #sym = table.symbol
                     rowcounter += 1
                     ws.write(rowcounter, 0, table.symbol)
@@ -462,11 +463,12 @@ def export_pdf(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
+        #widget = get_object_or_404(Widget, pk=widget_id)
         data = []
         for query in widget.get_queries():
             tabl = query.table
             for tabl in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == tabl.symbol):
+                if (query.first_order_option == tabl.symbol):
                     data.append([tabl.symbol, tabl.price])
  
     ts = [('ALIGN', (1,1), (-1,-1), 'CENTER'),
