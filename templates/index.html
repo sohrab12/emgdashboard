@@ -354,18 +354,21 @@ $(document).ready(function(){
    
 
 		<!-- start content -->
-
-
-
 		<div id="widgetList">
     
-		<table>    	
+		<table>
 	    	<tr>
-	        	{% for Widget in widgets %}
-	        	<td align="center"><iframe src="/dashboard/linewidget/{{ Widget.pk }}" width="390" height="500" frameborder="0"></iframe></td>
+				<td valign="top" width="410">
+	        	{% for b in left_widget_bodies %}
+	        	{{ b }}
 	            {% endfor %}
+				</td>
+				<td valign="top" width="310">
+	        	{% for b in right_widget_bodies %}
+	        	{{ b }}
+	            {% endfor %}
+				</td>
 	        </tr>
-       
 		</table>
 		</div>
 		<!-- end content -->

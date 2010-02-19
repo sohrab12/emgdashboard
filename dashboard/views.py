@@ -56,14 +56,6 @@ def widget_properties(request, widget_id):
             dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
             tempyear-=1
     return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
-    
-def ticker_widget(request, ticker_widget_id):
-    ticker_widget = TickerWidget.objects.get(parent_widget=ticker_widget_id)
-    query = ticker_widget.get_query()
-    try:
-        return HttpResponse('<b>%s.%s:</b> %s' % (query.table, query.first_order_option, query.run().next()))
-    except StopIteration:
-        return HttpResponse('<b>No data for %s.%s!</b>' % (query.table, query.first_order_option))
         
 def line_graph_view(request, widget_id):
     """Renders a line graph from data passed via an HttpRequest
@@ -407,9 +399,13 @@ def index(request, dashboard_id):
     #p = get_object_or_404(StockPrice, pk=1)
     dash = get_object_or_404(Dashboard, pk=dashboard_id)
     stockList = StockPrice.objects.all().order_by('-symbol')
-    widgets = dash.get_widgets()
-    return render_to_response('index.html', {'stockList': stockList, 'dashboard': dash, 'widgets':widgets})
-    #return render_to_response('index.html')
+    widgets = Widget.objects.filter(belongTo=dash)
+    left_widget_bodies = [w.get_specialization().get_html() for w in widgets if w.x == 0]
+    right_widget_bodies = [w.get_specialization().get_html() for w in widgets if w.x == 1]
+    return render_to_response('index.html', {'stockList': stockList,
+                                             'dashboard': dash,
+                                             'left_widget_bodies': left_widget_bodies,
+                                             'right_widget_bodies': right_widget_bodies})
  
 def export_widget(request):
     import xlwt # importing inside the view so that other functions work
