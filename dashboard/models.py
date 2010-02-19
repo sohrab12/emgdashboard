@@ -1,5 +1,6 @@
 from django.template import loader, Context
 from django.db import models
+from datetime import datetime, timedelta
 import inspect
 
 #GUI Models
@@ -203,8 +204,56 @@ class LineWidget(models.Model):
     firstunit = models.CharField(max_length = 20)
     secondunit = models.CharField(max_length = 20)
     def get_html(self):
+        #Get the properties of the widget to render the widgetframe template with
+        widget = self.parent_widget
+
+        #Calculate the dates that the slider can be set to based on start time, end time, and zoom.
+        #Append these values to a list
+        typedwidget = widget.widget_type()
+        earliesttime = typedwidget.sliderstartdate
+        latesttime = typedwidget.sliderenddate
+        zoom = typedwidget.zoom
+        dates = []
+
+        #Calculate dates
+        if(zoom == "hours"):
+            #Tempduration = number of hours between the first and last dates
+            tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24)
+            #For each hour, increment earliestdate by one hour and add it to the list
+            dates = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
+        elif(zoom == "days"):
+            tempduration = int((latesttime+timedelta(days=1)-earliesttime).days)
+            dates = [earliesttime + timedelta(days=i) for i in range(tempduration)]
+        elif(zoom == "weeks"):
+            tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7)
+            dates = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
+        elif(zoom == "months"):
+            #If the latest month is after or the same as the earliest month, count the difference between the months, plus
+            #12 times the number of intervening years
+            if(latesttime.month >= earliesttime.month):
+                tempduration = (latesttime.year-earliesttime.year)*12 + latesttime.month-earliesttime.month
+            #If the latest month is before the earliest month, on a later year, count 12 times the number of years minus 1,
+            #the months to the latest date since the start of the latest year, and the months from the starting month to the end of that year
+            else:
+                tempduration = (latesttime.year-earliesttime.year-1)*12 + latesttime.month + (12 - earliesttime.month)
+            tempduration+=1
+            tempyear = latesttime.year
+            tempmonth = latesttime.month
+            #For each month in the duration, create a new date time, calculating the month and the year
+            for i in range(tempduration):
+                dates.insert(0, datetime(tempyear, tempmonth, 1, 0, 0, 0))
+                tempmonth-=1
+                if(tempmonth<1):
+                    tempmonth=12
+                    tempyear-=1
+        else: #zoom == years
+            tempduration = latesttime.year-earliesttime.year + 1
+            tempyear = latesttime.year
+            for i in range(tempduration):
+                dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
+                tempyear-=1
         t = loader.get_template('linewidget.html')
-        c = Context({ 'widget_pk': self.pk })
+        c = Context({'pk': widget.pk, 'widget': widget, 'typedwidget': typedwidget, 'dates': dates})
         return t.render(c)
     def __unicode__(self):
         return "LineWidget " + str(self.parent_widget.pk)
