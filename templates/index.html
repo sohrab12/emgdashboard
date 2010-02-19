@@ -58,7 +58,7 @@ function collapseMenus()
 function cancelAddWidget()
 {
 	removeAllMenuHighlights();
-	$("#tabbody").slideToggle("slow");
+	$("#tabbody").slideToggle("fast");
 	$(this).toggleClass("active");
 }
 
@@ -66,7 +66,7 @@ function cancelAddWidget()
 function cancelExport()
 {
 	removeAllMenuHighlights();
-	$("#tabbody").slideToggle("slow");
+	$("#tabbody").slideToggle("fast");
 	$(this).toggleClass("active");
 }
 
@@ -74,7 +74,7 @@ function cancelExport()
 function cancelKit()
 {
 	removeAllMenuHighlights();
-	$("#tabbody").slideToggle("slow");
+	$("#tabbody").slideToggle("fast");
 	$(this).toggleClass("active");	
 }
 
@@ -379,5 +379,9 @@ $(document).ready(function(){
 		</div>
 	</div>
 	<!-- end content -->
+	
+	<div id="footer">
+		<p>Courtesy, <em>Team Volt</em>. 2010.</p>
+	</div>
 </body>
 </html>

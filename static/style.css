@@ -33,6 +33,7 @@ a {
 /* Header */
 
 #header {
+    margin-top: 24px;
 }
 
 #logo {
@@ -77,13 +78,14 @@ a {
     -webkit-border-radius: 5px;
     background-color: #9AB1CB;
     color: black;
+    padding: 5px;
 }
 
 
 /* Content */
 
 #content {
-    margin-top: 20px;
+    margin-top: 34px;
 }
 
 /* Forms */
@@ -160,3 +162,7 @@ select {
 }
 
 /* Footer */
+#footer {
+    text-align: center;
+    font-size: 8pt;
+}
