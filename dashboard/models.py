@@ -63,7 +63,7 @@ class Widget(models.Model):
         elif graphtype == "table":
             pass
         else:
-            ticker = TickerWidget(parent_widget = self, firstunit = unitone)
+            ticker = TickerWidget(parent_widget = self)
             ticker.save()
             return ticker
                          
@@ -210,7 +210,9 @@ class LineWidget(models.Model):
         return "LineWidget " + str(self.parent_widget.pk)
 
 class Query(models.Model):
-    """A query to be submitted to the database. Each query references a widget as a foreign key."""
+    """
+    A query to be submitted to the database/models.
+    """
     belongTo = models.ForeignKey(Widget)
     table = models.CharField(max_length=50) #The database table this query searches
     first_order_option = models.CharField(max_length=50) #The string to match to filter the table
@@ -218,7 +220,10 @@ class Query(models.Model):
     #Run the query, searching the table for entries that have the desired first order option. Then return the value
     #for the property field
     def run(self):
-        print 'constructing generator w/ table=%s and property=%s' % (self.table, self.property)
+        '''
+        Returns a generator that yields 2-tuples of the
+        form: (property's value, datetime.datetime).
+        '''
         for o in globals()[self.table].objects_by_first_order_option(self.first_order_option):
             yield (o.__getitem__(self.property), o.__getitem__("time"))
     def __unicode__(self):
@@ -230,7 +235,7 @@ class TickerWidget(models.Model):
     of a single data series.
     """
     parent_widget = models.OneToOneField(Widget, primary_key=True)
-
+    
     def get_html(self):
         queries = self.parent_widget.get_queries()
         if len(queries) > 1:
@@ -241,7 +246,7 @@ class TickerWidget(models.Model):
         except StopIteration:
             data = None
         t = loader.get_template('ticker.html')
-        c = Context({ 'table': query.table, 'foo': query.first_order_option, 'data': data})
+        c = Context({ 'table': query.table, 'foo': query.first_order_option, 'data': data[0]})
         return t.render(c)
     def __unicode__(self):
         return u'<TickerWidget %d>' % self.pk 
