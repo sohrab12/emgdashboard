@@ -400,10 +400,12 @@ def index(request, dashboard_id):
     dash = get_object_or_404(Dashboard, pk=dashboard_id)
     stockList = StockPrice.objects.all().order_by('-symbol')
     widgets = Widget.objects.filter(belongTo=dash)
+    no_widgets = (len(widgets) == 0)
     left_widget_bodies = [w.get_specialization().get_html() for w in widgets if w.x == 0]
     right_widget_bodies = [w.get_specialization().get_html() for w in widgets if w.x == 1]
     return render_to_response('index.html', {'stockList': stockList,
                                              'dashboard': dash,
+                                             'no_widgets': no_widgets,
                                              'left_widget_bodies': left_widget_bodies,
                                              'right_widget_bodies': right_widget_bodies})
  
