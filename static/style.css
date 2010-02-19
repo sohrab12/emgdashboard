@@ -39,6 +39,12 @@ a {
     float: left;
 }
 
+#logo {
+    font: 16pt "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+    color: #566371;
+    font-weight: bold;
+}
+
 #menu {
     font: 10pt "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
     text-align: right;
@@ -78,91 +84,6 @@ a {
 
 #content {
     margin-top: 20px;
-}
-
-.post {
-}
-
-.post .title {
-	margin: 0;
-	background: url(images/img03.jpg) repeat-x left bottom;
-}
-
-.post .title h1, .post .title h2 {
-	margin: 0;
-	padding: 0;
-}
-
-.post .title a {
-	border: none;
-	color: #666666;
-}
-
-.post .meta {
-	margin: 0;
-	padding: 3px 0 0 0;
-	font: bold 10px Verdana, Verdana, sans-serif;
-	color: #CCCCCC;
-}
-
-.post .entry {
-	padding-bottom: 20px;
-}
-
-.post .entry p, .post .entry ol, .post .entry ul {
-	line-height: 180%;
-}
-
-.post .tags {
-	margin: 0;
-	padding: 10px;
-	border-top: 1px solid #DEDEDE;
-	font-size: smaller;
-	text-align: center;
-}
-
-.post .tags a {
-	margin-left: 10px;
-}
-
-.post .links {
-	text-align: center;
-	margin: 0;
-	padding: 5px 10px;
-	border: 1px solid #DEDEDE;
-	font-size: smaller;
-	text-transform: uppercase;
-}
-
-.post .links a {
-	font-weight: bold;
-}
-
-.post ul {
-	padding-bottom: 25px;
-}
-
-.post h2, .post h3 {
-	padding-top: 20px;
-}
-
-#recent-posts {
-}
-
-#recent-posts h3 {
-	margin: 0;
-	padding: 20px 0 0 0;
-	border-bottom: 1px solid #DEDEDE;
-}
-
-#recent-posts ul {
-	margin: 0;
-	padding: 0;
-}
-
-#recent-posts li {
-	margin: 0;
-	padding: 0;
 }
 
 /* Forms */
@@ -242,3 +163,5 @@ select {
 	font-weight: normal;
 	color: #FFFFFF;
 }
+
+/* Footer */
