@@ -162,7 +162,14 @@
 						document.images[i].src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=" + i + "&chunkcount=3&ytop=20&ybottom=0&width=" + width + "&height=" + height;
 					}
 				}
-	}
+				if("{{typedwidget.secondunit}}" != "null")
+				{
+					console.log("second unit");
+					var width = $("div .widgetgraph").width();
+					var height = $("div .widgetgraph").height();
+					//document.write('<img id="secondyaxis" onMouseUp="return update_graph()" src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0&width=' + width + '&height=' + height + '"/>');
+				}
+			}
 	</script>
 
 </head>
@@ -172,15 +179,9 @@
 	<div class="widget">
 		<!-- widget placeholder -->
 		<DIV class="widgetgraph">
-			<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><script type="text/javascript">
-			if("{{typedwidget.secondunit}}" != "null")
-			{
-				var width = $("div .widgetgraph").width();
-				var height = $("div .widgetgraph").height();
-				var imgsrc = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0";
-				document.write('<img id="secondyaxis" onMouseUp="return update_graph()"/>')
-				$('img#secondyaxis').src(imgsrc);
-			}
+			<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/>
+			<script language="JavaScript">
+				 setup_widget();
 			</script>
 		</DIV>
 		<div class="widgetbox">
@@ -218,8 +219,5 @@
 		<!-- delete -->
 		<div alt="delete" class="delete"><font color="blue"><u> Delete </u></font></div>
 	</div>
-	<script language="JavaScript">
-			  setup_widget();
-	</script>
 </body>
 </html>
