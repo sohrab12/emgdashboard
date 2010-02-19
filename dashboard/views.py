@@ -92,7 +92,7 @@ graphchunks: the total number of chunks to split the graph into.
     # Current y range under display
     #TODO: Check min, max values against YTOP and YBOTTOM
  
-    line_widget = LineWidget.objects.get(parentwidget = widget_id)
+    line_widget = LineWidget.objects.get(parent_widget = widget_id)
     try:
         maxyvalue = int(request.GET['ytop'])
         minyvalue = int(request.GET['ybottom'])
@@ -204,8 +204,8 @@ graphchunks: the total number of chunks to split the graph into.
     xaxisvalues = [] #The dates to display on the x-axis
  
     #Get the the queries that belong to this model
-    parentwidget = Widget.objects.get(pk=widget_id)
-    queries = parentwidget.get_queries()
+    parent_widget = Widget.objects.get(pk=widget_id)
+    queries = parent_widget.get_queries()
     #Run each query
     query_results = []
     for query in queries:
