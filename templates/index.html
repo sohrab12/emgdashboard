@@ -110,50 +110,44 @@ var data = "";
 <script type="text/javascript">
 
   	$(document).ready(function(){
+		
+		$(".addWidget").click(function(){
+			console.log("hi");
+			collapseMenus();
+			$('#tabbody').show();
+			$("#addWidgetMenu").show();
+			$('.addWidget').addClass('menuitemselected');
+		});
 
-	$('select#stocksGraphSymbol').selectList('div#addSelections',{
-		addAnimate: function (item, callback) {
-			$(item).slideDown(500, callback);
-			updateQueryInfo('stocksGraphSymbol');},
 
-		removeAnimate: function (item, callback) {
-			$(item).slideUp(500, callback);}
+		$(".exportWidget").click(function(){
+			collapseMenus();
+			$('#tabbody').show();
+			$("#exportMenu").show();
+			$('.exportWidget').addClass('menuitemselected');
+		});
+
+
+		$(".manageKit").click(function(){
+			collapseMenus();
+			$('#tabbody').show();
+			$("#manageKitMenu").show();
+			$('.manageKit').addClass('menuitemselected');
+		});
+		
+		data = data.split(" ");
+		$("#stocksGraphSymbolSearchBox").autocomplete(data);
+		
+		$('select#stocksGraphSymbol').selectList('div#addSelections',{
+			addAnimate: function (item, callback) {
+				$(item).slideDown(500, callback);
+				updateQueryInfo('stocksGraphSymbol');},
+
+			removeAnimate: function (item, callback) {
+				$(item).slideUp(500, callback);}
+		});	
+
 	});
-
-
-
-//  var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");
-	data = data.split(" ");
-	$("#stocksGraphSymbolSearchBox").autocomplete(data);
-
-
-
-
-	$(".addWidget").click(function(){
-		collapseMenus();
-		$('#tabbody').show();
-		$("#addWidgetMenu").show();
-		$('.addWidget').addClass('menuitemselected');
-	});
-
-
-	$(".exportWidget").click(function(){
-		collapseMenus();
-		$('#tabbody').show();
-		$("#exportMenu").show();
-		$('.exportWidget').addClass('menuitemselected');
-	});
-
-
-	$(".manageKit").click(function(){
-		collapseMenus();
-		$('#tabbody').show();
-		$("#manageKitMenu").show();
-		$('.manageKit').addClass('menuitemselected');
-	});
-
-
-});
 </script>
 </head>
 
