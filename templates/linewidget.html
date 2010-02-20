@@ -81,22 +81,15 @@
 		var valDates = [];
 		//Remove the brackets from the list to get the list of dates
 		var datelisttxt = '{{dates}}'.split("[")[1].split("]")[0];
-		var tempdates= datelisttxt.split("datetime.datetime")
+		var tempdates = datelisttxt.split(",")
 		//Parse list of dates and load each into valDates
+		console.log("{{typedwidget.startdate}}");
 		for (date in tempdates)
 		{
 			if(tempdates[date]!="")
 			{
-				datevalues = tempdates[date].split("(")[1].split(")")[0].split(", ");
-				//Add zero padding for matching with the slider construction
-				for(datepiece in datevalues)
-				{
-					if(datevalues[datepiece].length < 2)
-					{
-						datevalues[datepiece] = "0" + datevalues[datepiece];
-					}
-				}
-				valDates.push(datevalues[0]+"-"+datevalues[1]+"-"+datevalues[2]+" "+datevalues[3]+":"+datevalues[4]+":"+datevalues[5]);
+				datevalues = tempdates[date].split(";")[1].split("&")[0].split("T");
+				valDates.push(datevalues[0]+" "+datevalues[1]);
 			}
 		}
 
