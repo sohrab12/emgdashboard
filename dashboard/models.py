@@ -208,6 +208,25 @@ class TickerWidget(models.Model):
     def __unicode__(self):
         return u'<TickerWidget %d>' % self.pk 
     
+    
+class TableWidget(models.Model):
+    """
+    A widget containing a table of data.
+    """
+    parent_widget = models.OneToOneField(Widget, primary_key=True)
+    
+    def get_html(self):
+        queries = self.parent_widget.get_queires()
+        
+        t = loader.get_template('tablewidget.html')
+        c = Context({ 'table': query.table, 'foo': query.first_order_option, 'data': data[0]})
+        return t.render(c)
+    
+    def __unicode__(self):
+        return u'<TableWidget %d>' % self.pk   
+    
+    
+    
 class Kit(WidgetOwner):
     """
     A collection of widgets that can all be added to the dashboard at
