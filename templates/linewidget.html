@@ -116,7 +116,7 @@
 				var startdate = valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 0)];
 				var enddate = valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 1)];
 				$.post('http://127.0.0.1:8000/dashboard/slidewidgettimes', {pk: "{{widget.pk}}", start: startdate, end: enddate}, function(data){console.log("Data Loaded: " + data);});
-				update_graph();
+				update_graph({{ pk }});
 			}
 		});
 
@@ -132,8 +132,16 @@
 	});
 
 
-		function update_graph()
+		function update_graph(pk)
 		{
+			var i = 0;
+			$('#linewidget'+pk+' .widgetgraph img').each(function() {
+				var n = $(this).attr('src').split("&refresh", 1)+"&refresh=" + refreshtag;
+				console.log(n);
+				$(this).attr('src', n);
+				i++;
+			})
+			
 			var refreshtag = Math.floor(Math.random()*10001)
 			for(var i = 0; i<=3; i++)
 			{
@@ -141,8 +149,6 @@
 					document.images[i].src = document.images[i].src.split("&refresh", 1)+"&refresh=" + refreshtag;
 				}
 			}
-			//setTimeout('get_chunk()', 1000);
-			console.log("Graph updated");
 		}
 
 		function setup_widget(pk)
@@ -161,7 +167,7 @@
 				console.log("second unit");
 				var width = $('#linewidget'+pk+' .widgetgraph').width();
 				var height = $('#linewidget'+pk+' .widgetgraph').height();
-				//document.write('<img id="secondyaxis" onMouseUp="return update_graph()" src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0&width=' + width + '&height=' + height + '"/>');
+				//document.write('<img id="secondyaxis" onMouseUp="return update_graph({{ pk }})" src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0&width=' + width + '&height=' + height + '"/>');
 			}
 		}
 </script>
@@ -169,16 +175,16 @@
 <div id="linewidget{{ pk }}" class="widget" style="display: block; height: 500px; border: 2px solid black">
 	<!-- widget placeholder -->
 	<div class="widgetgraph">
-		<img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/><img onMouseUp="return update_graph()"/>
+		<img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/>
 		<script language="JavaScript">
 			 setup_widget({{pk}});
 		</script>
 	</div>
 	<!-- new range slider -->
-	<div class="widgetslider" id = "slider-range">
-		<p>
+	<div class="widgetslider" id="slider-range">
+	</div>
+	<div id="slidermeta{{ pk }}">
 		<label for="date">Date Range:</label>
 		<input type="text" id="date" style="border:0; color:#f6931f; font-weight:bold;" />
-		</p>
 	</div>
 </div>
