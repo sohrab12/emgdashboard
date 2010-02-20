@@ -36,6 +36,7 @@ function selectZoom(id)
 	document.getElementById('month').style.fontWeight = 'normal';
 	document.getElementById('year').style.fontWeight = 'normal';
 	document.getElementById(id).style.fontWeight = 'bold';
+
 	document.addWidgetForm.zoom.value = id;
 }
 
@@ -227,26 +228,17 @@ $(document).ready(function(){
         	
 		        </td>
 		        <td align="right">
-		        	<!--
-		            <br>
-						<input type="text" name="startDate">
-		 			<br><br>
-						<input type="text" name="startDate">
-		            -->
-           
-            
-
 		            <div id="addSelections" style="width:230px;height:100px;">
 					</div>
 
             
 		            <br><br>
 		            <b>Zoom:</b>&nbsp;
-		            <span id="hour"><a href="javascript:selectZoom('hour')">Hour</a></span> |
-		            <span id="day"><a href="javascript:selectZoom('day')">Day</a></span> |
-		            <span id="week"><a href="javascript:selectZoom('week')">Week</a></span> |
-		            <span id="month"><a href="javascript:selectZoom('month')">Month</a></span> |
-		            <span id="year"><a href="javascript:selectZoom('year')">Year</a></span>
+		            <a href="javascript:selectZoom('hour')"><font id="hour">Hour</font></a> |
+		            <a href="javascript:selectZoom('day')"><font id="day">Day</font></a> |
+		            <a href="javascript:selectZoom('week')"><font id="week">Week</font></a> |
+		            <a href="javascript:selectZoom('month')"><font id="month">Month</font></a> |
+		            <a href="javascript:selectZoom('year')"><font id="year">Year</font></a>
 		            <br><br>
 		            <input type="hidden" name="zoom" value="week">
 		            <input type="hidden" name="queryInfo" value="">
@@ -346,7 +338,6 @@ $(document).ready(function(){
 	    </div>
 	
 	</div>
-	
 	<!-- start content -->
 	<div id="content">
 		{% if no_widgets %}

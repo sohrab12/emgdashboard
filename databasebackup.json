@@ -1,0 +1,239 @@
+[ 
+    {
+        "pk": 1, 
+        "model": "dashboard.Dashboard", 
+        "fields": {
+        	"user": "1",
+        	"lastLogin": "2010-01-13 19:02:58"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "dashboard.widgetowner", 
+        "fields": {}
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.widgetowner", 
+        "fields": {}
+    }, 
+    {
+        "pk": 1, 
+        "model": "dashboard.dashboard", 
+        "fields": {
+            "user": "Subject 1", 
+            "lastLogin": "2010-01-13 19:02:58"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.dashboard", 
+        "fields": {
+            "user": "Subject 2", 
+            "lastLogin": "2010-01-13 19:03:10"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "dashboard.widget", 
+        "fields": {
+            "updated": "2010-01-13 19:08:48", 
+            "created": "2010-01-13 19:08:47", 
+            "creator": "Subject 1", 
+            "y": 1, 
+            "x": 0, 
+            "belongTo": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.widget", 
+        "fields": {
+            "updated": "2010-01-13 19:08:48", 
+            "created": "2010-01-13 19:08:47", 
+            "creator": "Subject 1", 
+            "y": 0, 
+            "x": 0, 
+            "belongTo": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "dashboard.widget", 
+        "fields": {
+            "updated": "2010-01-13 19:11:55", 
+            "created": "2010-01-13 19:11:54", 
+            "creator": "Subject 2", 
+            "y": 0, 
+            "x": 0, 
+            "belongTo": 2
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.linewidget", 
+        "fields": {
+            "startdate": "2010-01-05 19:11:55", 
+            "enddate": "2010-01-25 19:11:55", 
+            "sliderstartdate": "2010-01-05 19:11:55", 
+            "sliderenddate": "2010-01-25 19:11:55", 
+            "latestentry": "2010-01-25 19:11:55", 
+            "zoom": "days",
+            "firstunit": "dollars"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "dashboard.linewidget", 
+        "fields": {
+            "startdate": "2010-01-05 19:11:55", 
+            "enddate": "2010-02-25 19:11:55", 
+            "sliderstartdate": "2010-01-05 19:11:55", 
+            "sliderenddate": "2010-02-25 19:11:55", 
+            "latestentry": "2010-02-25 19:11:55", 
+            "zoom": "days",
+            "firstunit": "dollars",
+            "secondunit": "dollars"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "dashboard.query", 
+        "fields": {
+            "table": "StockPrice", 
+            "property": "price", 
+            "belongTo": 3, 
+            "first_order_option": "EIX"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.query", 
+        "fields": {
+            "table": "StockPrice", 
+            "property": "price", 
+            "belongTo": 3, 
+            "first_order_option": "OMG"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-21 16:22:17"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-09 16:25:00"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-11 17:13:07"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-05 17:13:19"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-05 11:03:53"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-20 11:04:10"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-25 11:04:22"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "dashboard.dataentry", 
+        "fields": {
+            "time": "2010-01-22 11:04:36"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 5.1200000000000001, 
+            "symbol": "EIX"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 2.1400000000000001, 
+            "symbol": "EIX"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 13.0, 
+            "symbol": "EIX"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 9.3100000000000005, 
+            "symbol": "EIX"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 7.1200000000000001, 
+            "symbol": "OMG"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 4.1200000000000001, 
+            "symbol": "OMG"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 15.130000000000001, 
+            "symbol": "OMG"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "dashboard.stockprice", 
+        "fields": {
+            "price": 8.1999999999999993, 
+            "symbol": "OMG"
+        }
+    }
+]
