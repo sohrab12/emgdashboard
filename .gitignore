@@ -2,3 +2,5 @@
 *EMGDashboardDB
 dashboard.db
 local_settings.py
+Thumbs.db
+.DS_Store
