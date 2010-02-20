@@ -5,75 +5,24 @@ from django.conf import settings
 from datetime import datetime, timedelta
 from models import *
 from django.template import RequestContext
- 
-def widget_properties(request, widget_id):
-    #Get the properties of the widget to render the widgetframe template with
-    widget = get_object_or_404(Widget, pk=widget_id)
- 
-    #Calculate the dates that the slider can be set to based on start time, end time, and zoom.
-    #Append these values to a list
-    typedwidget = widget.widget_type()
-    earliesttime = typedwidget.sliderstartdate
-    latesttime = typedwidget.sliderenddate
-    zoom = typedwidget.zoom
-    dates = []
- 
-    #Calculate dates
-    if(zoom == "hours"):
-        #Tempduration = number of hours between the first and last dates
-        tempduration = int((latesttime+timedelta(hours=1)-earliesttime).days * 24)
-        #For each hour, increment earliestdate by one hour and add it to the list
-        dates = [earliesttime + timedelta(hours=i) for i in range(tempduration)]
-    elif(zoom == "days"):
-        tempduration = int((latesttime+timedelta(days=1)-earliesttime).days)
-        dates = [earliesttime + timedelta(days=i) for i in range(tempduration)]
-    elif(zoom == "weeks"):
-        tempduration = int((latesttime+timedelta(weeks=1)-earliesttime).days / 7)
-        dates = [earliesttime + timedelta(weeks=i) for i in range(tempduration)]
-    elif(zoom == "months"):
-        #If the latest month is after or the same as the earliest month, count the difference between the months, plus
-        #12 times the number of intervening years
-        if(latesttime.month >= earliesttime.month):
-            tempduration = (latesttime.year-earliesttime.year)*12 + latesttime.month-earliesttime.month
-        #If the latest month is before the earliest month, on a later year, count 12 times the number of years minus 1,
-        #the months to the latest date since the start of the latest year, and the months from the starting month to the end of that year
-        else:
-            tempduration = (latesttime.year-earliesttime.year-1)*12 + latesttime.month + (12 - earliesttime.month)
-        tempduration+=1
-        tempyear = latesttime.year
-        tempmonth = latesttime.month
-        #For each month in the duration, create a new date time, calculating the month and the year
-        for i in range(tempduration):
-            dates.insert(0, datetime(tempyear, tempmonth, 1, 0, 0, 0))
-            tempmonth-=1
-            if(tempmonth<1):
-                tempmonth=12
-                tempyear-=1
-    else: #zoom == years
-        tempduration = latesttime.year-earliesttime.year + 1
-        tempyear = latesttime.year
-        for i in range(tempduration):
-            dates.insert(0, datetime(tempyear, 1, 1, 0, 0, 0))
-            tempyear-=1
-    return render_to_response('widgetframe.html', {'widget':widget, 'typedwidget':typedwidget, 'dates': dates})
         
 def line_graph_view(request, widget_id):
     """Renders a line graph from data passed via an HttpRequest
-A request must include the following parameters:
-width: the width in pixels of the graph window
-height: the height in pixels of the graph window
-lefttime: the earliest time that will appear on the x-axis
-righttime: the latest time that will appear on the x-axis
-modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
-but each must be numbered sequentially(model1, model2, model3, etc.)
-modelioption: the value to filter database queries by (assumed to be the value of the first order option).
-Requests can contain multiple modelioption's, but each must correspond to a modeli (model1option, model2option, etc.)
-zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
-topy: The maximum y value of the graph
-bottomy: the minimum y value of the graph
-graphplace: the number of the chunk to return in response.
-graphchunks: the total number of chunks to split the graph into.
-"""
+    A request must include the following parameters:
+    width: the width in pixels of the graph window
+    height: the height in pixels of the graph window
+    lefttime: the earliest time that will appear on the x-axis
+    righttime: the latest time that will appear on the x-axis
+    modeli: the table in the database to retrieve information from. Request can contain multiple modeli's,
+    but each must be numbered sequentially(model1, model2, model3, etc.)
+    modelioption: the value to filter database queries by (assumed to be the value of the first order option).
+    Requests can contain multiple modelioption's, but each must correspond to a modeli (model1option, model2option, etc.)
+    zoom: the value of the zoom, passed as a string. Zoom can be hours, days, weeks, months, or years
+    topy: The maximum y value of the graph
+    bottomy: the minimum y value of the graph
+    graphplace: the number of the chunk to return in response.
+    graphchunks: the total number of chunks to split the graph into.
+    """
     #Vertical Margins for the widget's display
     KEY_MARGIN = 30
     TOP_MARGIN = 5
@@ -343,13 +292,13 @@ graphchunks: the total number of chunks to split the graph into.
  
 def addWidget(request):
     #Get the dashboard to add a widget to.
-    dashboard_id = request.GET["dashboardID"]
-    dashboard = objects.Dashboard.get(pk=dashboard_id)
-    new_widget = dashboard.addWidget(0)
+    dashboard_id = request.POST["dashboardID"]
+    dashboard = Dashboard.objects.get(pk=dashboard_id)
+    new_widget = dashboard.addWidget('left')
  
     #Add a typed widget corresponding to the new generic widget
-    graphtype = request.GET["graphType"]
-    zoom = request.GET["zoom"]
+    graphtype = request.POST["graphType"]
+    zoom = request.POST["zoom"]
     earliesttime = datetime(2010,01,01,00,00,00)
     latesttime = datetime(2010,02,01,00,00,00)
     firstunit = "dollars"
@@ -357,10 +306,14 @@ def addWidget(request):
     new_widget.add_typed_widget(graphtype, zoom, earliesttime, latesttime, firstunit, secondunit)
  
     #Make all the queries that need to be added to the database for the new widget
-    queries = request.GET["queryInfo"]
+    queries = request.POST["queryInfo"].split(",")
     for query in queries:
-        new_widget.add_query(query[0], query[1], query[2])
-    return HttpResponseRedirect('/dashboard')
+        if query != "":
+            table = query.split(":")[0]
+            option = query.split(":")[1]
+            property = globals()[table].get_most_important_property()
+            new_widget.add_query(table, option, property)
+    return HttpResponseRedirect('/dashboard/' + dashboard_id)
 
 def extract_times(indate):
     """Takes a string representing a time stamp from the template, and scans it into a datetime object
@@ -414,14 +367,15 @@ def export_widget(request):
                 # on hosts without xlwt
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
-        widget = get_object_or_404(Widget, pk=widget_id)
+        widget = Widget.objects.get(pk=widget_id)
+        #widget = get_object_or_404(Widget, pk=widget_id)
         wb = xlwt.Workbook()
         for query in widget.get_queries():
             table = query.table
             rowcounter = -1
-            ws = wb.add_sheet(str(query.property)+' Test Sheet')
+            ws = wb.add_sheet(str(query.first_order_option)+' Test Sheet')
             for table in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == table.symbol):
+                if (query.first_order_option == table.symbol):
                     #sym = table.symbol
                     rowcounter += 1
                     ws.write(rowcounter, 0, table.symbol)
@@ -462,11 +416,12 @@ def export_pdf(request):
     widget_ids = request.GET.values()
     for widget_id in widget_ids:
         widget = get_object_or_404(Widget, pk=widget_id)
+        #widget = get_object_or_404(Widget, pk=widget_id)
         data = []
         for query in widget.get_queries():
             tabl = query.table
             for tabl in globals()[query.table].objects.all().order_by('-symbol'):
-                if (query.property == tabl.symbol):
+                if (query.first_order_option == tabl.symbol):
                     data.append([tabl.symbol, tabl.price])
  
     ts = [('ALIGN', (1,1), (-1,-1), 'CENTER'),

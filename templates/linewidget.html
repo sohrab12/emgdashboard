@@ -1,1 +1,183 @@
-<iframe src="/dashboard/linewidget/{{ widget_pk }}" width="390" height="500" frameborder="0"></iframe>
+<script type="text/javascript" src="/static/widgetjs/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="/static/widgetjs/jquery-ui-1.7.1.custom.min.js"></script>
+<script type="text/javascript" src="/static/widgetjs/selectToUISlider.jQuery.js"></script>
+<link rel="stylesheet" href="/static/widgetcss/ui.slider.extras.css" type="text/css" />
+<link rel="stylesheet" href="/static/widgetcss/widget-ui.css" type="text/css" />
+<link rel="stylesheet" href="/static/widgetcss/redmond/jquery-ui-1.7.1.custom.css" type="text/css" />
+<script type="text/javascript">
+	//Convert datetime strings to a user-appropriate format
+	function clean_date(date)
+	{
+		datevalues = date.split(" ");
+		calvals = datevalues[0].split("-");
+		timevals = datevalues[1].split(":");
+		datevalues = calvals;
+		if('{{typedwidget.zoom}}' == 'hours')
+		{
+			//Add a time string for the date into valdates showing year, month, day, and hour.
+			var hour = timevals[0];
+			if(hour == 0)
+			{
+				hour = 12
+				timestamp = 'am';
+			}
+			else if(hour == 12)
+			{
+				timestamp = 'pm';
+			}
+			else if(hour > 12)
+			{
+				hour = hour-12;
+				var timestamp = 'pm';
+			}
+			else
+			{
+				var timestamp = 'am';
+			}
+			return (datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0] + " " + hour + " " + timestamp);
+		}
+		else if('{{typedwidget.zoom}}' == 'days')
+		{
+			return (datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0]);
+		}
+		else if('{{typedwidget.zoom}}' == 'weeks')
+		{
+			return (datevalues[1] + "/" +datevalues[2] + "/" + datevalues[0]);
+		}
+		else if('{{typedwidget.zoom}}' == 'months')
+		{
+			return (datevalues[1] + "/" + datevalues[0]);
+		}
+		else //Zoom = years
+		{
+			return (datevalues[0]);
+		}
+	}
+
+	//Find the location in valDates of the given date
+	function find_date(date, datesarray, start, len)
+	{
+		for(i=0;i<datesarray.length;i++)
+		{;
+			if(datesarray[i]==date)
+			{
+				return i;
+			}
+		}
+		//If this is the start date, and no index was found, set the handles position to 0
+		if(start==true)
+		{
+			return 0;
+		}
+		//If this is the end date, set the handles position to whatever length was passed in
+		else
+		{
+			return len-1;
+		}
+	}
+
+	$(function(){
+		//var valDates = ['2006', '2007', '2008', '2009', '2010'];
+		var valDates = [];
+		//Remove the brackets from the list to get the list of dates
+		var datelisttxt = '{{dates}}'.split("[")[1].split("]")[0];
+		var tempdates = datelisttxt.split(",")
+		//Parse list of dates and load each into valDates
+		console.log("{{typedwidget.startdate}}");
+		for (date in tempdates)
+		{
+			if(tempdates[date]!="")
+			{
+				datevalues = tempdates[date].split(";")[1].split("&")[0].split("T");
+				valDates.push(datevalues[0]+" "+datevalues[1]);
+			}
+		}
+
+		//new range slider
+		var startval = find_date("{{typedwidget.startdate}}", valDates, true, 0);
+		var endval = find_date("{{typedwidget.enddate}}", valDates, false, valDates.length);
+		$("#linewidget{{ pk }} #slider-range").slider({
+			range: true,
+			min: 0,
+			max: valDates.length - 1,
+			values: [startval, endval],
+			slide: function(event, ui) {
+				$("#linewidget{{ pk }} #date").val(clean_date(valDates[ui.values[0]]) + ' - ' + clean_date(valDates[ui.values[1]]));
+			},
+			//Set change to update the widget via python when the sliders change
+			change: function(event, ui) {
+				var startdate = valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 0)];
+				var enddate = valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 1)];
+				$.post('http://127.0.0.1:8000/dashboard/slidewidgettimes', {pk: "{{widget.pk}}", start: startdate, end: enddate}, function(data){console.log("Data Loaded: " + data);});
+				update_graph({{ pk }});
+			}
+		});
+
+		$("#linewidget{{ pk }} #date").val(clean_date(valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 0)]) + ' - ' + clean_date(valDates[$("#linewidget{{ pk }} #slider-range").slider("values", 1)]));
+
+		//delete widget
+		$("#linewidget{{ pk }} .widget .delete").click(function(){
+					$(this).parents(".widget").animate({ opacity: 'hide' }, "slow");
+					$.post('http://127.0.0.1:8000/dashboard/removewidget', {pk: "{{widget.pk}}"}, function(data){alert("Data Loaded: " + data);});
+		});
+
+
+	});
+
+
+		function update_graph(pk)
+		{
+			var i = 0;
+			$('#linewidget'+pk+' .widgetgraph img').each(function() {
+				var n = $(this).attr('src').split("&refresh", 1)+"&refresh=" + refreshtag;
+				console.log(n);
+				$(this).attr('src', n);
+				i++;
+			})
+			
+			var refreshtag = Math.floor(Math.random()*10001)
+			for(var i = 0; i<=3; i++)
+			{
+				if(document.images[i]) {
+					document.images[i].src = document.images[i].src.split("&refresh", 1)+"&refresh=" + refreshtag;
+				}
+			}
+		}
+
+		function setup_widget(pk)
+		{
+			var width = $('#linewidget'+pk+' .widgetgraph').width();
+			var height = $('#linewidget'+pk+' .widgetgraph').height();
+			var i = 0;
+			$('#linewidget'+pk+' .widgetgraph img').each(function() {
+				console.log(i);
+				console.log($(this))
+				$(this).attr('src', "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=" + i + "&chunkcount=3&ytop=20&ybottom=0&width=" + width + "&height=" + height);
+				i++;
+			})
+			if("{{typedwidget.secondunit}}" != "null")
+			{
+				console.log("second unit");
+				var width = $('#linewidget'+pk+' .widgetgraph').width();
+				var height = $('#linewidget'+pk+' .widgetgraph').height();
+				//document.write('<img id="secondyaxis" onMouseUp="return update_graph({{ pk }})" src = "http://127.0.0.1:8000/dashboard/graph_chunk/{{widget.id}}?chunkplace=-1&chunkcount=3&ytop=20&ybottom=0&width=' + width + '&height=' + height + '"/>');
+			}
+		}
+</script>
+
+<div id="linewidget{{ pk }}" class="widget" style="display: block; height: 500px; border: 2px solid black">
+	<!-- widget placeholder -->
+	<div class="widgetgraph">
+		<img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/><img onMouseUp="return update_graph({{ pk }})"/>
+		<script language="JavaScript">
+			 setup_widget({{pk}});
+		</script>
+	</div>
+	<!-- new range slider -->
+	<div class="widgetslider" id="slider-range">
+	</div>
+	<div id="slidermeta{{ pk }}">
+		<label for="date">Date Range:</label>
+		<input type="text" id="date" style="border:0; color:#f6931f; font-weight:bold;" />
+	</div>
+</div>
