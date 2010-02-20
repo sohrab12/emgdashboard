@@ -108,9 +108,7 @@ var data = "";
 
 <script type="text/javascript">
 
-
-
-$(document).ready(function(){
+  	$(document).ready(function(){
 
 	$('select#stocksGraphSymbol').selectList('div#addSelections',{
 		addAnimate: function (item, callback) {
@@ -363,12 +361,12 @@ $(document).ready(function(){
 		    	<tr>
 					<td valign="top" width="410">
 		        	{% for b in left_widget_bodies %}
-		        	{{ b }}
+		        	<div class="widget" style="padding:0; margin:0; margin-bottom: 40px">{{ b }}</div>
 		            {% endfor %}
 					</td>
 					<td valign="top" width="310">
 		        	{% for b in right_widget_bodies %}
-		        	{{ b }}
+		        	<div class="widget" style="padding:0; margin:0; margin-bottom: 40px">{{ b }}</div>
 		            {% endfor %}
 					</td>
 		        </tr>
